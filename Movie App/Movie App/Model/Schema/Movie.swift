@@ -19,7 +19,7 @@ class Movie {
     var originalTitle: String
     var title: String
     var overview: String
-    var voteAverage: Int
+    var voteAverage: Float
     var releaseDate: String
     var page: Int = 0
     
@@ -32,7 +32,7 @@ class Movie {
         self.originalTitle = json["original_title"] as? String ?? ""
         self.title = json["title"] as? String ?? ""
         self.overview = json["overview"] as? String ?? ""
-        self.voteAverage = json["vote_average"] as? Int ?? 0
+        self.voteAverage = json["vote_average"] as? Float ?? 0.0
         self.releaseDate = json["release_date"] as? String ?? ""
     }
 }

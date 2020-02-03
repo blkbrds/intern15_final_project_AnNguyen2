@@ -10,6 +10,7 @@ import UIKit
 
 class MovieCell: UICollectionViewCell {
 
+    @IBOutlet private weak var ratingLabel: UILabel!
     @IBOutlet private weak var movieImageView: ImageView!
 
     override func awakeFromNib() {
@@ -29,6 +30,7 @@ class MovieCell: UICollectionViewCell {
                 return
             }
             DispatchQueue.main.async {
+                self.ratingLabel.text = "\(movie.voteAverage.toString())"
                 self.movieImageView.image = image
             }
         }

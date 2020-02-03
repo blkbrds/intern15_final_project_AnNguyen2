@@ -11,6 +11,7 @@ import UIKit
 class BaseViewController: UIViewController {
     let refeshControl: UIRefreshControl = {
         let refeshControl = UIRefreshControl()
+        refeshControl.tintColor = .white
         return refeshControl
     }()
 

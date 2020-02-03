@@ -9,7 +9,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="MovieCell" customModule="Demo_Movie_App" customModuleProvider="target">
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="MovieCell" customModule="Movie_App" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
             <autoresizingMask key="autoresizingMask"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -19,22 +19,32 @@
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_image" translatesAutoresizingMaskIntoConstraints="NO" id="UHy-OI-TRD">
                         <rect key="frame" x="10" y="0.0" width="40" height="50"/>
                     </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="4.5" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sNV-4o-4HQ">
+                        <rect key="frame" x="19.5" y="5" width="25.5" height="19.5"/>
+                        <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                        <color key="textColor" red="1" green="1" blue="1" alpha="0.9982074058" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
             </view>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="UHy-OI-TRD" secondAttribute="bottom" id="3Ka-rl-vvL"/>
+                <constraint firstItem="sNV-4o-4HQ" firstAttribute="width" relation="lessThanOrEqual" secondItem="UHy-OI-TRD" secondAttribute="width" id="UnT-AY-kzw"/>
                 <constraint firstItem="UHy-OI-TRD" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="10" id="YfT-i3-ux7"/>
+                <constraint firstAttribute="trailing" secondItem="sNV-4o-4HQ" secondAttribute="trailing" constant="5" id="i7e-q9-3fw"/>
                 <constraint firstAttribute="trailing" secondItem="UHy-OI-TRD" secondAttribute="trailing" id="o4P-Tv-LMY"/>
                 <constraint firstItem="UHy-OI-TRD" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="onJ-32-HaH"/>
+                <constraint firstItem="sNV-4o-4HQ" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="5" id="xez-fQ-xHd"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <connections>
                 <outlet property="movieImageView" destination="UHy-OI-TRD" id="HFE-TN-MXO"/>
+                <outlet property="ratingLabel" destination="sNV-4o-4HQ" id="bHF-ok-Nr1"/>
             </connections>
             <point key="canvasLocation" x="-2.8985507246376816" y="91.071428571428569"/>
         </collectionViewCell>
     </objects>
     <resources>
-        <image name="default_image" width="248" height="248"/>
+        <image name="default_image" width="124" height="124"/>
     </resources>
 </document>

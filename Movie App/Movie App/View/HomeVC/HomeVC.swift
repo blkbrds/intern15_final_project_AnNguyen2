@@ -30,7 +30,7 @@ class HomeVC: BaseViewController {
     
     override func setupUI() {
         title = "Home"
-        view.backgroundColor = App.Color.mainColor
+        movieTableView.backgroundColor = App.Color.mainColor
     }
     
     override func setupData() {
