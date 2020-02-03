@@ -1,0 +1,19 @@
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '9.0'
+
+target 'Movie App' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for Movie App
+
+  # Architect
+  pod 'MVVM-Swift' # MVVM Architect for iOS Application.
+  
+  # Data
+  pod 'ObjectMapper' # Simple JSON Object mapping written in Swift. Please fix this version to 2.2.6 now.
+  
+  # Network
+  pod 'Alamofire' # Elegant HTTP Networking in Swift.
+
+end
