@@ -17,7 +17,7 @@ class BaseNavigationController: UINavigationController {
 
     private func setupNavBar() {
         navigationBar.barStyle = .black
-        navigationBar.tintColor = .white
+        navigationBar.tintColor = App.Color.barTint
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {

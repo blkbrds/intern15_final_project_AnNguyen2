@@ -26,6 +26,6 @@ extension App.Font {
     }
 
     static var buttonTextLabel: UIFont {
-        return .boldSystemFont(ofSize: 14)
+        return .boldSystemFont(ofSize: 12)
     }
 }

@@ -9,6 +9,10 @@
 import UIKit
 
 class BaseViewController: UIViewController {
+    let refeshControl: UIRefreshControl = {
+        let refeshControl = UIRefreshControl()
+        return refeshControl
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,7 +23,7 @@ class BaseViewController: UIViewController {
         super.viewDidAppear(animated)
         setupUI()
     }
-
+    
     func setupUI() { }
     
     func setupData() { }
