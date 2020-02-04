@@ -10,7 +10,7 @@ import UIKit
 
 extension App.Font {
     static var navigationBar: UIFont {
-        return .boldSystemFont(ofSize: 20)
+        return .systemFont(ofSize: 20, weight: .bold)
     }
 
     static var tableHeaderViewTextLabel: UIFont {

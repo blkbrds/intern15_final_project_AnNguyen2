@@ -9,9 +9,9 @@
 import UIKit
 
 extension UILabel {
-    func borderLabel(){
-        self.layer.cornerRadius = 4
-        self.backgroundColor = .lightGray
-        self.clipsToBounds = true
+    func borderLabel() {
+        layer.cornerRadius = 4
+        backgroundColor = .lightGray
+        clipsToBounds = true
     }
 }
