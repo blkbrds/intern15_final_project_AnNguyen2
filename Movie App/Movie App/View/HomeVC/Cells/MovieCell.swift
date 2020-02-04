@@ -10,7 +10,7 @@ import UIKit
 
 class MovieCell: UICollectionViewCell {
 
-    @IBOutlet private weak var ratingLabel: UILabel!
+    @IBOutlet private weak var voteCountLabel: UILabel!
     @IBOutlet private weak var movieImageView: ImageView!
 
     override func awakeFromNib() {
@@ -20,6 +20,8 @@ class MovieCell: UICollectionViewCell {
     
     private func configCell(){
         movieImageView.image = UIImage(named: "default_image")
+        voteCountLabel.text = "..."
+        voteCountLabel.borderLabel()
     }
 
     func setupView(movie: Movie) {
@@ -30,7 +32,7 @@ class MovieCell: UICollectionViewCell {
                 return
             }
             DispatchQueue.main.async {
-                self.ratingLabel.text = "\(movie.voteAverage.toString())"
+                self.voteCountLabel.text = " \(movie.voteCount.parseToThousandUnit()) K"
                 self.movieImageView.image = image
             }
         }

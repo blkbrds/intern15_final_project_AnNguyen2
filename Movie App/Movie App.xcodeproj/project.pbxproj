@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8E1EEFEA23E9111100FAD69B /* IntExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E1EEFE923E9111100FAD69B /* IntExt.swift */; };
+		8E1EEFEC23E9119400FAD69B /* LabelExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E1EEFEB23E9119400FAD69B /* LabelExt.swift */; };
 		8E2F28A223E7C090006F9DED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2F28A123E7C090006F9DED /* AppDelegate.swift */; };
 		8E2F28A623E7C11B006F9DED /* MoviesVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2F28A423E7C11B006F9DED /* MoviesVC.swift */; };
 		8E2F28A723E7C11B006F9DED /* MoviesVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8E2F28A523E7C11B006F9DED /* MoviesVC.xib */; };
@@ -60,6 +62,8 @@
 
 /* Begin PBXFileReference section */
 		853D0EE2C7B03C245FFE56C2 /* Pods-Movie App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Movie App.release.xcconfig"; path = "Target Support Files/Pods-Movie App/Pods-Movie App.release.xcconfig"; sourceTree = "<group>"; };
+		8E1EEFE923E9111100FAD69B /* IntExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntExt.swift; sourceTree = "<group>"; };
+		8E1EEFEB23E9119400FAD69B /* LabelExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LabelExt.swift; sourceTree = "<group>"; };
 		8E2F28A123E7C090006F9DED /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8E2F28A423E7C11B006F9DED /* MoviesVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesVC.swift; sourceTree = "<group>"; };
 		8E2F28A523E7C11B006F9DED /* MoviesVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MoviesVC.xib; sourceTree = "<group>"; };
@@ -333,6 +337,8 @@
 				8E2F28A923E7C1D2006F9DED /* InputViewExt.swift */,
 				8E2F28AA23E7C1D2006F9DED /* StringExt.swift */,
 				8E2F28AB23E7C1D2006F9DED /* UIViewControllerExt.swift */,
+				8E1EEFEB23E9119400FAD69B /* LabelExt.swift */,
+				8E1EEFE923E9111100FAD69B /* IntExt.swift */,
 				8E2F28F223E7FB02006F9DED /* FloatExt.swift */,
 			);
 			path = Ext;
@@ -524,6 +530,7 @@
 				8E2F28DC23E7C965006F9DED /* HomeViewModel.swift in Sources */,
 				8E2F28EF23E7CA96006F9DED /* LayoutCustom.swift in Sources */,
 				8E8143A223E282F600E68EF7 /* BaseTabBarController.swift in Sources */,
+				8E1EEFEA23E9111100FAD69B /* IntExt.swift in Sources */,
 				8E2F28DE23E7CA34006F9DED /* ImageView.swift in Sources */,
 				8E2F28F323E7FB02006F9DED /* FloatExt.swift in Sources */,
 				8E2F28AF23E7C1D2006F9DED /* StringExt.swift in Sources */,
@@ -532,6 +539,7 @@
 				8E2F28B023E7C1D2006F9DED /* UIViewControllerExt.swift in Sources */,
 				8E2F28CF23E7C470006F9DED /* Color.swift in Sources */,
 				8E8143B723E2837A00E68EF7 /* HomeVC.swift in Sources */,
+				8E1EEFEC23E9119400FAD69B /* LabelExt.swift in Sources */,
 				8E2F28B923E7C36E006F9DED /* App.swift in Sources */,
 				8E2F28C923E7C447006F9DED /* Movie.swift in Sources */,
 				8E8143AA23E2834B00E68EF7 /* ComingSoonVC.swift in Sources */,
