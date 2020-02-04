@@ -26,16 +26,23 @@
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                     </collectionView>
+                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="hHK-Vd-jaf">
+                        <rect key="frame" x="150" y="65" width="20" height="20"/>
+                        <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </activityIndicatorView>
                 </subviews>
                 <constraints>
+                    <constraint firstItem="hHK-Vd-jaf" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="9vz-v7-ANl"/>
                     <constraint firstAttribute="bottom" secondItem="Qom-9f-CoL" secondAttribute="bottom" id="Cg8-6S-RFe"/>
                     <constraint firstItem="Qom-9f-CoL" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="HUc-pB-poi"/>
                     <constraint firstItem="Qom-9f-CoL" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="NYR-3v-CFv"/>
+                    <constraint firstItem="hHK-Vd-jaf" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="erb-3b-ZUU"/>
                     <constraint firstAttribute="trailing" secondItem="Qom-9f-CoL" secondAttribute="trailing" id="xeq-q9-pr6"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="loadActivityIndicator" destination="hHK-Vd-jaf" id="L3P-zi-go4"/>
                 <outlet property="moviesCollectionView" destination="Qom-9f-CoL" id="iUH-zM-Khk"/>
             </connections>
             <point key="canvasLocation" x="140.57971014492756" y="117.85714285714285"/>

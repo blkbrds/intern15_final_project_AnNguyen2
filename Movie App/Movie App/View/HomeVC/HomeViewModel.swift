@@ -46,14 +46,8 @@ enum MovieCategory: CaseIterable {
 
 final class HomeViewModel {
     let movieCategories: [MovieCategory] = [.popular, .discover, .topRated, .trending, .tv]
-    var movies: [[Movie]] = []
-
-    init() {
-        for _ in 1...movieCategories.count {
-            movies.append([])
-        }
-    }
-
+    var movies: [[Movie]] = [[], [], [], [], []]
+    
     func resetMovies() {
         for i in 0..<movieCategories.count {
             movies[i] = []

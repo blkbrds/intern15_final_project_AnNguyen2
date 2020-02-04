@@ -1,5 +1,5 @@
 //
-//  LabelExt.swift
+//  ImageViewExt.swift
 //  Movie App
 //
 //  Created by An Nguyễn on 2/3/20.
@@ -8,10 +8,9 @@
 
 import UIKit
 
-extension UILabel {
-    func borderLabel() {
-        layer.cornerRadius = 4
-        backgroundColor = .lightGray
+extension UIImageView {
+    func borderImage(cornerRadius: CGFloat = 5){
+        layer.cornerRadius = cornerRadius
         clipsToBounds = true
     }
 }

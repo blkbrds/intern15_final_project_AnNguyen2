@@ -15,8 +15,8 @@ class ImageView: UIImageView {
     }
     
     private func configView(){
-        self.layer.cornerRadius = 5
-        self.clipsToBounds = true
+        layer.cornerRadius = 5
+        clipsToBounds = true
     }
     
     required init?(coder: NSCoder) {

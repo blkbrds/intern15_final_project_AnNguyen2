@@ -25,26 +25,29 @@ class HomeVC: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        configMovieTableView()
     }
     
     override func setupUI() {
         title = "Home"
-        movieTableView.backgroundColor = App.Color.mainColor
+        configMovieTableView()
     }
     
     override func setupData() {
         fetchData(for: .load)
     }
     
+    private func updateUI(){
+        self.movieTableView.reloadData()
+    }
+    
     private func fetchData(for action: Action){
         if action == .reload {
             homeViewModel.resetMovies()
-            self.movieTableView.reloadData()
+            updateUI()
         }
         homeViewModel.fetchData { (done, error) in
             if done {
-                self.movieTableView.reloadData()
+                self.updateUI()
             }else if let error = error {
                 self.alert(error: error)
             }
@@ -52,6 +55,7 @@ class HomeVC: BaseViewController {
     }
 
     private func configMovieTableView() {
+        movieTableView.backgroundColor = App.Color.mainColor
         let nib = UINib(nibName: Config.nibNameCell, bundle: .main)
         movieTableView.register(nib, forCellReuseIdentifier: Config.withReuseIdentifier)
         movieTableView.register(UITableViewCell.self, forCellReuseIdentifier: Config.defautIdentifier)

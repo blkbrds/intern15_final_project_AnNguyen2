@@ -17,6 +17,7 @@ private final class Config {
 class HomeCell: UITableViewCell {
 
     @IBOutlet private weak var moviesCollectionView: UICollectionView!
+    @IBOutlet private weak var loadActivityIndicator: UIActivityIndicatorView!
     private var movies: [Movie] = [] {
         didSet {
             moviesCollectionView.reloadData()
@@ -29,6 +30,13 @@ class HomeCell: UITableViewCell {
     }
 
     func setupData(movies: [Movie]) {
+        if movies.isEmpty {
+            loadActivityIndicator.startAnimating()
+            loadActivityIndicator.isHidden = false
+        } else {
+            loadActivityIndicator.stopAnimating()
+            loadActivityIndicator.isHidden = true
+        }
         self.movies = movies
     }
 
@@ -37,6 +45,7 @@ class HomeCell: UITableViewCell {
     }
 
     private func configMoviesCollectionView() {
+        loadActivityIndicator.isHidden = false
         let nib = UINib(nibName: Config.nibNameCell, bundle: .main)
         moviesCollectionView.register(nib, forCellWithReuseIdentifier: Config.withReuseIdentifier)
         moviesCollectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: Config.defautIdentifier)

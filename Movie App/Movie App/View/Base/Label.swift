@@ -11,9 +11,9 @@ import UIKit
 class Label: UILabel {
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.translatesAutoresizingMaskIntoConstraints = false
-        self.textColor = App.Color.titleColor
-        self.font = UIFont.boldSystemFont(ofSize: 18)
+        translatesAutoresizingMaskIntoConstraints = false
+        textColor = App.Color.titleColor
+        font = UIFont.boldSystemFont(ofSize: 18)
     }
     
     required init?(coder: NSCoder) {
