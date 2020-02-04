@@ -1,0 +1,24 @@
+PODS:
+  - Alamofire (4.9.1)
+  - MVVM-Swift (5.0.1)
+  - ObjectMapper (3.5.1)
+
+DEPENDENCIES:
+  - Alamofire
+  - MVVM-Swift
+  - ObjectMapper
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - MVVM-Swift
+    - ObjectMapper
+
+SPEC CHECKSUMS:
+  Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
+  MVVM-Swift: 0333cd8a16abfe0e93a1423bfddb49b8c11065e1
+  ObjectMapper: 70187b8941977c62ccfb423caf6b50be405cabf0
+
+PODFILE CHECKSUM: fd696134a1657807fa4503a05b0c632c16be9cd1
+
+COCOAPODS: 1.8.1
