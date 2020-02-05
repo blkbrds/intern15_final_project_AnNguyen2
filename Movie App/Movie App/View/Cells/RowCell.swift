@@ -1,33 +1,39 @@
 //
-//  MoviesCell.swift
+//  RowCell.swift
 //  Demo Movie App
 //
-//  Created by An Nguyễn on 1/22/20.
+//  Created by An Nguyễn on 1/27/20.
 //  Copyright © 2020 An Nguyễn. All rights reserved.
 //
 
 import UIKit
 
-class GridCell: UICollectionViewCell {
+class RowCell: UICollectionViewCell {
 
-    @IBOutlet private weak var voteCountLabel: UILabel!
-    @IBOutlet private weak var movieImageView: UIImageView!
-
+    @IBOutlet weak private var movieImageView: UIImageView!
+    @IBOutlet weak private var movieNameLabel: UILabel!
+    @IBOutlet weak private var releaseDateLabel: UILabel!
+    @IBOutlet weak private var overviewLabel: UILabel!
+    @IBOutlet weak private var voteCountLabel: UILabel!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        configCell()
+        configView()
     }
     
-    private func configCell(){
+    private func configView(){
         movieImageView.borderImage()
         voteCountLabel.text = "..."
         voteCountLabel.borderLabel()
     }
-
+    
     func setupView(movie: Movie) {
         movieImageView.image = #imageLiteral(resourceName: "default_image")
         voteCountLabel.text = " \(movie.voteCount.parseToThousandUnit()) K"
-        let urlString = APIManager.Path.baseImageURL + movie.posterPath
+        overviewLabel.text = movie.overview
+        releaseDateLabel.text = movie.releaseDate
+        movieNameLabel.text = movie.originalTitle
+        let urlString = APIManager.Path.baseImage5URL + movie.posterPath
         APIManager.Downloader.downloadImage(with: urlString) { (image, error) in
             if let error = error {
                 print(error)
@@ -38,4 +44,5 @@ class GridCell: UICollectionViewCell {
             }
         }
     }
+
 }

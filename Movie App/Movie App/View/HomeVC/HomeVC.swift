@@ -104,6 +104,7 @@ extension HomeVC: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: Config.withReuseIdentifier) as? HomeCell else {
             return UITableViewCell()
         }
+        cell.delegate = self
         let movies = viewModel.movies[indexPath.section]
         cell.setupData(movies: movies)
         return cell
@@ -126,5 +127,15 @@ extension HomeVC: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 170
+    }
+}
+
+//MARK: -HomeCellDelegate
+extension HomeVC: HomeCellDelegate {
+    func homeCell(_ homeCell: HomeCell, didSelectItem: Movie, perform action: HomeCellActionType) {
+        let detailVC = DetailVC()
+        let detailViewModel = viewModel.detailViewModel(for: didSelectItem.id)
+        detailVC.viewModel = detailViewModel
+        navigationController?.pushViewController(detailVC, animated: true)
     }
 }

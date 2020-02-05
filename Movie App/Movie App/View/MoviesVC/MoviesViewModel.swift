@@ -25,15 +25,18 @@ final class MoviesViewModel {
     var isShowFilter: Bool = false
     var genreFilter: Genre?
     var trendingTypeFilter: TrendingType?
-    
 
     init() { }
-    
+
     init(type: MovieCategory = .discover) {
         self.movieCategory = type
     }
+    
+    func detailViewModel(for id: Int) -> DetailViewModel {
+        return DetailViewModel(by: id)
+    }
 
-    func handleUrl(page: Int = 1){
+    func handleUrl(page: Int = 1) {
         guard let category = self.movieCategory else { url = ""; return }
         switch category {
         case .trending:
@@ -41,35 +44,36 @@ final class MoviesViewModel {
                 url = APIManager.Path.Trending(page: page, trendingType: trendingType) .url
             } else {
                 url = APIManager.Path.Trending(page: page) .url
-
             }
         case .discover:
             if let genre = genreFilter {
                 url = APIManager.Path.Discover(page: page, with_genres: genre.id).url
             } else {
-                url = APIManager.Path.Discover().url
+                url = APIManager.Path.Discover(page: page).url
             }
         case .tv:
             if let genre = genreFilter {
                 url = APIManager.Path.TV(page: page, with_genres: genre.id) .url
             } else {
-                url = APIManager.Path.TV().url
+                url = APIManager.Path.TV(page: page).url
             }
         case .popular:
             url = APIManager.Path.Popular(page: page).url
         case .topRated:
             url = APIManager.Path.TopRated(page: page).url
+        default:
+            url = ""
         }
     }
 
     func fetchDataWithFilter(page: Int = 1, completion: @escaping Completion) {
         handleUrl(page: page)
-        guard let url = url else {
+        guard let url = url?.url else {
             completion(false, APIError.errorURL)
             return
         }
         isLoadData = true
-        API.shared().request(with: url) { (result) in
+        API.shared().request(with: url.absoluteString) { (result) in
             switch result {
             case .failure(let error):
                 completion(false, error)

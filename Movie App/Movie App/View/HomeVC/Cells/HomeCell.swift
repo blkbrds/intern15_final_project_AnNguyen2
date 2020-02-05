@@ -14,6 +14,14 @@ private final class Config {
     static let defautIdentifier = "defaultCell"
 }
 
+enum HomeCellActionType {
+    case didSelectItem
+}
+
+protocol HomeCellDelegate: class {
+    func homeCell(_ homeCell: HomeCell, didSelectItem: Movie, perform action: HomeCellActionType)
+}
+
 class HomeCell: UITableViewCell {
 
     @IBOutlet private weak var moviesCollectionView: UICollectionView!
@@ -23,6 +31,7 @@ class HomeCell: UITableViewCell {
             moviesCollectionView.reloadData()
         }
     }
+    weak var delegate: HomeCellDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -79,8 +88,8 @@ extension HomeCell: UICollectionViewDataSource {
 //MARK: -UICollectionViewDelegate
 extension HomeCell: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        //TODO: -Show Details Screen
-        print("didSelectItem")
+        let movie = movies[indexPath.row]
+        delegate?.homeCell(self, didSelectItem: movie, perform: .didSelectItem)
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

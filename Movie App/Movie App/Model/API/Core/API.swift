@@ -22,8 +22,10 @@ enum APIError: Error {
     case errorJSON
     case errorNetwork
     case emptyData
+    case emptyID
     case invalidURL
     case cancelRequest
+    case canNotGetVideoURL
 
     var localizedDescription: String {
         switch self {
@@ -41,6 +43,10 @@ enum APIError: Error {
             return "he internet connection appears to be offline."
         case .cancelRequest:
             return "Server returns no information and closes the connection."
+        case .emptyID:
+            return "ID is empty."
+        case .canNotGetVideoURL:
+            return "Can't get video url."
         }
     }
 }
