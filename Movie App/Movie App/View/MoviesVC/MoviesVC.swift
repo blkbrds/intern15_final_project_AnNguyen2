@@ -23,13 +23,7 @@ class MoviesVC: BaseViewController {
     private var filterViewCustom: FilterViewCustom!
     private var fillterBarButtonItem: UIBarButtonItem!
     private var statusBarButtonItem: UIBarButtonItem!
-    var movieCategory: MovieCategory? {
-        didSet {
-            title = movieCategory?.title
-            moviesViewModel.movieCategory = movieCategory
-        }
-    }
-    let moviesViewModel = MoviesViewModel()
+    var viewModel = MoviesViewModel()
     enum Action {
         case reload, load
     }
@@ -44,6 +38,7 @@ class MoviesVC: BaseViewController {
     }
 
     override func setupUI() {
+        title = viewModel.movieCategory?.title
         setupNavigationBar()
         if let filterView = Bundle.main.loadNibNamed("FilterViewCustom", owner: self, options: nil)?.first as? FilterViewCustom {
             filterViewCustom = filterView
@@ -51,7 +46,7 @@ class MoviesVC: BaseViewController {
             filterViewCustom.translatesAutoresizingMaskIntoConstraints = false
             filterViewCustomBottomAnchor = filterViewCustom.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
             filterViewCustomTopAnchor = filterViewCustom.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-            let filterHeight: CGFloat = movieCategory == .trending ? 170 : 300
+            let filterHeight: CGFloat = viewModel.movieCategory == .trending ? 170 : 300
             NSLayoutConstraint.activate([
                 filterViewCustom.heightAnchor.constraint(equalToConstant: filterHeight),
                 filterViewCustom.widthAnchor.constraint(equalToConstant: view.bounds.width),
@@ -59,7 +54,7 @@ class MoviesVC: BaseViewController {
                 ])
             filterViewCustomTopAnchor?.isActive = true
             filterViewCustom.delegate = self
-            filterViewCustom.setupAlertFilterViewCustom(genres: self.moviesViewModel.genres)
+            filterViewCustom.setupAlertFilterViewCustom(genres: self.viewModel.genres)
         }
         moviesCollectionView.delegate = self
         moviesCollectionView.dataSource = self
@@ -67,11 +62,11 @@ class MoviesVC: BaseViewController {
 
     override func setupData() {
         fetchData(for: .load)
-        guard let category = movieCategory else { return }
+        guard let category = viewModel.movieCategory else { return }
         if category == .discover || category == .tv || category == .trending {
-            moviesViewModel.fetchGenre { (done, error) in
+            viewModel.fetchGenre { (done, error) in
                 if done {
-                    self.filterViewCustom?.setupAlertFilterViewCustom(genres: self.moviesViewModel.genres)
+                    self.filterViewCustom?.setupAlertFilterViewCustom(genres: self.viewModel.genres)
                 } else if let error = error {
                     self.alert(errorString: error.localizedDescription)
                 }
@@ -81,11 +76,11 @@ class MoviesVC: BaseViewController {
 
     private func fetchData(for action: Action, page: Int = 1) {
         if action == .reload {
-            moviesViewModel.movies = []
+            viewModel.movies = []
             updateUI()
         }
         loadActivityIndicator.isHidden = false
-        moviesViewModel.fetchDataWithFilter(page: page) { (done, error) in
+        viewModel.fetchDataWithFilter(page: page) { (done, error) in
             if done {
                 self.updateUI()
             } else if let error = error {
@@ -113,7 +108,7 @@ class MoviesVC: BaseViewController {
     private func setupNavigationBar() {
         fillterBarButtonItem = UIBarButtonItem(image: UIImage.init(systemName: "f.circle.fill"), style: .plain, target: self, action: #selector(handleFilterMovies))
         statusBarButtonItem = UIBarButtonItem(image: UIImage.init(systemName: "square.grid.2x2"), style: .plain, target: self, action: #selector(handleChangedStatus))
-        guard let category = movieCategory else { return }
+        guard let category = viewModel.movieCategory else { return }
         if category == .discover || category == .tv || category == .trending { navigationItem.rightBarButtonItems = [statusBarButtonItem, fillterBarButtonItem]
         } else {
             navigationItem.rightBarButtonItem = statusBarButtonItem
@@ -121,7 +116,7 @@ class MoviesVC: BaseViewController {
     }
 
     private func handleChangeStatusForButtonItem() {
-        if moviesViewModel.status == .row {
+        if viewModel.status == .row {
             statusBarButtonItem.image = UIImage.init(systemName: "square.grid.2x2")
         } else {
             statusBarButtonItem.image = UIImage.init(systemName: "line.horizontal.3")
@@ -131,7 +126,7 @@ class MoviesVC: BaseViewController {
     private func changedLayout() {
         let layout = LayoutCustom() //Flow layout
         layout.scrollDirection = .vertical
-        if moviesViewModel.status == .row {
+        if viewModel.status == .row {
             let widthItem = view.bounds.width
             let heightItem: CGFloat = 120
             layout.minimumLineSpacing = 0
@@ -151,8 +146,8 @@ class MoviesVC: BaseViewController {
     }
 
     private func handleChangedStatusFilterMovies() {
-        moviesViewModel.isShowFilter = !moviesViewModel.isShowFilter
-        if moviesViewModel.isShowFilter {
+        viewModel.isShowFilter = !viewModel.isShowFilter
+        if viewModel.isShowFilter {
             filterViewCustomBottomAnchor?.isActive = true
             filterViewCustomTopAnchor?.isActive = false
         } else {
@@ -165,7 +160,7 @@ class MoviesVC: BaseViewController {
     }
 
     @objc private func handleChangedStatus() {
-        moviesViewModel.changedStatus()
+        viewModel.changedStatus()
         changedLayout()
         moviesCollectionView.reloadData()
     }
@@ -192,10 +187,10 @@ extension MoviesVC: UICollectionViewDelegate {
         let scrollHeight = scrollView.bounds.height
         let scrollViewContentOffsetY = scrollView.contentOffset.y
         let contentSizeHeight = scrollView.contentSize.height
-        if scrollHeight + scrollViewContentOffsetY >= contentSizeHeight && !moviesViewModel.isLoadData {
-            let nextPage = self.moviesViewModel.currentPage + 1
+        if scrollHeight + scrollViewContentOffsetY >= contentSizeHeight && !viewModel.isLoadData {
+            let nextPage = self.viewModel.currentPage + 1
             fetchData(for: .load, page: nextPage)
-            print(moviesViewModel.movies.count)
+            print(viewModel.movies.count)
         }
     }
 }
@@ -203,13 +198,13 @@ extension MoviesVC: UICollectionViewDelegate {
 //MARK: -UICollectionViewDataSource
 extension MoviesVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return moviesViewModel.movies.count
+        return viewModel.movies.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var cell = collectionView.dequeueReusableCell(withReuseIdentifier: Config.withReuseDefaultIdentifier, for: indexPath)
-        let movie = moviesViewModel.movies[indexPath.row]
-        if moviesViewModel.status == .row {
+        let movie = viewModel.movies[indexPath.row]
+        if viewModel.status == .row {
             guard let rowCell = collectionView.dequeueReusableCell(withReuseIdentifier: Config.withReuseIdentifierRowCell, for: indexPath) as? RowCell else {
                 return cell
             }
@@ -235,9 +230,9 @@ extension MoviesVC: FilterViewCustomDelegate {
     func filterViewCustom(_ view: FilterViewCustom, didSelectGenre: Genre, perform action: FilterViewActionType) {
         handleChangedStatusFilterMovies()
         if didSelectGenre.name == "Day" || didSelectGenre.name == "Week" {
-            moviesViewModel.trendingTypeFilter = didSelectGenre.name == "Day" ? .day: .week
+            viewModel.trendingTypeFilter = didSelectGenre.name == "Day" ? .day: .week
         }else {
-            moviesViewModel.genreFilter = didSelectGenre
+            viewModel.genreFilter = didSelectGenre
         }
         fetchData(for: .reload, page: 1)
         print(didSelectGenre)

@@ -17,8 +17,8 @@ final private class Config {
 class HomeVC: BaseViewController {
 
     @IBOutlet private weak var movieTableView: UITableView!
-    fileprivate let homeViewModel = HomeViewModel()
-    
+    fileprivate let viewModel = HomeViewModel()
+
     enum Action {
         case reload, load
     }
@@ -26,30 +26,30 @@ class HomeVC: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-    
+
     override func setupUI() {
         title = "Home"
         configMovieTableView()
     }
-    
+
     override func setupData() {
         fetchData(for: .load)
     }
-    
-    private func updateUI(sectionIndex: Int){
+
+    private func updateUI(sectionIndex: Int) {
         let indexSet = IndexSet(integer: sectionIndex)
         self.movieTableView.reloadSections(indexSet, with: .fade)
     }
-    
-    private func fetchData(for action: Action){
+
+    private func fetchData(for action: Action) {
         if action == .reload {
-            homeViewModel.resetMovies()
+            viewModel.resetMovies()
             movieTableView.reloadData()
         }
-        homeViewModel.fetchData { (done, index, error) in
+        viewModel.fetchData { (done, index, error) in
             if done {
                 self.updateUI(sectionIndex: index)
-            }else if let error = error {
+            } else if let error = error {
                 self.alert(errorString: error.localizedDescription)
             }
         }
@@ -66,16 +66,17 @@ class HomeVC: BaseViewController {
         refeshControl.addTarget(self, action: #selector(handleRefeshData), for: .valueChanged)
         movieTableView.refreshControl = refeshControl
     }
-    
-    @objc private func handleRefeshData(){
+
+    @objc private func handleRefeshData() {
         fetchData(for: .reload)
         refeshControl.endRefreshing()
     }
 
     @objc private func handleSeeMoreButton(sender: UIButton) {
-          let moviesVC = MoviesVC()
-          moviesVC.movieCategory = homeViewModel.movieCategories[sender.tag]
-          navigationController?.pushViewController(moviesVC, animated: true)
+        let moviesVC = MoviesVC()
+        let category = viewModel.movieCategories[sender.tag]
+        moviesVC.viewModel = MoviesViewModel(type: category)
+        navigationController?.pushViewController(moviesVC, animated: true)
     }
 }
 
@@ -85,7 +86,7 @@ extension HomeVC: UITableViewDataSource {
         let headerView = UIView()
         headerView.backgroundColor = App.Color.mainColor
         let titleLabel = Label()
-        titleLabel.text = homeViewModel.movieCategories[section].title
+        titleLabel.text = viewModel.movieCategories[section].title
         headerView.addSubview(titleLabel)
         titleLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 5).isActive = true
         titleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 10).isActive = true
@@ -100,16 +101,16 @@ extension HomeVC: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: Config.withReuseIdentifier) as? HomeCell  else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: Config.withReuseIdentifier) as? HomeCell else {
             return UITableViewCell()
         }
-        let movies = homeViewModel.movies[indexPath.section]
+        let movies = viewModel.movies[indexPath.section]
         cell.setupData(movies: movies)
         return cell
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return homeViewModel.movieCategories.count
+        return viewModel.movieCategories.count
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
