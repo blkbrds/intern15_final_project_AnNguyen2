@@ -50,6 +50,10 @@ final class HomeViewModel {
     let movieCategories: [MovieCategory] = [.popular, .discover, .topRated, .trending, .tv]
     var movies: [[Movie]] = [[], [], [], [], []]
     
+    func moviesViewModel(at index: Int) -> MoviesViewModel {
+        return MoviesViewModel(type: movieCategories[index])
+    }
+    
     func resetMovies() {
         for i in 0..<movieCategories.count {
             movies[i] = []
