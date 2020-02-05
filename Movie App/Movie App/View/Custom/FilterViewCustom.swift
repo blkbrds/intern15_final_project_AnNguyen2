@@ -18,8 +18,8 @@ protocol FilterViewCustomDelegate: class {
 }
 
 class FilterViewCustom: UIView {
-    @IBOutlet weak var alertTitleLabel: UILabel!
-    @IBOutlet weak var alertContentPickerView: UIPickerView!
+    @IBOutlet weak private var alertTitleLabel: UILabel!
+    @IBOutlet weak private var alertContentPickerView: UIPickerView!
 
     private var genres: [Genre] = []
     weak var delegate: FilterViewCustomDelegate?
