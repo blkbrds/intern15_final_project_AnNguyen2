@@ -58,8 +58,8 @@ class MoviesVC: BaseViewController {
                 filterViewCustom.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                 ])
             filterViewCustomTopAnchor?.isActive = true
-            self.filterViewCustom.delegate = self
-            self.filterViewCustom.setupAlertFilterViewCustom(genres: self.moviesViewModel.genres)
+            filterViewCustom.delegate = self
+            filterViewCustom.setupAlertFilterViewCustom(genres: self.moviesViewModel.genres)
         }
         moviesCollectionView.delegate = self
         moviesCollectionView.dataSource = self
