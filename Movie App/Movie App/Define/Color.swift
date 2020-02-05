@@ -16,6 +16,7 @@ extension App.Color {
     static let navigationBar = UIColor.black
     static let tableFooterView = UIColor.red
     static let tableCellTextLabel = UIColor.yellow
+    static let backgroundColorLabel = UIColor.lightGray.withAlphaComponent(0.6)
 
     static func button(state: UIControl.State) -> UIColor {
         switch state {

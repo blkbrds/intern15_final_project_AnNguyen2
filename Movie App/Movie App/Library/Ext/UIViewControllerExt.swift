@@ -9,8 +9,8 @@
 import UIKit
 
 extension UIViewController {
-    func alert(error: Error) {
-        alert(title: "ERROR", msg: error.localizedDescription, buttons: ["OK"], handler: nil)
+    func alert(errorString: String) {
+        alert(title: "ERROR", msg: errorString, buttons: ["OK"], handler: nil)
     }
 
     func alert(title: String? = nil, msg: String, buttons: [String], handler: ((UIAlertAction) -> Void)?) {

@@ -25,7 +25,7 @@ extension API {
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
         request.allHTTPHeaderFields = headers
-        request.httpBody = nil
+        request.httpBody = body
         let config = URLSessionConfiguration.ephemeral
         config.timeoutIntervalForRequest = 60
         config.waitsForConnectivity = true

@@ -23,12 +23,23 @@ class RowCell: UICollectionViewCell {
     
     private func configView(){
         movieImageView.borderImage()
+        voteCountLabel.text = "..."
         voteCountLabel.borderLabel()
-        movieImageView.image = UIImage(named: "default_image")
     }
     
     func setupView(movie: Movie) {
-        
+        movieImageView.image = #imageLiteral(resourceName: "default_image")
+        voteCountLabel.text = " \(movie.voteCount.parseToThousandUnit()) K"
+        let urlString = APIManager.Path.baseImageURL + movie.posterPath
+        APIManager.Downloader.downloadImage(with: urlString) { (image, error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            DispatchQueue.main.async {
+                self.movieImageView.image = image
+            }
+        }
     }
 
 }

@@ -9,6 +9,8 @@
 import Foundation
 
 typealias Completion = (Bool, APIError?) -> Void
+typealias HomeCompletion = (Bool, Int, APIError?) -> Void
+
 
 enum MovieCategory: CaseIterable {
     case tv, discover, popular, topRated, trending
@@ -46,42 +48,36 @@ enum MovieCategory: CaseIterable {
 
 final class HomeViewModel {
     let movieCategories: [MovieCategory] = [.popular, .discover, .topRated, .trending, .tv]
-    var movies: [[Movie]] = []
-
-    init() {
-        for _ in 1...movieCategories.count {
-            movies.append([])
-        }
-    }
-
+    var movies: [[Movie]] = [[], [], [], [], []]
+    
     func resetMovies() {
         for i in 0..<movieCategories.count {
             movies[i] = []
         }
     }
 
-    func fetchData(completion: @escaping Completion) {
+    func fetchData(completion: @escaping HomeCompletion) {
         let urls = movieCategories.map({ $0.defaultURL })
         for i in 0..<urls.count {
             API.shared().request(with: urls[i]) { (result) in
                 switch result {
                 case .failure(let error):
-                    completion(false, error)
+                    completion(false, i, error)
                 case .success(let data):
                     guard let data = data else {
-                        completion(false, APIError.emptyData)
+                        completion(false, i,  APIError.emptyData)
                         return
                     }
                     let json = data.toJSObject()
                     var items: [Movie] = []
-                    if let results = json["results"] as? [JSON] {
+                    if let results = json["results"] as? JSArray {
                         for item in results {
                             let movie = Movie(json: item)
                             items.append(movie)
-                            completion(true, nil)
                         }
                     }
                     self.movies[i] = items
+                    completion(true, i,  nil)
                 }
             }
         }

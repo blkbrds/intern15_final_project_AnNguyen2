@@ -9,6 +9,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MoviesVC" customModule="Movie_App" customModuleProvider="target">
             <connections>
+                <outlet property="loadActivityIndicator" destination="MJv-By-oDl" id="d08-nJ-Lax"/>
                 <outlet property="moviesCollectionView" destination="ZEe-Fh-bcI" id="UYs-AV-bnm"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -28,12 +29,18 @@
                         <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                     </collectionViewFlowLayout>
                 </collectionView>
+                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="MJv-By-oDl">
+                    <rect key="frame" x="197" y="827" width="20" height="20"/>
+                    <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                </activityIndicatorView>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="ZEe-Fh-bcI" secondAttribute="trailing" id="20s-no-qX5"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="MJv-By-oDl" secondAttribute="bottom" constant="15" id="Nna-Jp-mvD"/>
                 <constraint firstItem="ZEe-Fh-bcI" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="Olk-rq-DD6"/>
                 <constraint firstAttribute="bottom" secondItem="ZEe-Fh-bcI" secondAttribute="bottom" id="WJl-LI-BNr"/>
+                <constraint firstItem="MJv-By-oDl" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Xgb-Oq-8xl"/>
                 <constraint firstItem="ZEe-Fh-bcI" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="fqM-pM-MZW"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>

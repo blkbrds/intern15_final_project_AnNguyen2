@@ -8,8 +8,6 @@
 
 import Foundation
 
-typealias JSON = [String: Any]
-
 class Movie {
     var popularity: Double
     var voteCount: Int
@@ -23,7 +21,7 @@ class Movie {
     var releaseDate: String
     var page: Int = 0
     
-    init(json: JSON) {
+    init(json: JSObject) {
         self.id = json["id"] as? Int ?? 0
         self.popularity = json["popularity"] as? Double ?? 0.0
         self.voteCount = json["vote_count"] as? Int ?? 0
