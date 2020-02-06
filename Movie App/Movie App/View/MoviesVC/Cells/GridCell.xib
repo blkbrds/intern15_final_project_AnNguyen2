@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="GridCell" customModule="Movie_App" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="H6v-KN-mzG">
+                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="4.5 K" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pvl-2n-hED">
+                        <rect key="frame" x="9" y="5" width="36" height="17"/>
+                        <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
+                        <color key="textColor" red="1" green="1" blue="1" alpha="0.9982074058" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstItem="H6v-KN-mzG" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="EiH-NK-w2w"/>
+                <constraint firstAttribute="trailing" secondItem="Pvl-2n-hED" secondAttribute="trailing" constant="5" id="KMM-tz-ALh"/>
+                <constraint firstAttribute="bottom" secondItem="H6v-KN-mzG" secondAttribute="bottom" id="RYU-Nh-kym"/>
+                <constraint firstAttribute="trailing" secondItem="H6v-KN-mzG" secondAttribute="trailing" id="W7i-3A-Ghg"/>
+                <constraint firstItem="H6v-KN-mzG" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="aeh-wV-0UL"/>
+                <constraint firstItem="Pvl-2n-hED" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="5" id="wwq-fH-WVU"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <connections>
+                <outlet property="movieImageView" destination="H6v-KN-mzG" id="UUn-3S-RlI"/>
+                <outlet property="voteCountLabel" destination="Pvl-2n-hED" id="tE1-EF-NHa"/>
+            </connections>
+            <point key="canvasLocation" x="140.57971014492756" y="117.85714285714285"/>
+        </collectionViewCell>
+    </objects>
+</document>

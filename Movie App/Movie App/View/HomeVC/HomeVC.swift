@@ -72,7 +72,9 @@ class HomeVC: BaseViewController {
     }
 
     @objc private func handleSeeMoreButton(sender: UIButton) {
-        //Show MoviesVC        
+          let moviesVC = MoviesVC()
+          moviesVC.movieCategory = homeViewModel.movieCategories[sender.tag]
+          navigationController?.pushViewController(moviesVC, animated: true)
     }
 }
 
