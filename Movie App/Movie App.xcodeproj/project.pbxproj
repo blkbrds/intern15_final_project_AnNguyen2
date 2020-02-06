@@ -49,6 +49,7 @@
 		8E2F28F123E7CAAD006F9DED /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2F28F023E7CAAD006F9DED /* Label.swift */; };
 		8E2F28F323E7FB02006F9DED /* FloatExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2F28F223E7FB02006F9DED /* FloatExt.swift */; };
 		8E4837DE23EAE6260062C9B2 /* ButtonExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4837DD23EAE6260062C9B2 /* ButtonExt.swift */; };
+		8E4837E023EAF6C40062C9B2 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4837DF23EAF6C40062C9B2 /* SearchViewModel.swift */; };
 		8E81437223E26F0B00E68EF7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E81437123E26F0B00E68EF7 /* SceneDelegate.swift */; };
 		8E81437923E26F1000E68EF7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E81437823E26F1000E68EF7 /* Assets.xcassets */; };
 		8E81437C23E26F1000E68EF7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E81437A23E26F1000E68EF7 /* LaunchScreen.storyboard */; };
@@ -118,6 +119,7 @@
 		8E2F28F023E7CAAD006F9DED /* Label.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
 		8E2F28F223E7FB02006F9DED /* FloatExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatExt.swift; sourceTree = "<group>"; };
 		8E4837DD23EAE6260062C9B2 /* ButtonExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonExt.swift; sourceTree = "<group>"; };
+		8E4837DF23EAF6C40062C9B2 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		8E81436C23E26F0B00E68EF7 /* Movie App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Movie App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E81437123E26F0B00E68EF7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		8E81437823E26F1000E68EF7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -444,6 +446,7 @@
 			children = (
 				8E8143B923E2839C00E68EF7 /* SearchVC.swift */,
 				8E8143BA23E2839C00E68EF7 /* SearchVC.xib */,
+				8E4837DF23EAF6C40062C9B2 /* SearchViewModel.swift */,
 			);
 			path = SearchVC;
 			sourceTree = "<group>";
@@ -631,6 +634,7 @@
 				8E1EEFE323E8E93300FAD69B /* LabelExt.swift in Sources */,
 				8E2F28D923E7C953006F9DED /* MovieCell.swift in Sources */,
 				8E2F28E823E7CA58006F9DED /* API.swift in Sources */,
+				8E4837E023EAF6C40062C9B2 /* SearchViewModel.swift in Sources */,
 				8E2F28A623E7C11B006F9DED /* MoviesVC.swift in Sources */,
 				8E1EEFE023E8E8DD00FAD69B /* GridCell.swift in Sources */,
 			);
@@ -772,6 +776,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = SG8WKWH7TV;
 				INFOPLIST_FILE = "$(SRCROOT)/Movie App/Supports/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -791,6 +796,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = SG8WKWH7TV;
 				INFOPLIST_FILE = "$(SRCROOT)/Movie App/Supports/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

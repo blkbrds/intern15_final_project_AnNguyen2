@@ -189,7 +189,7 @@ extension MoviesVC: UICollectionViewDelegate {
         let scrollHeight = scrollView.bounds.height
         let scrollViewContentOffsetY = scrollView.contentOffset.y
         let contentSizeHeight = scrollView.contentSize.height
-        if scrollHeight + scrollViewContentOffsetY >= contentSizeHeight && !viewModel.isLoadData {
+        if scrollHeight + scrollViewContentOffsetY >= contentSizeHeight && !viewModel.isLoadData, viewModel.totalPages > viewModel.currentPage {
             let nextPage = self.viewModel.currentPage + 1
             fetchData(for: .load, page: nextPage)
             print(viewModel.movies.count)
