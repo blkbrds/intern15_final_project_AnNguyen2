@@ -32,4 +32,19 @@ extension APIManager.Downloader {
             }
         }
     }
+    
+    static func downloadVideo(with url: URL, completion: @escaping(_ videoData: Data?, _ error: Error?) -> Void){
+        API.shared().request(with: url.absoluteString) { (result) in
+            switch result {
+            case .failure(let error):
+                completion(nil, error)
+            case .success(let data):
+                if let data = data {
+                    completion(data, nil)
+                }else {
+                    completion(nil, APIError.emptyData)
+                }
+            }
+        }
+    }
 }

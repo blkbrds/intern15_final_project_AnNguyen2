@@ -131,4 +131,25 @@ final class DetailViewModel {
             }
         }
     }
+
+    func saveOfflineVideo(completion: @escaping(_ data: Data?, _ error: Error?) -> Void) {
+        guard let url = self.urlVideo else {
+            completion(nil, APIError.invalidURL)
+            return
+        }
+        API.shared().request(with: url.absoluteString) { (result) in
+
+            switch result {
+            case .failure(let error):
+                completion(nil, error)
+                return
+            case .success(let data):
+                guard let data = data else {
+                    completion(nil, APIError.emptyData)
+                    return
+                }
+                completion(data, nil)
+            }
+        }
+    }
 }

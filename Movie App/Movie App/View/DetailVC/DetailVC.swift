@@ -148,6 +148,15 @@ class DetailVC: BaseViewController {
     @IBAction private func favoriteButton(_ sender: Any) {
         print("favoriteButton")
     }
+    
+    @IBAction private func downloadButton(_ sender: Any) {
+        viewModel.saveOfflineVideo { (data, error) in
+            if let error = error {
+                self.alert(errorString: error.localizedDescription)
+            }
+            print(data)
+        }
+    }
 
     @IBAction private func shareButton(_ sender: Any) {
         guard let movie = viewModel.movie, let url = movie.homePage.url else {
