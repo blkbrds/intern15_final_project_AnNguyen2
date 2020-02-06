@@ -33,9 +33,7 @@ class SearchVC: BaseViewController {
         searchController.searchBar.placeholder = "Search movies..."
         definesPresentationContext = true
         searchController.searchResultsUpdater = self
-        if #available(iOS 13, *) {
-            searchController.dimsBackgroundDuringPresentation = false
-        }
+        searchController.obscuresBackgroundDuringPresentation = false
         navigationItem.searchController = searchController
         configMoviesCollectionView()
         searchCollectionView.delegate = self
