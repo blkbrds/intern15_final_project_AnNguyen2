@@ -8,14 +8,6 @@
 
 import UIKit
 
-final private class Config {
-    static let withReuseDefaultIdentifier = "defaultCell"
-    static let withReuseIdentifierGridCell = "gridCell"
-    static let nibNameGridCell = "GridCell"
-    static let withReuseIdentifierRowCell = "rowCell"
-    static let nibNameRowCell = "RowCell"
-}
-
 class MoviesVC: BaseViewController {
 
     @IBOutlet weak private var moviesCollectionView: UICollectionView!
@@ -96,11 +88,8 @@ class MoviesVC: BaseViewController {
 
     private func configMoviesCollectionView() {
         moviesCollectionView.backgroundColor = App.Color.mainColor
-        moviesCollectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: Config.withReuseDefaultIdentifier)
-        let nibForColumn = UINib(nibName: Config.nibNameGridCell, bundle: .main)
-        moviesCollectionView.register(nibForColumn, forCellWithReuseIdentifier: Config.withReuseIdentifierGridCell)
-        let nibForRow = UINib(nibName: Config.nibNameRowCell, bundle: .main)
-        moviesCollectionView.register(nibForRow, forCellWithReuseIdentifier: Config.withReuseIdentifierRowCell)
+        moviesCollectionView.register(GridCell.self)
+        moviesCollectionView.register(RowCell.self)
         refeshControl.addTarget(self, action: #selector(handleReloadData), for: .valueChanged)
         moviesCollectionView.refreshControl = refeshControl
     }
@@ -204,22 +193,16 @@ extension MoviesVC: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        var cell = collectionView.dequeueReusableCell(withReuseIdentifier: Config.withReuseDefaultIdentifier, for: indexPath)
         let movie = viewModel.movies[indexPath.row]
         if viewModel.status == .row {
-            guard let rowCell = collectionView.dequeueReusableCell(withReuseIdentifier: Config.withReuseIdentifierRowCell, for: indexPath) as? RowCell else {
-                return cell
-            }
+            let rowCell = collectionView.dequeueReusableCell(with: RowCell.self, for: indexPath)
             rowCell.setupView(movie: movie)
-            cell = rowCell
+            return rowCell
         } else {
-            guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: Config.withReuseIdentifierGridCell, for: indexPath) as? GridCell else {
-                return cell
-            }
+            let gridCell = collectionView.dequeueReusableCell(with: GridCell.self, for: indexPath)
             gridCell.setupView(movie: movie)
-            cell = gridCell
+            return gridCell
         }
-        return cell
     }
 }
 

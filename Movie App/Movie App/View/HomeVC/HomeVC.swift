@@ -8,12 +8,6 @@
 
 import UIKit
 
-final private class Config {
-    static let withReuseIdentifier = "homeCell"
-    static let nibNameCell = "HomeCell"
-    static let defautIdentifier = "defaultCell"
-}
-
 class HomeVC: BaseViewController {
 
     @IBOutlet private weak var movieTableView: UITableView!
@@ -37,8 +31,7 @@ class HomeVC: BaseViewController {
     }
 
     private func updateUI(sectionIndex: Int) {
-        let indexSet = IndexSet(integer: sectionIndex)
-        self.movieTableView.reloadSections(indexSet, with: .fade)
+        movieTableView.reloadSection(section: sectionIndex)
     }
 
     private func fetchData(for action: Action) {
@@ -57,9 +50,7 @@ class HomeVC: BaseViewController {
 
     private func configMovieTableView() {
         movieTableView.backgroundColor = App.Color.mainColor
-        let nib = UINib(nibName: Config.nibNameCell, bundle: .main)
-        movieTableView.register(nib, forCellReuseIdentifier: Config.withReuseIdentifier)
-        movieTableView.register(UITableViewCell.self, forCellReuseIdentifier: Config.defautIdentifier)
+        movieTableView.register(HomeCell.self)
         let footerView = UIView()
         movieTableView.showsVerticalScrollIndicator = false
         movieTableView.tableFooterView = footerView
@@ -101,9 +92,7 @@ extension HomeVC: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: Config.withReuseIdentifier) as? HomeCell else {
-            return UITableViewCell()
-        }
+        let cell = tableView.dequeueReusableCell(HomeCell.self)
         cell.delegate = self
         let movies = viewModel.movies[indexPath.section]
         cell.setupData(movies: movies)

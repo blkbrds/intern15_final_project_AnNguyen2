@@ -8,12 +8,6 @@
 
 import UIKit
 
-final private class Config {
-    static let withReuseDefaultIdentifier = "defaultCell"
-    static let withReuseIdentifierGridCell = "gridCell"
-    static let nibNameGridCell = "GridCell"
-}
-
 class SearchVC: BaseViewController {
     @IBOutlet weak private var searchCollectionView: UICollectionView!
     @IBOutlet weak private var loadActivityIndicator: UIActivityIndicatorView!
@@ -50,7 +44,11 @@ class SearchVC: BaseViewController {
             viewModel.movies = []
             updateUI()
         }
-        loadActivityIndicator?.isHidden = false
+        if navigationItem.searchController?.searchBar.text == "" {
+            loadActivityIndicator?.isHidden = true
+        }else {
+            loadActivityIndicator?.isHidden = false
+        }
         viewModel.fetchSearchData(page: page) { (_, error) in
             if error != nil || self.viewModel.movies.isEmpty {
                 self.noResultTextStackView.isHidden = false
@@ -76,9 +74,7 @@ class SearchVC: BaseViewController {
 
     private func configMoviesCollectionView() {
         searchCollectionView.backgroundColor = App.Color.mainColor
-        searchCollectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: Config.withReuseDefaultIdentifier)
-        let nibForColumn = UINib(nibName: Config.nibNameGridCell, bundle: .main)
-        searchCollectionView.register(nibForColumn, forCellWithReuseIdentifier: Config.withReuseIdentifierGridCell)
+        searchCollectionView.register(GridCell.self)
         refeshControl.addTarget(self, action: #selector(handleReloadData), for: .valueChanged)
         searchCollectionView.refreshControl = refeshControl
         layoutForSearchCollectionView()
@@ -106,10 +102,7 @@ extension SearchVC: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Config.withReuseIdentifierGridCell, for: indexPath) as? GridCell else {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Config.withReuseDefaultIdentifier, for: indexPath)
-            return cell
-        }
+        let cell = collectionView.dequeueReusableCell(with: GridCell.self, for: indexPath)
         let movie = viewModel.movies[indexPath.row]
         cell.setupView(movie: movie)
         return cell
@@ -127,6 +120,7 @@ extension SearchVC: UICollectionViewDelegate {
             fetchData(with: .load, page: nextPage)
             print(viewModel.movies.count)
         }
+        scrollView.keyboardDismissMode = .onDrag
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

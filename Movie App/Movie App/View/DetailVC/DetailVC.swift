@@ -9,12 +9,6 @@
 import UIKit
 import AVKit
 
-final private class Config {
-    static let withReuseIdentifier = "detailCell"
-    static let nibNameCell = "DetailCell"
-    static let defautIdentifier = "defaultCell"
-}
-
 class DetailVC: BaseViewController {
     @IBOutlet weak private var loadActivityIndicator: UIActivityIndicatorView!
     @IBOutlet weak private var detailScrollView: UIScrollView!
@@ -124,9 +118,7 @@ class DetailVC: BaseViewController {
 
     private func configMovieTableView() {
         moreLikeThisMoviesTableView.backgroundColor = App.Color.mainColor
-        let nib = UINib(nibName: Config.nibNameCell, bundle: .main)
-        moreLikeThisMoviesTableView.register(nib, forCellReuseIdentifier: Config.withReuseIdentifier)
-        moreLikeThisMoviesTableView.register(UITableViewCell.self, forCellReuseIdentifier: Config.defautIdentifier)
+        moreLikeThisMoviesTableView.register(DetailCell.self)
         let footerView = UIView()
         moreLikeThisMoviesTableView.showsVerticalScrollIndicator = false
         moreLikeThisMoviesTableView.tableFooterView = footerView
@@ -190,9 +182,7 @@ extension DetailVC: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: Config.withReuseIdentifier) as? DetailCell else {
-            return UITableViewCell()
-        }
+        let cell = tableView.dequeueReusableCell(DetailCell.self)
         cell.delegate = self
         let movies = viewModel.movies[indexPath.section]
         cell.setupData(movies: movies)
