@@ -128,11 +128,6 @@ extension FavoriteVC: FavoriteCellDelegate {
             self.viewModel.removeInFavorite(movie: item) { (done, error) in
                 if done {
                     self.fetchData(for: .load)
-                    guard let indexPath = indexPath else {
-                        self.favoriteTableView.reloadData()
-                        return
-                    }
-                    self.favoriteTableView.deleteRows(at: [indexPath], with: .left)
                 } else {
                     print(error?.localizedDescription ?? "")
                 }
