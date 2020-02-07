@@ -8,10 +8,16 @@
 
 import UIKit
 
+final private class Config {
+    static let withReuseIdentifier = "homeCell"
+    static let nibNameCell = "HomeCell"
+    static let defautIdentifier = "defaultCell"
+}
+
 class HomeVC: BaseViewController {
 
     @IBOutlet private weak var movieTableView: UITableView!
-    fileprivate let viewModel = HomeViewModel()
+    private let viewModel = HomeViewModel()
 
     enum Action {
         case reload, load
@@ -31,7 +37,8 @@ class HomeVC: BaseViewController {
     }
 
     private func updateUI(sectionIndex: Int) {
-        movieTableView.reloadSection(section: sectionIndex)
+        let indexSet = IndexSet(integer: sectionIndex)
+        movieTableView.reloadSections(indexSet, with: .fade)
     }
 
     private func fetchData(for action: Action) {
@@ -39,18 +46,21 @@ class HomeVC: BaseViewController {
             viewModel.resetMovies()
             movieTableView.reloadData()
         }
-        viewModel.fetchData { (done, index, error) in
+        viewModel.fetchData { [weak self] (done, index, error) in
+            guard let this = self else { return }
             if done {
-                self.updateUI(sectionIndex: index)
+                this.updateUI(sectionIndex: index)
             } else if let error = error {
-                self.alert(errorString: error.localizedDescription)
+                this.alert(errorString: error.localizedDescription)
             }
         }
     }
 
     private func configMovieTableView() {
         movieTableView.backgroundColor = App.Color.mainColor
-        movieTableView.register(HomeCell.self)
+        let nib = UINib(nibName: Config.nibNameCell, bundle: .main)
+        movieTableView.register(nib, forCellReuseIdentifier: Config.withReuseIdentifier)
+        movieTableView.register(UITableViewCell.self, forCellReuseIdentifier: Config.defautIdentifier)
         let footerView = UIView()
         movieTableView.showsVerticalScrollIndicator = false
         movieTableView.tableFooterView = footerView
@@ -77,7 +87,7 @@ extension HomeVC: UITableViewDataSource {
         let headerView = UIView()
         headerView.backgroundColor = App.Color.mainColor
         let titleLabel = Label()
-        titleLabel.text = viewModel.movieCategories[section].title
+        titleLabel.text = viewModel.getTitleForHeader(at: section)
         headerView.addSubview(titleLabel)
         titleLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 5).isActive = true
         titleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 10).isActive = true
@@ -92,15 +102,16 @@ extension HomeVC: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(HomeCell.self)
-        cell.delegate = self
-        let movies = viewModel.movies[indexPath.section]
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: Config.withReuseIdentifier) as? HomeCell else {
+            return UITableViewCell()
+        }
+        let movies = viewModel.getMovies(for: indexPath.section)
         cell.setupData(movies: movies)
         return cell
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.movieCategories.count
+        return viewModel.numberOfSections()
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -116,15 +127,5 @@ extension HomeVC: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 170
-    }
-}
-
-//MARK: -HomeCellDelegate
-extension HomeVC: HomeCellDelegate {
-    func homeCell(_ homeCell: HomeCell, didSelectItem: Movie, perform action: HomeCellActionType) {
-        let detailVC = DetailVC()
-        let detailViewModel = viewModel.detailViewModel(for: didSelectItem.id)
-        detailVC.viewModel = detailViewModel
-        navigationController?.pushViewController(detailVC, animated: true)
     }
 }

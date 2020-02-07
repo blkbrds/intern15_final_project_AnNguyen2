@@ -8,6 +8,14 @@
 
 import UIKit
 
+final private class Config {
+    static let withReuseDefaultIdentifier = "defaultCell"
+    static let withReuseIdentifierGridCell = "gridCell"
+    static let nibNameGridCell = "GridCell"
+    static let withReuseIdentifierRowCell = "rowCell"
+    static let nibNameRowCell = "RowCell"
+}
+
 class MoviesVC: BaseViewController {
 
     @IBOutlet weak private var moviesCollectionView: UICollectionView!
@@ -42,7 +50,7 @@ class MoviesVC: BaseViewController {
             NSLayoutConstraint.activate([
                 filterViewCustom.heightAnchor.constraint(equalToConstant: filterHeight),
                 filterViewCustom.widthAnchor.constraint(equalToConstant: view.bounds.width),
-                filterViewCustom.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                filterViewCustom.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                 ])
             filterViewCustomTopAnchor?.isActive = true
             filterViewCustom.delegate = self
@@ -54,13 +62,14 @@ class MoviesVC: BaseViewController {
 
     override func setupData() {
         fetchData(for: .load)
-        guard let category = viewModel.movieCategory else { return }
+        guard let category = viewModel.getMovieCategory() else { return }
         if category == .discover || category == .tv || category == .trending {
-            viewModel.fetchGenre { (done, error) in
+            viewModel.fetchGenre { [weak self] (done, error) in
+                guard let this = self else { return }
                 if done {
-                    self.filterViewCustom?.setupAlertFilterViewCustom(genres: self.viewModel.genres)
+                    this.filterViewCustom?.setupAlertFilterViewCustom(genres: this.viewModel.genres)
                 } else if let error = error {
-                    self.alert(errorString: error.localizedDescription)
+                    this.alert(errorString: error.localizedDescription)
                 }
             }
         }
@@ -72,13 +81,14 @@ class MoviesVC: BaseViewController {
             updateUI()
         }
         loadActivityIndicator.isHidden = false
-        viewModel.fetchDataWithFilter(page: page) { (done, error) in
+        viewModel.fetchDataWithFilter(page: page) { [weak self] (done, error) in
+            guard let this = self else { return }
             if done {
-                self.updateUI()
+                this.updateUI()
             } else if let error = error {
-                self.alert(errorString: error.localizedDescription)
+                this.alert(errorString: error.localizedDescription)
             }
-            self.loadActivityIndicator.isHidden = true
+            this.loadActivityIndicator.isHidden = true
         }
     }
 
@@ -88,8 +98,11 @@ class MoviesVC: BaseViewController {
 
     private func configMoviesCollectionView() {
         moviesCollectionView.backgroundColor = App.Color.mainColor
-        moviesCollectionView.register(GridCell.self)
-        moviesCollectionView.register(RowCell.self)
+        moviesCollectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: Config.withReuseDefaultIdentifier)
+        let nibForColumn = UINib(nibName: Config.nibNameGridCell, bundle: .main)
+        moviesCollectionView.register(nibForColumn, forCellWithReuseIdentifier: Config.withReuseIdentifierGridCell)
+        let nibForRow = UINib(nibName: Config.nibNameRowCell, bundle: .main)
+        moviesCollectionView.register(nibForRow, forCellWithReuseIdentifier: Config.withReuseIdentifierRowCell)
         refeshControl.addTarget(self, action: #selector(handleReloadData), for: .valueChanged)
         moviesCollectionView.refreshControl = refeshControl
     }
@@ -135,8 +148,8 @@ class MoviesVC: BaseViewController {
     }
 
     private func handleChangedStatusFilterMovies() {
-        viewModel.isShowFilter = !viewModel.isShowFilter
-        if viewModel.isShowFilter {
+        viewModel.changedShowFilter()
+        if viewModel.getShowFilter() {
             filterViewCustomBottomAnchor?.isActive = true
             filterViewCustomTopAnchor?.isActive = false
         } else {
@@ -151,7 +164,7 @@ class MoviesVC: BaseViewController {
     @objc private func handleChangedStatus() {
         viewModel.changedStatus()
         changedLayout()
-        updateUI()
+        moviesCollectionView.reloadData()
     }
 
     @objc private func handleReloadData() {
@@ -167,10 +180,8 @@ class MoviesVC: BaseViewController {
 //MARK: -UICollectionViewDelegate
 extension MoviesVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        //TODO: -Show detail
         let detailVC = DetailVC()
-        let movie = viewModel.movies[indexPath.row]
-        let detailViewModel = viewModel.detailViewModel(for: movie.id)
-        detailVC.viewModel = detailViewModel
         navigationController?.pushViewController(detailVC, animated: true)
     }
 
@@ -178,8 +189,8 @@ extension MoviesVC: UICollectionViewDelegate {
         let scrollHeight = scrollView.bounds.height
         let scrollViewContentOffsetY = scrollView.contentOffset.y
         let contentSizeHeight = scrollView.contentSize.height
-        if scrollHeight + scrollViewContentOffsetY >= contentSizeHeight && !viewModel.isLoadData, viewModel.totalPages > viewModel.currentPage {
-            let nextPage = self.viewModel.currentPage + 1
+        if scrollHeight + scrollViewContentOffsetY >= contentSizeHeight && viewModel.isNotLoadData() {
+            let nextPage = viewModel.nextPage()
             fetchData(for: .load, page: nextPage)
             print(viewModel.movies.count)
         }
@@ -189,20 +200,26 @@ extension MoviesVC: UICollectionViewDelegate {
 //MARK: -UICollectionViewDataSource
 extension MoviesVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.movies.count
+        return viewModel.numberOfItemsInSection()
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let movie = viewModel.movies[indexPath.row]
+        var cell = collectionView.dequeueReusableCell(withReuseIdentifier: Config.withReuseDefaultIdentifier, for: indexPath)
+        let movie = viewModel.getMovie(at: indexPath)
         if viewModel.status == .row {
-            let rowCell = collectionView.dequeueReusableCell(with: RowCell.self, for: indexPath)
+            guard let rowCell = collectionView.dequeueReusableCell(withReuseIdentifier: Config.withReuseIdentifierRowCell, for: indexPath) as? RowCell else {
+                return cell
+            }
             rowCell.setupView(movie: movie)
-            return rowCell
+            cell = rowCell
         } else {
-            let gridCell = collectionView.dequeueReusableCell(with: GridCell.self, for: indexPath)
+            guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: Config.withReuseIdentifierGridCell, for: indexPath) as? GridCell else {
+                return cell
+            }
             gridCell.setupView(movie: movie)
-            return gridCell
+            cell = gridCell
         }
+        return cell
     }
 }
 
@@ -215,9 +232,9 @@ extension MoviesVC: FilterViewCustomDelegate {
     func filterViewCustom(_ view: FilterViewCustom, didSelectGenre: Genre, perform action: FilterViewActionType) {
         handleChangedStatusFilterMovies()
         if didSelectGenre.name == "Day" || didSelectGenre.name == "Week" {
-            viewModel.trendingTypeFilter = didSelectGenre.name == "Day" ? .day: .week
-        }else {
-            viewModel.genreFilter = didSelectGenre
+            viewModel.changedTrendingTypeFilter(genre: didSelectGenre)
+        } else {
+            viewModel.chageGenreFilter(genre: didSelectGenre)
         }
         fetchData(for: .reload, page: 1)
         print(didSelectGenre)
