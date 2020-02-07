@@ -62,13 +62,14 @@ class MoviesVC: BaseViewController {
 
     override func setupData() {
         fetchData(for: .load)
-        guard let category = viewModel.movieCategory else { return }
+        guard let category = viewModel.getMovieCategory() else { return }
         if category == .discover || category == .tv || category == .trending {
-            viewModel.fetchGenre { (done, error) in
+            viewModel.fetchGenre { [weak self] (done, error) in
+                guard let this = self else { return }
                 if done {
-                    self.filterViewCustom?.setupAlertFilterViewCustom(genres: self.viewModel.genres)
+                    this.filterViewCustom?.setupAlertFilterViewCustom(genres: this.viewModel.genres)
                 } else if let error = error {
-                    self.alert(errorString: error.localizedDescription)
+                    this.alert(errorString: error.localizedDescription)
                 }
             }
         }
@@ -80,13 +81,14 @@ class MoviesVC: BaseViewController {
             updateUI()
         }
         loadActivityIndicator.isHidden = false
-        viewModel.fetchDataWithFilter(page: page) { (done, error) in
+        viewModel.fetchDataWithFilter(page: page) { [weak self] (done, error) in
+            guard let this = self else { return }
             if done {
-                self.updateUI()
+                this.updateUI()
             } else if let error = error {
-                self.alert(errorString: error.localizedDescription)
+                this.alert(errorString: error.localizedDescription)
             }
-            self.loadActivityIndicator.isHidden = true
+            this.loadActivityIndicator.isHidden = true
         }
     }
 
@@ -146,8 +148,8 @@ class MoviesVC: BaseViewController {
     }
 
     private func handleChangedStatusFilterMovies() {
-        viewModel.isShowFilter = !viewModel.isShowFilter
-        if viewModel.isShowFilter {
+        viewModel.changedShowFilter()
+        if viewModel.getShowFilter() {
             filterViewCustomBottomAnchor?.isActive = true
             filterViewCustomTopAnchor?.isActive = false
         } else {
@@ -187,8 +189,8 @@ extension MoviesVC: UICollectionViewDelegate {
         let scrollHeight = scrollView.bounds.height
         let scrollViewContentOffsetY = scrollView.contentOffset.y
         let contentSizeHeight = scrollView.contentSize.height
-        if scrollHeight + scrollViewContentOffsetY >= contentSizeHeight && !viewModel.isLoadData {
-            let nextPage = self.viewModel.currentPage + 1
+        if scrollHeight + scrollViewContentOffsetY >= contentSizeHeight && viewModel.isNotLoadData() {
+            let nextPage = viewModel.nextPage()
             fetchData(for: .load, page: nextPage)
             print(viewModel.movies.count)
         }
@@ -198,12 +200,12 @@ extension MoviesVC: UICollectionViewDelegate {
 //MARK: -UICollectionViewDataSource
 extension MoviesVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.movies.count
+        return viewModel.numberOfItemsInSection()
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var cell = collectionView.dequeueReusableCell(withReuseIdentifier: Config.withReuseDefaultIdentifier, for: indexPath)
-        let movie = viewModel.movies[indexPath.row]
+        let movie = viewModel.getMovie(at: indexPath)
         if viewModel.status == .row {
             guard let rowCell = collectionView.dequeueReusableCell(withReuseIdentifier: Config.withReuseIdentifierRowCell, for: indexPath) as? RowCell else {
                 return cell
@@ -230,9 +232,9 @@ extension MoviesVC: FilterViewCustomDelegate {
     func filterViewCustom(_ view: FilterViewCustom, didSelectGenre: Genre, perform action: FilterViewActionType) {
         handleChangedStatusFilterMovies()
         if didSelectGenre.name == "Day" || didSelectGenre.name == "Week" {
-            viewModel.trendingTypeFilter = didSelectGenre.name == "Day" ? .day: .week
-        }else {
-            viewModel.genreFilter = didSelectGenre
+            viewModel.changedTrendingTypeFilter(genre: didSelectGenre)
+        } else {
+            viewModel.chageGenreFilter(genre: didSelectGenre)
         }
         fetchData(for: .reload, page: 1)
         print(didSelectGenre)

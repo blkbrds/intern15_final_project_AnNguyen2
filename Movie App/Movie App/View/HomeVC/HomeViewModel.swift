@@ -54,6 +54,18 @@ final class HomeViewModel {
         return MoviesViewModel(type: movieCategories[index])
     }
     
+    func getTitleForHeader(at index: Int) -> String{
+        return movieCategories[index].title
+    }
+    
+    func getMovies(for section: Int) -> [Movie] {
+        return movies[section]
+    }
+    
+    func numberOfSections() -> Int{
+        return movies.count
+    }
+        
     func resetMovies() {
         for i in 0..<movieCategories.count {
             movies[i] = []

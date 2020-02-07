@@ -17,7 +17,7 @@ final private class Config {
 class HomeVC: BaseViewController {
 
     @IBOutlet private weak var movieTableView: UITableView!
-    fileprivate let viewModel = HomeViewModel()
+    private let viewModel = HomeViewModel()
 
     enum Action {
         case reload, load
@@ -38,7 +38,7 @@ class HomeVC: BaseViewController {
 
     private func updateUI(sectionIndex: Int) {
         let indexSet = IndexSet(integer: sectionIndex)
-        self.movieTableView.reloadSections(indexSet, with: .fade)
+        movieTableView.reloadSections(indexSet, with: .fade)
     }
 
     private func fetchData(for action: Action) {
@@ -46,11 +46,12 @@ class HomeVC: BaseViewController {
             viewModel.resetMovies()
             movieTableView.reloadData()
         }
-        viewModel.fetchData { (done, index, error) in
+        viewModel.fetchData { [weak self] (done, index, error) in
+            guard let this = self else { return }
             if done {
-                self.updateUI(sectionIndex: index)
+                this.updateUI(sectionIndex: index)
             } else if let error = error {
-                self.alert(errorString: error.localizedDescription)
+                this.alert(errorString: error.localizedDescription)
             }
         }
     }
@@ -86,7 +87,7 @@ extension HomeVC: UITableViewDataSource {
         let headerView = UIView()
         headerView.backgroundColor = App.Color.mainColor
         let titleLabel = Label()
-        titleLabel.text = viewModel.movieCategories[section].title
+        titleLabel.text = viewModel.getTitleForHeader(at: section)
         headerView.addSubview(titleLabel)
         titleLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 5).isActive = true
         titleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 10).isActive = true
@@ -104,13 +105,13 @@ extension HomeVC: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: Config.withReuseIdentifier) as? HomeCell else {
             return UITableViewCell()
         }
-        let movies = viewModel.movies[indexPath.section]
+        let movies = viewModel.getMovies(for: indexPath.section)
         cell.setupData(movies: movies)
         return cell
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.movieCategories.count
+        return viewModel.numberOfSections()
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

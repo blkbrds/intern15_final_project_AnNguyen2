@@ -25,15 +25,15 @@ final class MoviesViewModel {
     var isShowFilter: Bool = false
     var genreFilter: Genre?
     var trendingTypeFilter: TrendingType?
-    
+
 
     init() { }
-    
+
     init(type: MovieCategory = .discover) {
         self.movieCategory = type
     }
 
-    func handleUrl(page: Int = 1){
+    func handleUrl(page: Int = 1) {
         guard let category = self.movieCategory else { url = ""; return }
         switch category {
         case .trending:
@@ -141,5 +141,41 @@ final class MoviesViewModel {
         } else {
             status = .row
         }
+    }
+
+    func chageGenreFilter(genre: Genre) {
+        genreFilter = genre
+    }
+
+    func changedTrendingTypeFilter(genre: Genre) {
+        trendingTypeFilter = genre.name == "Day" ? .day : .week
+    }
+
+    func getMovie(at: IndexPath) -> Movie {
+        return movies[at.row]
+    }
+
+    func numberOfItemsInSection() -> Int {
+        return movies.count
+    }
+
+    func nextPage() -> Int {
+        return currentPage + 1
+    }
+
+    func isNotLoadData() -> Bool {
+        return !isLoadData
+    }
+
+    func getShowFilter() -> Bool {
+        return isShowFilter
+    }
+
+    func changedShowFilter(){
+        isShowFilter = !isShowFilter
+    }
+    
+    func getMovieCategory() -> MovieCategory? {
+        return movieCategory
     }
 }
