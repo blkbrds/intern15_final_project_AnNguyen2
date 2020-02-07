@@ -42,7 +42,7 @@ class MoviesVC: BaseViewController {
             NSLayoutConstraint.activate([
                 filterViewCustom.heightAnchor.constraint(equalToConstant: filterHeight),
                 filterViewCustom.widthAnchor.constraint(equalToConstant: view.bounds.width),
-                filterViewCustom.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                filterViewCustom.centerXAnchor.constraint(equalTo: view.centerXAnchor),
                 ])
             filterViewCustomTopAnchor?.isActive = true
             filterViewCustom.delegate = self
