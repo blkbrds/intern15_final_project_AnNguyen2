@@ -13,20 +13,27 @@ final class FavoriteViewModel {
     var isEmptyItems: Bool {
         return movies.isEmpty
     }
-    
+
     func detailViewModel(for id: Int) -> DetailViewModel {
         return DetailViewModel(by: id)
     }
-    
-    func fetchData(completion: @escaping Completion){
+
+    func fetchData(completion: @escaping Completion) {
         let movies = RealmManager.shared().getAllObjects(object: Movie.self)
         self.movies = movies
         completion(true, nil)
     }
-    
-    func removeInFavorite(movie: Movie?, completion: @escaping Completion){
+
+    func removeMovieInFavorite(movie: Movie?, completion: @escaping Completion) {
         guard let movie = movie else { return }
-        RealmManager.shared().deleteItem(object: movie, forPrimaryKey: movie.id) { (done, error) in
+        RealmManager.shared().deleteObject(object: movie, forPrimaryKey: movie.id) { (done, error) in
+            completion(done, error)
+        }
+    }
+
+    func removeMoviesInFavorite(movies: [Movie], completion: @escaping Completion) {
+        let forPrimaryKeys = movies.map({ $0.id })
+        RealmManager.shared().deleteObjects(object: Movie.self, forPrimaryKeys: forPrimaryKeys) { (done, error) in
             completion(done, error)
         }
     }

@@ -12,6 +12,8 @@ class FavoriteVC: BaseViewController {
 
     @IBOutlet weak private var favoriteTableView: UITableView!
     @IBOutlet weak private var noItemsLabel: UILabel!
+    private var rightEditBarButtonItem: UIBarButtonItem?
+    private var leftDeleteBarButtonItem: UIBarButtonItem?
     var viewModel = FavoriteViewModel()
     enum Action {
         case reload, load
@@ -29,7 +31,8 @@ class FavoriteVC: BaseViewController {
     override func setupUI() {
         title = "Favorites"
         configFavoriteTableView()
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(handleEditItems))
+        rightEditBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(handleEditItems))
+        navigationItem.rightBarButtonItem = rightEditBarButtonItem
     }
 
     override func setupData() {
@@ -67,6 +70,7 @@ class FavoriteVC: BaseViewController {
         favoriteTableView.showsVerticalScrollIndicator = true
         favoriteTableView.register(FavoriteCell.self)
         favoriteTableView.backgroundColor = App.Color.mainColor
+        favoriteTableView.allowsSelectionDuringEditing = true
         favoriteTableView.allowsMultipleSelectionDuringEditing = true
         refeshControl.addTarget(self, action: #selector(handleReloadData), for: .valueChanged)
         favoriteTableView.refreshControl = refeshControl
@@ -80,24 +84,43 @@ class FavoriteVC: BaseViewController {
     }
 
     @objc private func handleEditItems() {
-        let isEditing = favoriteTableView.isEditing
-        if isEditing {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleEditItems))
+        let isNotEditing = !favoriteTableView.isEditing
+        favoriteTableView.setEditing(isNotEditing, animated: true)
+        if favoriteTableView.isEditing {
+            rightEditBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleEditItems))
+            leftDeleteBarButtonItem = UIBarButtonItem(image: UIImage.init(systemName: "trash"), style: .plain, target: self, action: #selector(handleDeleteItems))
         } else {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(handleEditItems))
+            rightEditBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(handleEditItems))
+            leftDeleteBarButtonItem = nil
         }
-        favoriteTableView.setEditing(!isEditing, animated: true)
+        navigationItem.leftBarButtonItem = leftDeleteBarButtonItem
+        navigationItem.rightBarButtonItem = rightEditBarButtonItem
+    }
+    
+    @objc private func handleDeleteItems(){
+        guard let indexPaths = favoriteTableView.indexPathsForSelectedRows else { return }
+        let movies: [Movie] = indexPaths.map({ viewModel.movies[$0.row] })
+        viewModel.removeMoviesInFavorite(movies: movies) { (done, error) in
+            if done {
+                self.fetchData(for: .reload)
+                self.updateUI()
+                print("Delete movies success!")
+            }else {
+                print(error?.localizedDescription ?? "")
+            }
+        }
     }
 }
 
 //MARK: - UITableViewDelegate
 extension FavoriteVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
         let detailVC = DetailVC()
         let movie = viewModel.movies[indexPath.row]
         let detailViewModel = viewModel.detailViewModel(for: movie.id)
         detailVC.viewModel = detailViewModel
+        if tableView.isEditing { return }
+        tableView.deselectRow(at: indexPath, animated: true)
         navigationController?.pushViewController(detailVC, animated: true)
     }
 
@@ -125,7 +148,7 @@ extension FavoriteVC: UITableViewDataSource {
 extension FavoriteVC: FavoriteCellDelegate {
     func favoriteCell(_ cell: FavoriteCell, delete item: Movie?, in indexPath: IndexPath?, perform action: FavoriteCellActionType) {
         deleteAlert(msg: "Do you want to delete \(item?.originalTitle ?? "") in your favorites?") { (_) in
-            self.viewModel.removeInFavorite(movie: item) { (done, error) in
+            self.viewModel.removeMovieInFavorite(movie: item) { (done, error) in
                 if done {
                     self.fetchData(for: .load)
                 } else {

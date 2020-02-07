@@ -25,8 +25,21 @@ final class RealmManager {
         return RealmManager()
     }
 
-    func deleteObjects<T: Object>(objects: [T]) {
-        realm.delete(objects)
+    func deleteObjects<T: Object, K>(object: T.Type, forPrimaryKeys: [K], completion: @escaping Completion) {
+        var objectsOfRealm: [T] = []
+        forPrimaryKeys.forEach({
+            if let objectForRealm = realm.object(ofType: T.self, forPrimaryKey: $0) {
+                objectsOfRealm.append(objectForRealm)
+            }
+        })
+        do {
+            try realm.write {
+                realm.delete(objectsOfRealm)
+                completion(true, nil)
+            }
+        } catch {
+            completion(false, APIError.error(error.localizedDescription))
+        }
     }
 
     func getAllObjects<T: Object>(object: T.Type) -> [T] {
@@ -34,7 +47,7 @@ final class RealmManager {
         return objects
     }
 
-    func deleteItem<T: Object, K>(object: T, forPrimaryKey: K, completion: @escaping Completion) {
+    func deleteObject<T: Object, K>(object: T, forPrimaryKey: K, completion: @escaping Completion) {
         guard let objectForRealm = realm.object(ofType: T.self, forPrimaryKey: forPrimaryKey) else {
             completion(false, APIError.error("Empty Object with for Primary Key."))
             return

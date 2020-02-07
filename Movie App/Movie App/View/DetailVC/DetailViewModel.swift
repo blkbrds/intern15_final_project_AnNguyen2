@@ -212,7 +212,7 @@ final class DetailViewModel {
     
     func removeInFavorite(completion: @escaping Completion){
         guard let movie = movie else { return }
-        RealmManager.shared().deleteItem(object: movie, forPrimaryKey: movie.id) { (done, error) in
+        RealmManager.shared().deleteObject(object: movie, forPrimaryKey: movie.id) { (done, error) in
             self.isFavorited = false
             completion(done, error)
         }
