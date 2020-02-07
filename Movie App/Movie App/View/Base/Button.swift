@@ -20,7 +20,7 @@ class Button: UIButton {
     }
 
     private func configView() {
-        self.translatesAutoresizingMaskIntoConstraints = false
+        translatesAutoresizingMaskIntoConstraints = false
         setTitleColor(App.Color.titleColor, for: .normal)
         titleLabel?.font = App.Font.buttonTextLabel
         for state: UIControl.State in [.normal, .highlighted, .selected, .disabled] {
