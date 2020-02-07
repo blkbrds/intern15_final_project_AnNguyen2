@@ -10,6 +10,8 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="DetailVC" customModule="Movie_App" customModuleProvider="target">
             <connections>
                 <outlet property="detailScrollView" destination="FtW-zt-er2" id="weO-LE-rgU"/>
+                <outlet property="downloadButton" destination="dof-lF-qhm" id="4f0-bF-Quc"/>
+                <outlet property="favoriteButton" destination="XZo-WH-RoU" id="iaV-zO-lHo"/>
                 <outlet property="idmScoreLabel" destination="0li-Pb-JuO" id="2hz-oJ-V6j"/>
                 <outlet property="loadActivityIndicator" destination="idz-jE-otp" id="L1L-Ui-Vrb"/>
                 <outlet property="moreLikeThisMoviesTableView" destination="qYx-Fn-P9i" id="FJX-5u-zMT"/>
@@ -191,14 +193,14 @@
                                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="zEb-eJ-oEg">
                                                     <rect key="frame" x="244" y="0.0" width="56" height="51.5"/>
                                                     <subviews>
-                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dof-lF-qhm">
-                                                            <rect key="frame" x="15.5" y="2" width="25" height="21"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dof-lF-qhm">
+                                                            <rect key="frame" x="15.5" y="0.0" width="25" height="25"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="25" id="OjO-ev-Ram"/>
                                                                 <constraint firstAttribute="height" constant="25" id="fp2-jZ-nDa"/>
                                                             </constraints>
                                                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                            <state key="normal" backgroundImage="arrowtriangle.down.fill" catalog="system">
+                                                            <state key="normal" image="arrowtriangle.down.fill" catalog="system">
                                                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             </state>
                                                             <connections>

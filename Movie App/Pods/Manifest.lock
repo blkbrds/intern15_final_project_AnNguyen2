@@ -2,12 +2,18 @@ PODS:
   - Alamofire (4.9.1)
   - MVVM-Swift (5.0.1)
   - ObjectMapper (3.5.1)
+  - Realm (4.3.0):
+    - Realm/Headers (= 4.3.0)
+  - Realm/Headers (4.3.0)
+  - RealmSwift (4.3.0):
+    - Realm (= 4.3.0)
   - XCDYouTubeKit (2.8.2)
 
 DEPENDENCIES:
   - Alamofire
   - MVVM-Swift
   - ObjectMapper
+  - RealmSwift
   - XCDYouTubeKit
 
 SPEC REPOS:
@@ -15,14 +21,18 @@ SPEC REPOS:
     - Alamofire
     - MVVM-Swift
     - ObjectMapper
+    - Realm
+    - RealmSwift
     - XCDYouTubeKit
 
 SPEC CHECKSUMS:
   Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
   MVVM-Swift: 0333cd8a16abfe0e93a1423bfddb49b8c11065e1
   ObjectMapper: 70187b8941977c62ccfb423caf6b50be405cabf0
+  Realm: 9357c3589555793e1860a7104a7412bca4a48d99
+  RealmSwift: 402f1e379a8ef82c635313037b043f0f06de880c
   XCDYouTubeKit: 79baadb0560673a67c771eba45f83e353fd12c1f
 
-PODFILE CHECKSUM: d97e732120343c739c8be3bb8140d78f55c7b01b
+PODFILE CHECKSUM: 79c798d384e9e79428ec24b9f43f8d2f0753d921
 
 COCOAPODS: 1.8.1

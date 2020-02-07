@@ -16,6 +16,8 @@ final class DetailViewModel {
     var movieCategories: [MovieCategory] = [.similar, .recommendations]
     var urlVideo: URL?
     var keyVideo: String?
+    var localUrl: URL?
+    var isFavorited: Bool = false
 
     init() { }
 
@@ -50,11 +52,12 @@ final class DetailViewModel {
                 }
                 let json = data.toJSObject()
                 self.movie = Movie(json: json)
+                self.getLocalVideoUrl()
+                self.checkMovieInFavorite()
                 completion(true, nil)
             }
         }
     }
-
 
     func fetchSimilarRecommendMovie(completion: @escaping CompletionWithIndex) {
         guard let id = movieID else {
@@ -132,13 +135,16 @@ final class DetailViewModel {
         }
     }
 
-    func saveOfflineVideo(completion: @escaping(_ data: Data?, _ error: Error?) -> Void) {
-        guard let url = self.urlVideo else {
+    func saveOfflineVideo(completion: @escaping(_ data: URL?, _ error: Error?) -> Void) {
+        guard let url = urlVideo else {
             completion(nil, APIError.invalidURL)
             return
         }
+        if let _ = localUrl {
+            completion(nil, APIError.error("Saved!"))
+            return
+        }
         API.shared().request(with: url.absoluteString) { (result) in
-
             switch result {
             case .failure(let error):
                 completion(nil, error)
@@ -148,8 +154,67 @@ final class DetailViewModel {
                     completion(nil, APIError.emptyData)
                     return
                 }
-                completion(data, nil)
+                let fileManager = FileManager.default
+                do {
+                    let documentDirectory = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+                    guard let movie = self.movie else {
+                        completion(nil, APIError.emptyID)
+                        return
+                    }
+                    let fileURL = documentDirectory.appendingPathComponent("\(movie.id).mp4")
+                    print(fileURL.path)
+                    try data.write(to: fileURL)
+                    completion(fileURL, nil)
+                } catch {
+                    completion(nil, APIError.errorURL)
+                }
             }
+        }
+    }
+
+    func getLocalVideoUrl() {
+        let fileManager = FileManager.default
+        do {
+            let documentDirectory = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            guard let movie = self.movie else {
+                print("Video movie in local is empty!")
+                return
+            }
+            let filePath: String = documentDirectory.path + "/\(movie.id).mp4"
+            if let _ = fileManager.contents(atPath: filePath) {
+                self.localUrl = URL(fileURLWithPath: filePath)
+                print("Get success video movie in local!")
+            } else {
+                print("Video movie in local is empty!")
+            }
+        } catch {
+            print(APIError.errorURL.localizedDescription)
+        }
+    }
+
+    func checkMovieInFavorite() {
+        guard let movie = movie else { return }
+        RealmManager.shared().getObjectForKey(object: Movie.self, forPrimaryKey: movie.id) { (movie, error) in
+            if let _ = error {
+                return
+            }
+            self.isFavorited = true
+        }
+    }
+
+    func addMoviewToFavorite(completion: @escaping Completion) {
+        guard let movie = movie else { return }
+        RealmManager.shared().addNewObject(object: movie) { (done, error) in
+            self.isFavorited = true
+            completion(done, error)
+        }
+    }
+    
+    func removeInFavorite(completion: @escaping Completion){
+        guard let movie = movie else { return }
+        RealmManager.shared().deleteItem(object: movie, forPrimaryKey: movie.id) { (done, error) in
+            self.isFavorited = false
+            completion(done, error)
         }
     }
 }

@@ -22,6 +22,8 @@ class DetailVC: BaseViewController {
     @IBOutlet weak private var taglineLabel: UILabel!
     @IBOutlet weak private var playVideoButton: UIButton!
     @IBOutlet weak private var moreLikeThisMoviesTableView: UITableView!
+    @IBOutlet weak private var downloadButton: UIButton!
+    @IBOutlet weak private var favoriteButton: UIButton!
 
     var viewModel = DetailViewModel()
     enum Action {
@@ -54,6 +56,26 @@ class DetailVC: BaseViewController {
                 self.movieImageView.image = image
                 self.moviePosterImageView.image = image
             }
+            self.checkMovieDownLoad()
+        }
+    }
+
+    private func checkMovieInFavorite() {
+        if viewModel.isFavorited {
+            favoriteButton.tintColor = App.Color.favoritedButton
+            favoriteButton.setImage(UIImage.init(systemName: "heart.fill"), for: .normal)
+            print("Movie In Favorite!")
+        } else {
+            favoriteButton.tintColor = App.Color.notFavoritedButton
+            favoriteButton.setImage(UIImage.init(systemName: "heart"), for: .normal)
+            print("Movie not In Favorite!")
+        }
+    }
+    
+    private func checkMovieDownLoad(){
+        if let _ = self.viewModel.localUrl {
+            self.downloadButton.tintColor = UIColor.green
+            self.downloadButton.setImage(UIImage.init(systemName: "checkmark.circle.fill"), for: .normal)
         }
     }
 
@@ -72,6 +94,7 @@ class DetailVC: BaseViewController {
         loadActivityIndicator.isHidden = false
         viewModel.fetchMovieData { (done, error) in
             if done {
+                self.checkMovieInFavorite()
                 self.updateUI()
             } else if let error = error {
                 self.alert(errorString: error.localizedDescription)
@@ -133,28 +156,53 @@ class DetailVC: BaseViewController {
     }
 
     @IBAction private func playVideoButton(_ sender: Any) {
-        guard let url = viewModel.urlVideo else {
+        guard let urlOnline = viewModel.urlVideo else {
             alert(errorString: "URL video is empty!")
             return
         }
+        let url = viewModel.localUrl ?? urlOnline
+        print(url.absoluteString)
         let player = AVPlayer(url: url)
         let playerViewController = AVPlayerViewController()
         playerViewController.player = player
-        self.present(playerViewController, animated: true) {
+        present(playerViewController, animated: true) {
             playerViewController.player?.play()
         }
     }
 
     @IBAction private func favoriteButton(_ sender: Any) {
-        print("favoriteButton")
+        if viewModel.isFavorited {
+            viewModel.removeInFavorite { (done, error) in
+                if done {
+                    self.checkMovieInFavorite()
+                    print("Remove Favorite success.")
+                }else {
+                    print(error?.localizedDescription ?? "")
+                }
+            }
+        } else {
+            viewModel.addMoviewToFavorite { (done, error) in
+                if done {
+                    self.checkMovieInFavorite()
+                    print("addMoviewToFavorite")
+                } else {
+                    print(error?.localizedDescription ?? "")
+                }
+            }
+        }
     }
-    
+
     @IBAction private func downloadButton(_ sender: Any) {
-        viewModel.saveOfflineVideo { (data, error) in
+        if let _ = viewModel.localUrl { return }
+        print("Download...")
+        downloadButton.setImage(UIImage.init(systemName: "slowmo"), for: .normal)
+        viewModel.saveOfflineVideo { (url, error) in
             if let error = error {
                 self.alert(errorString: error.localizedDescription)
             }
-            print(data)
+            self.downloadButton.tintColor = UIColor.green
+            self.downloadButton.setImage(UIImage.init(systemName: "checkmark.circle.fill"), for: .normal)
+            print("Download success!")
         }
     }
 

@@ -9,7 +9,6 @@
 import UIKit
 
 extension App.Color {
-//    static let mainColor = UIColor(displayP3Red: 86 / 255, green: 87 / 255, blue: 86 / 255, alpha: 1)
     static let mainColor = UIColor(displayP3Red: 25 / 255, green: 25 / 255, blue: 25 / 255, alpha: 1)
     static let titleColor = UIColor.white
     static let barTint = UIColor.white
@@ -17,6 +16,8 @@ extension App.Color {
     static let tableFooterView = UIColor.red
     static let tableCellTextLabel = UIColor.yellow
     static let backgroundColorLabel = UIColor.lightGray.withAlphaComponent(0.6)
+    static let favoritedButton = UIColor.red
+    static let notFavoritedButton = UIColor.white
 
     static func button(state: UIControl.State) -> UIColor {
         switch state {

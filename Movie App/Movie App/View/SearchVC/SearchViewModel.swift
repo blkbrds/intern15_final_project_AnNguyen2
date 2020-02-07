@@ -15,6 +15,7 @@ final class SearchViewModel {
     var totalPages: Int = 0
     var totalResults: Int = 0
     var query: String = ""
+    var oldTime: Date = Date()
 
     func detailViewModel(for id: Int) -> DetailViewModel {
         return DetailViewModel(by: id)
@@ -55,5 +56,9 @@ final class SearchViewModel {
                 self.isLoadData = false
             }
         }
+    }
+    
+    func getSecondBetweenTyping(newTime: Date) -> Double{
+        return newTime.timeIntervalSinceReferenceDate - oldTime.timeIntervalSinceReferenceDate
     }
 }
