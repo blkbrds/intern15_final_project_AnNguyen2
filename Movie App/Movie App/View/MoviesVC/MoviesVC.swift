@@ -27,7 +27,6 @@ class MoviesVC: BaseViewController {
     enum Action {
         case reload, load
     }
-    private var isShowFilter: Bool = false
     private var filterViewCustomBottomAnchor: NSLayoutConstraint?
     private var filterViewCustomTopAnchor: NSLayoutConstraint?
 
