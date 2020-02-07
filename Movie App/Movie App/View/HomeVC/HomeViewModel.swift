@@ -9,11 +9,11 @@
 import Foundation
 
 typealias Completion = (Bool, APIError?) -> Void
-typealias CompletionWithIndex = (Bool, Int, APIError?) -> Void
+typealias HomeCompletion = (Bool, Int, APIError?) -> Void
 
 
 enum MovieCategory: CaseIterable {
-    case tv, discover, popular, topRated, trending, similar, recommendations
+    case tv, discover, popular, topRated, trending
 
     var title: String {
         switch self {
@@ -27,10 +27,6 @@ enum MovieCategory: CaseIterable {
             return "Top rated"
         case .tv:
             return "TV"
-        case .recommendations:
-            return "Recommendations"
-        case .similar:
-            return "Similar"
         }
     }
 
@@ -46,8 +42,6 @@ enum MovieCategory: CaseIterable {
             return APIManager.Path.TopRated().url
         case .tv:
             return APIManager.Path.TV().url
-        default:
-            return ""
         }
     }
 }
@@ -55,22 +49,30 @@ enum MovieCategory: CaseIterable {
 final class HomeViewModel {
     let movieCategories: [MovieCategory] = [.popular, .discover, .topRated, .trending, .tv]
     var movies: [[Movie]] = [[], [], [], [], []]
-
+    
     func moviesViewModel(at index: Int) -> MoviesViewModel {
         return MoviesViewModel(type: movieCategories[index])
     }
-
-    func detailViewModel(for id: Int) -> DetailViewModel {
-        return DetailViewModel(by: id)
+    
+    func getTitleForHeader(at index: Int) -> String{
+        return movieCategories[index].title
     }
-
+    
+    func getMovies(for section: Int) -> [Movie] {
+        return movies[section]
+    }
+    
+    func numberOfSections() -> Int{
+        return movies.count
+    }
+        
     func resetMovies() {
         for i in 0..<movieCategories.count {
             movies[i] = []
         }
     }
 
-    func fetchData(completion: @escaping CompletionWithIndex) {
+    func fetchData(completion: @escaping HomeCompletion) {
         let urls = movieCategories.map({ $0.defaultURL })
         for i in 0..<urls.count {
             API.shared().request(with: urls[i]) { (result) in
@@ -79,7 +81,7 @@ final class HomeViewModel {
                     completion(false, i, error)
                 case .success(let data):
                     guard let data = data else {
-                        completion(false, i, APIError.emptyData)
+                        completion(false, i,  APIError.emptyData)
                         return
                     }
                     let json = data.toJSObject()
@@ -91,7 +93,7 @@ final class HomeViewModel {
                         }
                     }
                     self.movies[i] = items
-                    completion(true, i, nil)
+                    completion(true, i,  nil)
                 }
             }
         }
