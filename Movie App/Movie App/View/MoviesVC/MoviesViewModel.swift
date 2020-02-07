@@ -59,6 +59,8 @@ final class MoviesViewModel {
             url = APIManager.Path.Popular(page: page).url
         case .topRated:
             url = APIManager.Path.TopRated(page: page).url
+        case .upcoming:
+            url = APIManager.Path.Upcoming(page: page).url
         default:
             url = ""
         }

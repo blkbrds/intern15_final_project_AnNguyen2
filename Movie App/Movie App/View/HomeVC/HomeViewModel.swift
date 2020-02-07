@@ -13,7 +13,7 @@ typealias CompletionWithIndex = (Bool, Int, APIError?) -> Void
 
 
 enum MovieCategory: CaseIterable {
-    case tv, discover, popular, topRated, trending, similar, recommendations
+    case tv, discover, popular, topRated, trending, similar, recommendations, upcoming
 
     var title: String {
         switch self {
@@ -31,7 +31,8 @@ enum MovieCategory: CaseIterable {
             return "Recommendations"
         case .similar:
             return "Similar"
-
+        case .upcoming:
+            return "Upcoming"
         }
     }
 
@@ -47,6 +48,8 @@ enum MovieCategory: CaseIterable {
             return APIManager.Path.TopRated().url
         case .tv:
             return APIManager.Path.TV().url
+        case .upcoming:
+            return APIManager.Path.Upcoming().url
         default:
             return ""
         }
@@ -54,8 +57,8 @@ enum MovieCategory: CaseIterable {
 }
 
 final class HomeViewModel {
-    let movieCategories: [MovieCategory] = [.popular, .discover, .topRated, .trending, .tv]
-    var movies: [[Movie]] = [[], [], [], [], []]
+    let movieCategories: [MovieCategory] = [.popular, .discover, .topRated, .trending, .tv, .upcoming]
+    var movies: [[Movie]] = [[], [], [], [], [], []]
 
     func moviesViewModel(at index: Int) -> MoviesViewModel {
         return MoviesViewModel(type: movieCategories[index])
@@ -69,8 +72,8 @@ final class HomeViewModel {
         return movieCategories[index].title
     }
 
-    func getMovies(for section: Int) -> [Movie] {
-        return movies[section]
+    func getMovies(for indexPath: IndexPath) -> [Movie] {
+        return movies[indexPath.section]
     }
 
     func numberOfSections() -> Int {

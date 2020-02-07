@@ -95,7 +95,7 @@ extension HomeVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(HomeCell.self)
         cell.delegate = self
-        let movies = viewModel.movies[indexPath.section]
+        let movies = viewModel.getMovies(for: indexPath)
         cell.setupData(movies: movies)
         return cell
     }
