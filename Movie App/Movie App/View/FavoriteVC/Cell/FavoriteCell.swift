@@ -49,13 +49,14 @@ class FavoriteCell: UITableViewCell {
         releaseDateLabel.text = movie.releaseDate
         movieNameLabel.text = movie.originalTitle
         let urlString = APIManager.Path.baseImage5URL + movie.posterPath
-        APIManager.Downloader.downloadImage(with: urlString) { (image, error) in
+        APIManager.Downloader.downloadImage(with: urlString) {[weak self] (image, error) in
+            guard let this = self else { return }
             if let error = error {
                 print(error)
                 return
             }
             DispatchQueue.main.async {
-                self.movieImageView.image = image
+                this.movieImageView.image = image
             }
         }
     }

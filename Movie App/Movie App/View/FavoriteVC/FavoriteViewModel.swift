@@ -14,6 +14,14 @@ final class FavoriteViewModel {
         return movies.isEmpty
     }
 
+    func resetMovies() {
+        movies = []
+    }
+
+    func getMovie(in indexPath: IndexPath) -> Movie {
+        return movies[indexPath.row]
+    }
+
     func detailViewModel(for id: Int) -> DetailViewModel {
         return DetailViewModel(by: id)
     }

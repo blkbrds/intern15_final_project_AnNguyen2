@@ -14,7 +14,7 @@ class FavoriteVC: BaseViewController {
     @IBOutlet weak private var noItemsLabel: UILabel!
     private var rightEditBarButtonItem: UIBarButtonItem?
     private var leftDeleteBarButtonItem: UIBarButtonItem?
-    var viewModel = FavoriteViewModel()
+    private let viewModel = FavoriteViewModel()
     enum Action {
         case reload, load
     }
@@ -52,14 +52,15 @@ class FavoriteVC: BaseViewController {
 
     private func fetchData(for action: Action) {
         if action == .reload {
-            viewModel.movies = []
+            viewModel.resetMovies()
             updateUI()
         }
-        viewModel.fetchData { (done, error) in
+        viewModel.fetchData { [weak self] (done, error) in
+            guard let this = self else { return }
             if done {
-                self.updateUI()
+                this.updateUI()
             } else if let error = error {
-                self.alert(errorString: error.localizedDescription)
+                this.alert(errorString: error.localizedDescription)
             }
         }
     }
@@ -96,16 +97,17 @@ class FavoriteVC: BaseViewController {
         navigationItem.leftBarButtonItem = leftDeleteBarButtonItem
         navigationItem.rightBarButtonItem = rightEditBarButtonItem
     }
-    
-    @objc private func handleDeleteItems(){
+
+    @objc private func handleDeleteItems() {
         guard let indexPaths = favoriteTableView.indexPathsForSelectedRows else { return }
-        let movies: [Movie] = indexPaths.map({ viewModel.movies[$0.row] })
-        viewModel.removeMoviesInFavorite(movies: movies) { (done, error) in
+        let movies: [Movie] = indexPaths.map({ viewModel.getMovie(in: $0) })
+        viewModel.removeMoviesInFavorite(movies: movies) { [weak self] (done, error) in
+            guard let this = self else { return }
             if done {
-                self.fetchData(for: .reload)
-                self.updateUI()
+                this.fetchData(for: .reload)
+                this.updateUI()
                 print("Delete movies success!")
-            }else {
+            } else {
                 print(error?.localizedDescription ?? "")
             }
         }
@@ -116,7 +118,7 @@ class FavoriteVC: BaseViewController {
 extension FavoriteVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let detailVC = DetailVC()
-        let movie = viewModel.movies[indexPath.row]
+        let movie = viewModel.getMovie(in: indexPath)
         let detailViewModel = viewModel.detailViewModel(for: movie.id)
         detailVC.viewModel = detailViewModel
         if tableView.isEditing { return }
@@ -138,7 +140,7 @@ extension FavoriteVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(FavoriteCell.self)
         cell.delegate = self
-        let movie = viewModel.movies[indexPath.row]
+        let movie = viewModel.getMovie(in: indexPath)
         cell.setupView(movie: movie, indexPath: indexPath)
         return cell
     }
@@ -148,9 +150,10 @@ extension FavoriteVC: UITableViewDataSource {
 extension FavoriteVC: FavoriteCellDelegate {
     func favoriteCell(_ cell: FavoriteCell, delete item: Movie?, in indexPath: IndexPath?, perform action: FavoriteCellActionType) {
         deleteAlert(msg: "Do you want to delete \(item?.originalTitle ?? "") in your favorites?") { (_) in
-            self.viewModel.removeMovieInFavorite(movie: item) { (done, error) in
+            self.viewModel.removeMovieInFavorite(movie: item) { [weak self] (done, error) in
+                guard let this = self else { return }
                 if done {
-                    self.fetchData(for: .load)
+                    this.fetchData(for: .load)
                 } else {
                     print(error?.localizedDescription ?? "")
                 }
