@@ -59,6 +59,8 @@ final class MoviesViewModel {
             url = APIManager.Path.Popular(page: page).url
         case .topRated:
             url = APIManager.Path.TopRated(page: page).url
+        default:
+            url = ""
         }
     }
 
@@ -171,10 +173,10 @@ final class MoviesViewModel {
         return isShowFilter
     }
 
-    func changedShowFilter(){
+    func changedShowFilter() {
         isShowFilter = !isShowFilter
     }
-    
+
     func getMovieCategory() -> MovieCategory? {
         return movieCategory
     }

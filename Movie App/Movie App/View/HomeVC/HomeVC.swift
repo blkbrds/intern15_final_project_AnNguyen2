@@ -8,16 +8,10 @@
 
 import UIKit
 
-final private class Config {
-    static let withReuseIdentifier = "homeCell"
-    static let nibNameCell = "HomeCell"
-    static let defautIdentifier = "defaultCell"
-}
-
 class HomeVC: BaseViewController {
 
     @IBOutlet private weak var movieTableView: UITableView!
-    private let viewModel = HomeViewModel()
+    fileprivate let viewModel = HomeViewModel()
 
     enum Action {
         case reload, load
@@ -37,8 +31,7 @@ class HomeVC: BaseViewController {
     }
 
     private func updateUI(sectionIndex: Int) {
-        let indexSet = IndexSet(integer: sectionIndex)
-        movieTableView.reloadSections(indexSet, with: .fade)
+        movieTableView.reloadSection(section: sectionIndex)
     }
 
     private func fetchData(for action: Action) {
@@ -58,9 +51,7 @@ class HomeVC: BaseViewController {
 
     private func configMovieTableView() {
         movieTableView.backgroundColor = App.Color.mainColor
-        let nib = UINib(nibName: Config.nibNameCell, bundle: .main)
-        movieTableView.register(nib, forCellReuseIdentifier: Config.withReuseIdentifier)
-        movieTableView.register(UITableViewCell.self, forCellReuseIdentifier: Config.defautIdentifier)
+        movieTableView.register(HomeCell.self)
         let footerView = UIView()
         movieTableView.showsVerticalScrollIndicator = false
         movieTableView.tableFooterView = footerView
@@ -102,10 +93,9 @@ extension HomeVC: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: Config.withReuseIdentifier) as? HomeCell else {
-            return UITableViewCell()
-        }
-        let movies = viewModel.getMovies(for: indexPath.section)
+        let cell = tableView.dequeueReusableCell(HomeCell.self)
+        cell.delegate = self
+        let movies = viewModel.movies[indexPath.section]
         cell.setupData(movies: movies)
         return cell
     }
@@ -127,5 +117,15 @@ extension HomeVC: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 170
+    }
+}
+
+//MARK: -HomeCellDelegate
+extension HomeVC: HomeCellDelegate {
+    func homeCell(_ homeCell: HomeCell, didSelectItem: Movie, perform action: HomeCellActionType) {
+        let detailVC = DetailVC()
+        let detailViewModel = viewModel.detailViewModel(for: didSelectItem.id)
+        detailVC.viewModel = detailViewModel
+        navigationController?.pushViewController(detailVC, animated: true)
     }
 }
