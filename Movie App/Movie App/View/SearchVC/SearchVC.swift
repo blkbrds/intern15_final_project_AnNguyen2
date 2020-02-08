@@ -21,6 +21,17 @@ class SearchVC: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateCollectionView()
+    }
+    
+    private func updateCollectionView(){
+        layoutForSearchCollectionView()
+        searchCollectionView.delegate = self
+        searchCollectionView.dataSource = self
+    }
 
     override func setupUI() {
         let searchController = UISearchController(searchResultsController: nil)
@@ -30,8 +41,6 @@ class SearchVC: BaseViewController {
         searchController.obscuresBackgroundDuringPresentation = false
         navigationItem.searchController = searchController
         configMoviesCollectionView()
-        searchCollectionView.delegate = self
-        searchCollectionView.dataSource = self
     }
 
     private func updateUI() {

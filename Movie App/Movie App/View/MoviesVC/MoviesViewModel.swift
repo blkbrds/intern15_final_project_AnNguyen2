@@ -51,13 +51,13 @@ final class MoviesViewModel {
             if let genre = genreFilter {
                 url = APIManager.Path.Discover(page: page, with_genres: genre.id).url
             } else {
-                url = APIManager.Path.Discover().url
+                url = APIManager.Path.Discover(page: page).url
             }
         case .tv:
             if let genre = genreFilter {
                 url = APIManager.Path.TV(page: page, with_genres: genre.id) .url
             } else {
-                url = APIManager.Path.TV().url
+                url = APIManager.Path.TV(page: page).url
             }
         case .popular:
             url = APIManager.Path.Popular(page: page).url

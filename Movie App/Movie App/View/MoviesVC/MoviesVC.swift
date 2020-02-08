@@ -36,6 +36,11 @@ class MoviesVC: BaseViewController {
         configMoviesCollectionView()
         changedLayout()
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateCollectionView()
+    }
 
     override func setupUI() {
         title = viewModel.movieCategory?.title
@@ -56,9 +61,9 @@ class MoviesVC: BaseViewController {
             filterViewCustom.delegate = self
             filterViewCustom.setupAlertFilterViewCustom(genres: self.viewModel.genres)
         }
-        moviesCollectionView.delegate = self
-        moviesCollectionView.dataSource = self
     }
+    
+    
 
     override func setupData() {
         fetchData(for: .load)
@@ -94,6 +99,12 @@ class MoviesVC: BaseViewController {
 
     private func updateUI() {
         moviesCollectionView?.reloadData()
+    }
+    
+    private func updateCollectionView(){
+        changedLayout()
+        moviesCollectionView.delegate = self
+        moviesCollectionView.dataSource = self
     }
 
     private func configMoviesCollectionView() {

@@ -66,7 +66,7 @@ class DetailVC: BaseViewController {
     }
 
     private func checkMovieDownLoad() {
-        if let _ = viewModel.getVideoUrl() {
+        if let _ = viewModel.localVideoUrl() {
             downloadButton.tintColor = UIColor.green
             downloadButton.setImage(UIImage.init(systemName: "checkmark.circle.fill"), for: .normal)
         }
