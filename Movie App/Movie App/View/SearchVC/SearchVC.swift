@@ -13,7 +13,7 @@ class SearchVC: BaseViewController {
     @IBOutlet weak private var loadActivityIndicator: UIActivityIndicatorView!
     @IBOutlet weak private var noResultTextStackView: UIStackView!
 
-    let viewModel = SearchViewModel()
+    private let viewModel = SearchViewModel()
     enum Action {
         case reload, load
     }
@@ -41,22 +41,23 @@ class SearchVC: BaseViewController {
 
     private func fetchData(with action: Action, page: Int = 1) {
         if action == .reload {
-            viewModel.movies = []
+            viewModel.resetMovies()
             updateUI()
         }
-        if navigationItem.searchController?.searchBar.text == "" {
+        let searctText = navigationItem.searchController?.searchBar.text
+        if  searctText == "" {
             loadActivityIndicator?.isHidden = true
         }else {
             loadActivityIndicator?.isHidden = false
         }
         viewModel.fetchSearchData(page: page) { (_, error) in
-            if error != nil || self.viewModel.movies.isEmpty {
+            if error != nil || self.viewModel.isEmptyMovie {
                 self.noResultTextStackView.isHidden = false
             }else {
                 self.noResultTextStackView.isHidden = true
             }
             self.updateUI()
-            print(self.viewModel.movies.count)
+            print(self.viewModel.numberOfItems())
         }
     }
 
@@ -98,12 +99,12 @@ extension SearchVC: UISearchResultsUpdating {
 //MARK: - UICollectionViewDataSource
 extension SearchVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.movies.count
+        return viewModel.numberOfItems()
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(with: GridCell.self, for: indexPath)
-        let movie = viewModel.movies[indexPath.row]
+        let movie = viewModel.getMovie(indexPath: indexPath)
         cell.setupView(movie: movie)
         return cell
     }
@@ -115,17 +116,17 @@ extension SearchVC: UICollectionViewDelegate {
         let scrollHeight = scrollView.bounds.height
         let scrollViewContentOffsetY = scrollView.contentOffset.y
         let contentSizeHeight = scrollView.contentSize.height
-        if scrollHeight + scrollViewContentOffsetY >= contentSizeHeight && !viewModel.isLoadData, viewModel.totalPages > viewModel.currentPage {
+        if scrollHeight + scrollViewContentOffsetY >= contentSizeHeight && viewModel.isNotLoadData(), viewModel.getTotalPags() > viewModel.getCurrentPage() {
             let nextPage = viewModel.currentPage + 1
             fetchData(with: .load, page: nextPage)
-            print(viewModel.movies.count)
+            print(viewModel.numberOfItems())
         }
         scrollView.keyboardDismissMode = .onDrag
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let detailVC = DetailVC()
-        let movie = viewModel.movies[indexPath.row]
+        let movie = viewModel.getMovie(indexPath: indexPath)
         let detailViewModel = viewModel.detailViewModel(for: movie.id)
         detailVC.viewModel = detailViewModel
         navigationController?.pushViewController(detailVC, animated: true)

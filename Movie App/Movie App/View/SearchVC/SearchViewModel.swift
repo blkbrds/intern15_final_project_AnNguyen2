@@ -15,9 +15,36 @@ final class SearchViewModel {
     var totalPages: Int = 0
     var totalResults: Int = 0
     var query: String = ""
+    var isEmptyMovie: Bool {
+        return movies.isEmpty
+    }
 
     func detailViewModel(for id: Int) -> DetailViewModel {
         return DetailViewModel(by: id)
+    }
+
+    func resetMovies() {
+        movies = []
+    }
+
+    func isNotLoadData() -> Bool {
+        return !isLoadData
+    }
+
+    func numberOfItems() -> Int {
+        return movies.count
+    }
+
+    func getMovie(indexPath: IndexPath) -> Movie {
+        return movies[indexPath.row]
+    }
+    
+    func getTotalPags() -> Int {
+        return totalPages
+    }
+    
+    func getCurrentPage() -> Int {
+        return currentPage
     }
 
     func fetchSearchData(page: Int = 1, completion: @escaping Completion) {

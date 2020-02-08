@@ -31,10 +31,6 @@ final class MoviesViewModel {
     init(type: MovieCategory = .discover) {
         self.movieCategory = type
     }
-    
-    func detailViewModel(for id: Int) -> DetailViewModel {
-        return DetailViewModel(by: id)
-    }
 
     func handleUrl(page: Int = 1) {
         guard let category = self.movieCategory else { url = ""; return }
@@ -44,18 +40,19 @@ final class MoviesViewModel {
                 url = APIManager.Path.Trending(page: page, trendingType: trendingType) .url
             } else {
                 url = APIManager.Path.Trending(page: page) .url
+
             }
         case .discover:
             if let genre = genreFilter {
                 url = APIManager.Path.Discover(page: page, with_genres: genre.id).url
             } else {
-                url = APIManager.Path.Discover(page: page).url
+                url = APIManager.Path.Discover().url
             }
         case .tv:
             if let genre = genreFilter {
                 url = APIManager.Path.TV(page: page, with_genres: genre.id) .url
             } else {
-                url = APIManager.Path.TV(page: page).url
+                url = APIManager.Path.TV().url
             }
         case .popular:
             url = APIManager.Path.Popular(page: page).url
@@ -68,12 +65,12 @@ final class MoviesViewModel {
 
     func fetchDataWithFilter(page: Int = 1, completion: @escaping Completion) {
         handleUrl(page: page)
-        guard let url = url?.url else {
+        guard let url = url else {
             completion(false, APIError.errorURL)
             return
         }
         isLoadData = true
-        API.shared().request(with: url.absoluteString) { (result) in
+        API.shared().request(with: url) { (result) in
             switch result {
             case .failure(let error):
                 completion(false, error)
@@ -145,5 +142,41 @@ final class MoviesViewModel {
         } else {
             status = .row
         }
+    }
+
+    func chageGenreFilter(genre: Genre) {
+        genreFilter = genre
+    }
+
+    func changedTrendingTypeFilter(genre: Genre) {
+        trendingTypeFilter = genre.name == "Day" ? .day : .week
+    }
+
+    func getMovie(at: IndexPath) -> Movie {
+        return movies[at.row]
+    }
+
+    func numberOfItemsInSection() -> Int {
+        return movies.count
+    }
+
+    func nextPage() -> Int {
+        return currentPage + 1
+    }
+
+    func isNotLoadData() -> Bool {
+        return !isLoadData
+    }
+
+    func getShowFilter() -> Bool {
+        return isShowFilter
+    }
+
+    func changedShowFilter() {
+        isShowFilter = !isShowFilter
+    }
+
+    func getMovieCategory() -> MovieCategory? {
+        return movieCategory
     }
 }
