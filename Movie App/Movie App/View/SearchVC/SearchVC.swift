@@ -74,7 +74,7 @@ class SearchVC: BaseViewController {
     //MARK: - Layout collectionView
     private func layoutForSearchCollectionView() {
         let collectionViewFlowLayout = UICollectionViewFlowLayout()
-        let itemWidth: CGFloat = (view.bounds.width - 30) / 3
+        let itemWidth: CGFloat = (searchCollectionView.bounds.width - 30) / 3
         let itemHeight: CGFloat = itemWidth * 1.4
         collectionViewFlowLayout.itemSize = CGSize(width: itemWidth, height: itemHeight)
         collectionViewFlowLayout.minimumLineSpacing = 5

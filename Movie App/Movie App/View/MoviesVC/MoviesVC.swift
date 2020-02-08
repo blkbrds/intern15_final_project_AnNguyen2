@@ -26,7 +26,6 @@ class MoviesVC: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configMoviesCollectionView()
-        changedLayout()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -55,8 +54,6 @@ class MoviesVC: BaseViewController {
         }
     }
     
-    
-
     override func setupData() {
         fetchData(for: .load)
         guard let category = viewModel.getMovieCategory() else { return }
@@ -135,7 +132,7 @@ class MoviesVC: BaseViewController {
             layout.sectionInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
             layout.itemSize = CGSize(width: widthItem, height: heightItem)
         } else {
-            let widthItem = (view.bounds.width - 30) / 3
+            let widthItem = (moviesCollectionView.bounds.width - 30) / 3
             let heightItem = 1.4 * widthItem
             layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
             layout.minimumLineSpacing = 5
