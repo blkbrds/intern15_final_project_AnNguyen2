@@ -23,6 +23,30 @@ final class DetailViewModel {
         self.movieID = id
     }
 
+    func resetMovie() {
+        movie = nil
+    }
+
+    func getMovie() -> Movie? {
+        return movie
+    }
+
+    func getVideoUrl() -> URL? {
+        return urlVideo
+    }
+
+    func getTitle(section: Int) -> String {
+        return movieCategories[section].title
+    }
+
+    func numberOfSections() -> Int {
+        return movies.count
+    }
+    
+    func moviesIn(indexPath: IndexPath) -> [Movie] {
+        return movies[indexPath.section]
+    }
+
     func detailViewModel(for id: Int) -> DetailViewModel {
         return DetailViewModel(by: id)
     }
