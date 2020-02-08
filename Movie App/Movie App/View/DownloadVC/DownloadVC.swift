@@ -31,7 +31,7 @@ class DownloadVC: BaseViewController {
     override func setupUI() {
         title = "Downloads"
         configFavoriteTableView()
-        rightEditBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(handleEditItems))
+        rightEditBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(handleEditChangedItems))
         navigationItem.rightBarButtonItem = rightEditBarButtonItem
     }
 
@@ -44,7 +44,10 @@ class DownloadVC: BaseViewController {
         if viewModel.isEmptyItems {
             favoriteTableView.isHidden = true
             noItemsLabel.isHidden = false
+            navigationItem.rightBarButtonItem = nil
+            navigationItem.leftBarButtonItem = nil
         } else {
+            navigationItem.rightBarButtonItem = rightEditBarButtonItem
             favoriteTableView.isHidden = false
             noItemsLabel.isHidden = true
         }
@@ -84,14 +87,14 @@ class DownloadVC: BaseViewController {
         refeshControl.endRefreshing()
     }
 
-    @objc private func handleEditItems() {
+    @objc private func handleEditChangedItems() {
         let isNotEditing = !favoriteTableView.isEditing
         favoriteTableView.setEditing(isNotEditing, animated: true)
         if favoriteTableView.isEditing {
-            rightEditBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleEditItems))
+            rightEditBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleEditChangedItems))
             leftDeleteBarButtonItem = UIBarButtonItem(image: UIImage.init(systemName: "trash"), style: .plain, target: self, action: #selector(handleDeleteItems))
         } else {
-            rightEditBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(handleEditItems))
+            rightEditBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(handleEditChangedItems))
             leftDeleteBarButtonItem = nil
         }
         navigationItem.leftBarButtonItem = leftDeleteBarButtonItem
