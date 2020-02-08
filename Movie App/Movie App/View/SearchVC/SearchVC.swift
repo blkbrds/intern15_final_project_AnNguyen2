@@ -45,19 +45,20 @@ class SearchVC: BaseViewController {
             updateUI()
         }
         let searctText = navigationItem.searchController?.searchBar.text
-        if  searctText == "" {
+        if searctText == "" {
             loadActivityIndicator?.isHidden = true
-        }else {
+        } else {
             loadActivityIndicator?.isHidden = false
         }
-        viewModel.fetchSearchData(page: page) { (_, error) in
-            if error != nil || self.viewModel.isEmptyMovie {
-                self.noResultTextStackView.isHidden = false
-            }else {
-                self.noResultTextStackView.isHidden = true
+        viewModel.fetchSearchData(page: page) { [weak self] (_, error) in
+            guard let this = self else { return }
+            if error != nil || this.viewModel.isEmptyMovie {
+                this.noResultTextStackView.isHidden = false
+            } else {
+                this.noResultTextStackView.isHidden = true
             }
-            self.updateUI()
-            print(self.viewModel.numberOfItems())
+            this.updateUI()
+            print(this.viewModel.numberOfItems())
         }
     }
 
@@ -117,7 +118,7 @@ extension SearchVC: UICollectionViewDelegate {
         let scrollViewContentOffsetY = scrollView.contentOffset.y
         let contentSizeHeight = scrollView.contentSize.height
         if scrollHeight + scrollViewContentOffsetY >= contentSizeHeight && viewModel.isNotLoadData(), viewModel.getTotalPags() > viewModel.getCurrentPage() {
-            let nextPage = viewModel.currentPage + 1
+            let nextPage = viewModel.getCurrentPage() + 1
             fetchData(with: .load, page: nextPage)
             print(viewModel.numberOfItems())
         }
