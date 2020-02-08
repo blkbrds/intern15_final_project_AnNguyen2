@@ -13,7 +13,7 @@ class SearchVC: BaseViewController {
     @IBOutlet weak private var loadActivityIndicator: UIActivityIndicatorView!
     @IBOutlet weak private var noResultTextStackView: UIStackView!
 
-    let viewModel = SearchViewModel()
+    private let viewModel = SearchViewModel()
     enum Action {
         case reload, load
     }
@@ -21,13 +21,13 @@ class SearchVC: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateCollectionView()
     }
-    
-    private func updateCollectionView(){
+
+    private func updateCollectionView() {
         layoutForSearchCollectionView()
         searchCollectionView.delegate = self
         searchCollectionView.dataSource = self
@@ -50,22 +50,24 @@ class SearchVC: BaseViewController {
 
     private func fetchData(with action: Action, page: Int = 1) {
         if action == .reload {
-            viewModel.movies = []
+            viewModel.resetMovies()
             updateUI()
         }
-        if navigationItem.searchController?.searchBar.text == "" {
+        let searctText = navigationItem.searchController?.searchBar.text
+        if searctText == "" {
             loadActivityIndicator?.isHidden = true
-        }else {
+        } else {
             loadActivityIndicator?.isHidden = false
         }
-        viewModel.fetchSearchData(page: page) { (_, error) in
-            if error != nil || self.viewModel.movies.isEmpty {
-                self.noResultTextStackView.isHidden = false
-            }else {
-                self.noResultTextStackView.isHidden = true
+        viewModel.fetchSearchData(page: page) { [weak self] (_, error) in
+            guard let this = self else { return }
+            if error != nil || this.viewModel.isEmptyMovie {
+                this.noResultTextStackView.isHidden = false
+            } else {
+                this.noResultTextStackView.isHidden = true
             }
-            self.updateUI()
-            print(self.viewModel.movies.count)
+            this.updateUI()
+            print(this.viewModel.numberOfItems())
         }
     }
 
@@ -98,22 +100,28 @@ class SearchVC: BaseViewController {
 //MARK: - UISearchResultsUpdating
 extension SearchVC: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        let text = searchController.searchBar.text?.lowercased() ?? ""
-        viewModel.query = text
-        updateUI()
-        fetchData(with: .reload)
+        let text =  searchController.searchBar.text?.lowercased() ?? ""
+        viewModel.getTimer()?.invalidate()
+        let timer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { (_) in
+            self.viewModel.updateQuery(text: text)
+            if self.viewModel.isNotLoadData() {
+                self.fetchData(with: .reload)
+                print("Reload! \(text)")
+            }
+        }
+        viewModel.updateOldTimer(timer: timer)
     }
 }
 
 //MARK: - UICollectionViewDataSource
 extension SearchVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.movies.count
+        return viewModel.numberOfItems()
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(with: GridCell.self, for: indexPath)
-        let movie = viewModel.movies[indexPath.row]
+        let movie = viewModel.getMovie(indexPath: indexPath)
         cell.setupView(movie: movie)
         return cell
     }
@@ -125,17 +133,17 @@ extension SearchVC: UICollectionViewDelegate {
         let scrollHeight = scrollView.bounds.height
         let scrollViewContentOffsetY = scrollView.contentOffset.y
         let contentSizeHeight = scrollView.contentSize.height
-        if scrollHeight + scrollViewContentOffsetY >= contentSizeHeight && !viewModel.isLoadData, viewModel.totalPages > viewModel.currentPage {
-            let nextPage = viewModel.currentPage + 1
+        if scrollHeight + scrollViewContentOffsetY >= contentSizeHeight && viewModel.isNotLoadData(), viewModel.getTotalPags() > viewModel.getCurrentPage() {
+            let nextPage = viewModel.getCurrentPage() + 1
             fetchData(with: .load, page: nextPage)
-            print(viewModel.movies.count)
+            print("\(viewModel.numberOfItems()) items")
         }
         scrollView.keyboardDismissMode = .onDrag
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let detailVC = DetailVC()
-        let movie = viewModel.movies[indexPath.row]
+        let movie = viewModel.getMovie(indexPath: indexPath)
         let detailViewModel = viewModel.detailViewModel(for: movie.id)
         detailVC.viewModel = detailViewModel
         navigationController?.pushViewController(detailVC, animated: true)
