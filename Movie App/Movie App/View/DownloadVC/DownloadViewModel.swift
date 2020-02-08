@@ -34,13 +34,42 @@ final class DownloadViewModel {
 
     func removeMovieInFavorite(movie: Movie?, completion: @escaping Completion) {
         guard let movie = movie else { return }
+        deleteVieo(movieID: movie.id)
         RealmManager.shared().deleteObject(object: movie, forPrimaryKey: movie.id) { (done, error) in
-            completion(done, error)
+            if done {
+                completion(done, error)
+                print("Delete movie")
+            }else {
+                completion(false, error)
+                print("Can't Delete movie")
+            }
+        }
+    }
+    
+    func deleteVieo(movieID: Int) {
+        let fileManager = FileManager.default
+        
+        do {
+            let documentDirectory = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            let filePath: String = documentDirectory.path + "/\(movieID).mp4"
+            if fileManager.fileExists(atPath: filePath) {
+                print("Exist")
+                let itemUrl = URL(fileURLWithPath: filePath)
+                try fileManager.removeItem(at: itemUrl)
+                print("Delete local movie video sucess!")
+            }else {
+                print("Video not exist!")
+            }
+        } catch {
+            print(APIError.errorURL.localizedDescription)
         }
     }
 
     func removeMoviesInFavorite(movies: [Movie], completion: @escaping Completion) {
         let forPrimaryKeys = movies.map({ $0.id })
+        forPrimaryKeys.forEach({
+            deleteVieo(movieID: $0)
+        })
         RealmManager.shared().deleteObjects(object: Movie.self, forPrimaryKeys: forPrimaryKeys) { (done, error) in
             completion(done, error)
         }

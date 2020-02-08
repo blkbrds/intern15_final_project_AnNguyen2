@@ -17,6 +17,7 @@
                 <outlet property="movieImageView" destination="xkm-h7-4vd" id="qfF-5K-Q0Q"/>
                 <outlet property="movieNameLabel" destination="m8x-Qg-Lz9" id="mzB-0A-wqr"/>
                 <outlet property="moviePosterImageView" destination="769-wc-aFs" id="rSe-LB-dci"/>
+                <outlet property="moviesTableViewHeightContraint" destination="HJc-2l-ixo" id="dgk-7Y-imV"/>
                 <outlet property="overviewMovieLabel" destination="Lzu-v4-NeY" id="j4l-rK-GAl"/>
                 <outlet property="playVideoButton" destination="kII-6b-Z83" id="0Z6-ra-5ta"/>
                 <outlet property="releaseDateLabel" destination="Ag4-Ah-1M6" id="drk-2H-EVx"/>

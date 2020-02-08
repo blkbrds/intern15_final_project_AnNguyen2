@@ -242,20 +242,18 @@ final class DetailViewModel {
     }
 
     func deleteVieo() {
+        guard let id = movieID else { return }
         let fileManager = FileManager.default
         do {
             let documentDirectory = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-            guard let movie = self.movie else {
-                print("Video movie in local is empty!")
-                return
-            }
-            let filePath: String = documentDirectory.path + "/\(movie.id).mp4"
-            if let _ = fileManager.contents(atPath: filePath) {
+            let filePath: String = documentDirectory.path + "/\(id).mp4"
+            if fileManager.fileExists(atPath: filePath) {
+                print("Exist")
                 let itemUrl = URL(fileURLWithPath: filePath)
                 try fileManager.removeItem(at: itemUrl)
                 print("Delete local movie video sucess!")
-            } else {
-                print("Can't not delete local movie!")
+            }else {
+                print("Video not exist!")
             }
         } catch {
             print(APIError.errorURL.localizedDescription)

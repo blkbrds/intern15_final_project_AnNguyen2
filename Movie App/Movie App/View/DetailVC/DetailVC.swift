@@ -15,6 +15,7 @@ class DetailVC: BaseViewController {
     @IBOutlet weak private var playVideoButton: UIButton!
     @IBOutlet weak private var moreLikeThisMoviesTableView: UITableView!
     @IBOutlet weak private var downloadButton: UIButton!
+    @IBOutlet weak private var moviesTableViewHeightContraint: NSLayoutConstraint!
 
     var viewModel = DetailViewModel()
     enum Action {
@@ -57,6 +58,8 @@ class DetailVC: BaseViewController {
             movieImageView.image = UIImage.init(data: data)
             moviePosterImageView.image = UIImage.init(data: data)
             changeIconButtonDownload()
+            moreLikeThisMoviesTableView.isHidden = true
+            moviesTableViewHeightContraint.constant = 0
             return
         }
         APIManager.Downloader.downloadImage(with: urlString) { [weak self] (image, error) in
@@ -76,7 +79,7 @@ class DetailVC: BaseViewController {
     }
 
     private func changeIconButtonDownload() {
-        if let _ = viewModel.localVideoUrl() {
+        if viewModel.isDownloaded() {
             downloadButton.tintColor = UIColor.green
             downloadButton.setBackgroundImage(UIImage.init(systemName: "checkmark.circle.fill"), for: .normal)
             print("Movie is download!")
@@ -150,7 +153,7 @@ class DetailVC: BaseViewController {
         moreLikeThisMoviesTableView.delegate = self
     }
 
-    private func saveContent() {
+    private func handleDownload() {
         if viewModel.isDownloaded() {
             viewModel.removeInDownload { [weak self] (done, error) in
                 guard let this = self else { return }
@@ -162,30 +165,25 @@ class DetailVC: BaseViewController {
                 }
             }
         } else {
+            print("Downloading...")
             viewModel.addMoviewToDownload { [weak self] (done, error) in
-                guard let this = self else { return }
+                guard let _ = self else { return }
                 if done {
-                    this.changeIconButtonDownload()
-                    print("Saved movie to download!")
+                    print("Saved movie content to download!")
                 } else {
                     print(error?.localizedDescription ?? "")
                 }
             }
-        }
-    }
-
-    private func downloadVideo() {
-        if let _ = viewModel.localVideoUrl() { return }
-        print("Download...")
-        downloadButton.setBackgroundImage(UIImage.init(systemName: "slowmo"), for: .normal)
-        viewModel.saveOfflineVideo { [weak self] (url, error) in
-            guard let this = self else { return }
-            if let error = error {
-                this.alert(errorString: error.localizedDescription)
+            downloadButton.setBackgroundImage(UIImage.init(systemName: "slowmo"), for: .normal)
+            viewModel.saveOfflineVideo { [weak self] (url, error) in
+                guard let this = self else { return }
+                if let error = error {
+                    this.alert(errorString: error.localizedDescription)
+                    return
+                }
+                this.changeIconButtonDownload()
+                print("Download video success!")
             }
-            this.downloadButton.tintColor = UIColor.green
-            this.downloadButton.setBackgroundImage(UIImage.init(systemName: "checkmark.circle.fill"), for: .normal)
-            print("Download success!")
         }
     }
 
@@ -216,8 +214,7 @@ class DetailVC: BaseViewController {
     }
 
     @IBAction private func downloadButton(_ sender: Any) {
-        saveContent()
-        downloadVideo()
+        handleDownload()
     }
 
     @IBAction private func shareButton(_ sender: Any) {

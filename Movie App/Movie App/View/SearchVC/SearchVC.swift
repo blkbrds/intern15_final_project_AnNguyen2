@@ -100,13 +100,8 @@ extension SearchVC: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         let text = searchController.searchBar.text?.lowercased() ?? ""
         viewModel.query = text
-        let newTime = Date()
-        if viewModel.getSecondBetweenTyping(newTime: newTime) >= 1 {
-            updateUI()
-            fetchData(with: .reload)
-            viewModel.oldTime = newTime
-        }
-        print(viewModel.getSecondBetweenTyping(newTime: newTime))
+        updateUI()
+        fetchData(with: .reload)
     }
 }
 
