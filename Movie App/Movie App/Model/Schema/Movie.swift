@@ -18,10 +18,11 @@ final class Movie: Object {
     @objc dynamic var title: String = ""
     @objc dynamic var overview: String = ""
     @objc dynamic var voteAverage: Float = 0.0
-    @objc dynamic var releaseDate: String = ""
+    @objc dynamic var releaseDate: Date?
     @objc dynamic var page: Int = 0
     @objc dynamic var tagLine: String = ""
     @objc dynamic var homePage: String = ""
+    @objc dynamic var imageData: Data?
 
     init(json: JSObject) {
         self.id = json["id"] as? Int ?? 0
@@ -33,7 +34,8 @@ final class Movie: Object {
         self.title = json["title"] as? String ?? ""
         self.overview = json["overview"] as? String ?? ""
         self.voteAverage = json["vote_average"] as? Float ?? 0.0
-        self.releaseDate = json["release_date"] as? String ?? ""
+        let dateStr = json["release_date"] as? String
+        self.releaseDate = dateStr?.toDate()
         self.tagLine = json["tagline"] as? String ?? ""
         self.homePage = json["homepage"] as? String ?? ""
     }

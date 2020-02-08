@@ -26,6 +26,11 @@ class DetailVC: BaseViewController {
     }
 
     override func setupData() {
+        if viewModel.isDownloaded() {
+            viewModel.getLocalVideoUrl()
+            updateUI()
+            return
+        }
         fetchData(for: .load)
     }
 
@@ -45,15 +50,23 @@ class DetailVC: BaseViewController {
         overviewMovieLabel.text = movie?.overview ?? "..."
         movieNameLabel.text = movie?.originalTitle ?? "..."
         voteCountLabel.text = "\(movie?.voteCount ?? 0) votes"
-        releaseDateLabel.text = movie?.releaseDate ?? "..."
+        releaseDateLabel.text = movie?.releaseDate?.toString() ?? "..."
         idmScoreLabel.text = "IDM \(movie?.voteAverage ?? 0)"
         let urlString = APIManager.Path.baseImage3URL + (movie?.posterPath ?? "")
+        if let data = movie?.imageData {
+            movieImageView.image = UIImage.init(data: data)
+            moviePosterImageView.image = UIImage.init(data: data)
+            changeIconButtonDownload()
+            return
+        }
         APIManager.Downloader.downloadImage(with: urlString) { [weak self] (image, error) in
             guard let this = self else { return }
             if let error = error {
                 print(error, "downloadImage")
                 return
             }
+            let imageData = image?.pngData() ?? image?.jpegData(compressionQuality: 1)
+            this.viewModel.setDataImageMovie(data: imageData)
             DispatchQueue.main.async {
                 this.movieImageView.image = image
                 this.moviePosterImageView.image = image
@@ -139,21 +152,21 @@ class DetailVC: BaseViewController {
 
     private func saveContent() {
         if viewModel.isDownloaded() {
-            viewModel.removeInFavorite { [weak self] (done, error) in
+            viewModel.removeInDownload { [weak self] (done, error) in
                 guard let this = self else { return }
                 if done {
                     this.changeIconButtonDownload()
-                    print("Remove Favorite success.")
+                    print("Removed movie from download!.")
                 } else {
                     print(error?.localizedDescription ?? "")
                 }
             }
         } else {
-            viewModel.addMoviewToFavorite { [weak self] (done, error) in
+            viewModel.addMoviewToDownload { [weak self] (done, error) in
                 guard let this = self else { return }
                 if done {
                     this.changeIconButtonDownload()
-                    print("addMoviewToFavorite")
+                    print("Saved movie to download!")
                 } else {
                     print(error?.localizedDescription ?? "")
                 }

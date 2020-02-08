@@ -31,7 +31,7 @@ class RowCell: UICollectionViewCell {
         movieImageView.image = #imageLiteral(resourceName: "default_image")
         voteCountLabel.text = " \(movie.voteCount.parseToThousandUnit()) K"
         overviewLabel.text = movie.overview
-        releaseDateLabel.text = movie.releaseDate
+        releaseDateLabel.text = movie.releaseDate?.toString()
         movieNameLabel.text = movie.originalTitle
         let urlString = APIManager.Path.baseImage5URL + movie.posterPath
         APIManager.Downloader.downloadImage(with: urlString) { [weak self] (image, error) in

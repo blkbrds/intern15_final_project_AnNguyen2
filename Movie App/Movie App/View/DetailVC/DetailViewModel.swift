@@ -32,6 +32,11 @@ final class DetailViewModel {
     func getMovie() -> Movie? {
         return movie
     }
+    
+    func setupMovie(movie: Movie) {
+        self.movie = movie
+        isSaved = true
+    }
 
     func getVideoUrl() -> URL? {
         return urlVideo
@@ -56,7 +61,7 @@ final class DetailViewModel {
     func localVideoUrl() -> URL? {
         return localUrl
     }
-    
+
     func getVideoUrlOnline() -> URL? {
         return urlVideo
     }
@@ -71,9 +76,17 @@ final class DetailViewModel {
         }
     }
 
+    func setDataImageMovie(data: Data?) {
+        movie?.imageData = data
+    }
+
     func fetchMovieData(completion: @escaping Completion) {
         guard let id = movieID else {
             completion(false, APIError.emptyID)
+            return
+        }
+        if let _ = movie {
+            completion(true, nil)
             return
         }
         let url = APIManager.Path.Details(id: "\(id)").url
@@ -89,7 +102,7 @@ final class DetailViewModel {
                 let json = data.toJSObject()
                 self.movie = Movie(json: json)
                 self.getLocalVideoUrl()
-                self.checkMovieInFavorite()
+                self.checkMovieInDownload()
                 completion(true, nil)
             }
         }
@@ -161,7 +174,7 @@ final class DetailViewModel {
                         return
                     }
                     guard let video = video else {
-                        completion(false, APIError.canNotGetVideoURL)
+                        completion(false, APIError.error("Video not exist!"))
                         return
                     }
                     self.urlVideo = video.streamURL
@@ -228,7 +241,28 @@ final class DetailViewModel {
         }
     }
 
-    func checkMovieInFavorite() {
+    func deleteVieo() {
+        let fileManager = FileManager.default
+        do {
+            let documentDirectory = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            guard let movie = self.movie else {
+                print("Video movie in local is empty!")
+                return
+            }
+            let filePath: String = documentDirectory.path + "/\(movie.id).mp4"
+            if let _ = fileManager.contents(atPath: filePath) {
+                let itemUrl = URL(fileURLWithPath: filePath)
+                try fileManager.removeItem(at: itemUrl)
+                print("Delete local movie video sucess!")
+            } else {
+                print("Can't not delete local movie!")
+            }
+        } catch {
+            print(APIError.errorURL.localizedDescription)
+        }
+    }
+
+    func checkMovieInDownload() {
         guard let movie = movie else { return }
         RealmManager.shared().getObjectForKey(object: Movie.self, forPrimaryKey: movie.id) { (movie, error) in
             if let _ = error {
@@ -238,7 +272,7 @@ final class DetailViewModel {
         }
     }
 
-    func addMoviewToFavorite(completion: @escaping Completion) {
+    func addMoviewToDownload(completion: @escaping Completion) {
         guard let movie = movie else { return }
         RealmManager.shared().addNewObject(object: movie) { (done, error) in
             self.isSaved = true
@@ -246,10 +280,13 @@ final class DetailViewModel {
         }
     }
 
-    func removeInFavorite(completion: @escaping Completion) {
+    func removeInDownload(completion: @escaping Completion) {
         guard let movie = movie else { return }
         RealmManager.shared().deleteObject(object: movie, forPrimaryKey: movie.id) { (done, error) in
             self.isSaved = false
+            if done {
+                self.deleteVieo()
+            }
             completion(done, error)
         }
     }

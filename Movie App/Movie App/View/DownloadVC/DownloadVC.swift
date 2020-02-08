@@ -120,6 +120,7 @@ extension DownloadVC: UITableViewDelegate {
         let detailVC = DetailVC()
         let movie = viewModel.getMovie(in: indexPath)
         let detailViewModel = viewModel.detailViewModel(for: movie.id)
+        detailViewModel.setupMovie(movie: movie)
         detailVC.viewModel = detailViewModel
         if tableView.isEditing { return }
         tableView.deselectRow(at: indexPath, animated: true)

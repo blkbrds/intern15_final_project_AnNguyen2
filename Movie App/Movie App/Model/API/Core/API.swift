@@ -46,7 +46,7 @@ enum APIError: Error {
         case .emptyID:
             return "ID is empty."
         case .canNotGetVideoURL:
-            return "Can't get video url."
+            return "Can't get video online url."
         }
     }
 }
