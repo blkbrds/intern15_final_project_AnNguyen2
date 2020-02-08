@@ -182,6 +182,9 @@ extension MoviesVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         //TODO: -Show detail
         let detailVC = DetailVC()
+        let movie = viewModel.getMovie(at: indexPath)
+        let detailViewModel = viewModel.detailViewModel(for: movie.id)
+        detailVC.viewModel = detailViewModel
         navigationController?.pushViewController(detailVC, animated: true)
     }
 
