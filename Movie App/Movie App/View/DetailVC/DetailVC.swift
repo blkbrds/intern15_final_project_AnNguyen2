@@ -15,7 +15,6 @@ class DetailVC: BaseViewController {
     @IBOutlet weak private var playVideoButton: UIButton!
     @IBOutlet weak private var moreLikeThisMoviesTableView: UITableView!
     @IBOutlet weak private var downloadButton: UIButton!
-    @IBOutlet weak private var favoriteButton: UIButton!
 
     var viewModel = DetailViewModel()
     enum Action {
@@ -28,6 +27,16 @@ class DetailVC: BaseViewController {
 
     override func setupData() {
         fetchData(for: .load)
+    }
+
+    override func setupUI() {
+        title = "Details"
+        detailScrollView.backgroundColor = App.Color.mainColor
+        refeshControl.addTarget(self, action: #selector(handleRefreshData), for: .valueChanged)
+        detailScrollView.refreshControl = refeshControl
+        movieImageView.borderImage()
+        playVideoButton.borderButton()
+        configMovieTableView()
     }
 
     private func updateUI() {
@@ -49,26 +58,19 @@ class DetailVC: BaseViewController {
                 this.movieImageView.image = image
                 this.moviePosterImageView.image = image
             }
-            this.checkMovieDownLoad()
+            this.changeIconButtonDownload()
         }
     }
 
-    private func checkMovieInFavorite() {
-        if viewModel.getIsFavorited() {
-            favoriteButton.tintColor = App.Color.favoritedButton
-            favoriteButton.setImage(UIImage.init(systemName: "heart.fill"), for: .normal)
-            print("Movie In Favorite!")
-        } else {
-            favoriteButton.tintColor = App.Color.notFavoritedButton
-            favoriteButton.setImage(UIImage.init(systemName: "heart"), for: .normal)
-            print("Movie not In Favorite!")
-        }
-    }
-
-    private func checkMovieDownLoad() {
+    private func changeIconButtonDownload() {
         if let _ = viewModel.localVideoUrl() {
             downloadButton.tintColor = UIColor.green
-            downloadButton.setImage(UIImage.init(systemName: "checkmark.circle.fill"), for: .normal)
+            downloadButton.setBackgroundImage(UIImage.init(systemName: "checkmark.circle.fill"), for: .normal)
+            print("Movie is download!")
+        } else {
+            downloadButton.tintColor = UIColor.white
+            downloadButton.setBackgroundImage(UIImage.init(systemName: "arrow.down.to.line.alt"), for: .normal)
+            print("Movie is not download!")
         }
     }
 
@@ -85,10 +87,10 @@ class DetailVC: BaseViewController {
         }
         loadActivityIndicator.startAnimating()
         loadActivityIndicator.isHidden = false
-        viewModel.fetchMovieData {[weak self] (done, error) in
+        viewModel.fetchMovieData { [weak self] (done, error) in
             guard let this = self else { return }
             if done {
-                this.checkMovieInFavorite()
+                this.changeIconButtonDownload()
                 this.updateUI()
             } else if let error = error {
                 this.alert(errorString: error.localizedDescription)
@@ -125,16 +127,6 @@ class DetailVC: BaseViewController {
         }
     }
 
-    override func setupUI() {
-        title = "Details"
-        detailScrollView.backgroundColor = App.Color.mainColor
-        refeshControl.addTarget(self, action: #selector(handleRefreshData), for: .valueChanged)
-        detailScrollView.refreshControl = refeshControl
-        movieImageView.borderImage()
-        playVideoButton.borderButton()
-        configMovieTableView()
-    }
-
     private func configMovieTableView() {
         moreLikeThisMoviesTableView.backgroundColor = App.Color.mainColor
         moreLikeThisMoviesTableView.register(DetailCell.self)
@@ -145,33 +137,12 @@ class DetailVC: BaseViewController {
         moreLikeThisMoviesTableView.delegate = self
     }
 
-    @objc private func handleRefreshData() {
-        fetchData(for: .reload)
-        fetchSimilarRecommendMovie(for: .reload)
-        refeshControl.endRefreshing()
-    }
-
-    @IBAction private func playVideoButton(_ sender: Any) {
-        guard let urlOnline = viewModel.getVideoUrlOnline() else {
-            alert(errorString: "URL video is empty!")
-            return
-        }
-        let url = viewModel.localVideoUrl() ?? urlOnline
-        print(url.absoluteString)
-        let player = AVPlayer(url: url)
-        let playerViewController = AVPlayerViewController()
-        playerViewController.player = player
-        present(playerViewController, animated: true) {
-            playerViewController.player?.play()
-        }
-    }
-
-    @IBAction private func favoriteButton(_ sender: Any) {
-        if viewModel.getIsFavorited() {
+    private func saveContent() {
+        if viewModel.isDownloaded() {
             viewModel.removeInFavorite { [weak self] (done, error) in
                 guard let this = self else { return }
                 if done {
-                    this.checkMovieInFavorite()
+                    this.changeIconButtonDownload()
                     print("Remove Favorite success.")
                 } else {
                     print(error?.localizedDescription ?? "")
@@ -181,7 +152,7 @@ class DetailVC: BaseViewController {
             viewModel.addMoviewToFavorite { [weak self] (done, error) in
                 guard let this = self else { return }
                 if done {
-                    this.checkMovieInFavorite()
+                    this.changeIconButtonDownload()
                     print("addMoviewToFavorite")
                 } else {
                     print(error?.localizedDescription ?? "")
@@ -190,19 +161,50 @@ class DetailVC: BaseViewController {
         }
     }
 
-    @IBAction private func downloadButton(_ sender: Any) {
+    private func downloadVideo() {
         if let _ = viewModel.localVideoUrl() { return }
         print("Download...")
-        downloadButton.setImage(UIImage.init(systemName: "slowmo"), for: .normal)
-        viewModel.saveOfflineVideo {[weak self] (url, error) in
+        downloadButton.setBackgroundImage(UIImage.init(systemName: "slowmo"), for: .normal)
+        viewModel.saveOfflineVideo { [weak self] (url, error) in
             guard let this = self else { return }
             if let error = error {
                 this.alert(errorString: error.localizedDescription)
             }
             this.downloadButton.tintColor = UIColor.green
-            this.downloadButton.setImage(UIImage.init(systemName: "checkmark.circle.fill"), for: .normal)
+            this.downloadButton.setBackgroundImage(UIImage.init(systemName: "checkmark.circle.fill"), for: .normal)
             print("Download success!")
         }
+    }
+
+    @objc private func handleRefreshData() {
+        fetchData(for: .reload)
+        fetchSimilarRecommendMovie(for: .reload)
+        refeshControl.endRefreshing()
+    }
+
+    @IBAction private func playVideoButton(_ sender: Any) {
+        var urlTemp: URL? = nil
+        if let localUrl = viewModel.localVideoUrl() {
+            urlTemp = localUrl
+        } else if let onlineUrl = viewModel.getVideoUrlOnline() {
+            urlTemp = onlineUrl
+        } else {
+            alert(errorString: "Video is empty!")
+            return
+        }
+        guard let url = urlTemp else { return }
+        print(url.absoluteString)
+        let player = AVPlayer(url: url)
+        let playerViewController = AVPlayerViewController()
+        playerViewController.player = player
+        present(playerViewController, animated: true) {
+            playerViewController.player?.play()
+        }
+    }
+
+    @IBAction private func downloadButton(_ sender: Any) {
+        saveContent()
+        downloadVideo()
     }
 
     @IBAction private func shareButton(_ sender: Any) {
@@ -267,7 +269,7 @@ extension DetailVC: UITableViewDelegate {
 
 //MARK: -DetailCellDelegate
 extension DetailVC: DetailCellDelegate {
-    func detailCell(_ homeCell: DetailCell, didSelectItem: Movie, perform action: DetailCellActionType) {
+    func detailCell(_ cell: DetailCell, didSelectItem: Movie, perform action: DetailCellActionType) {
         let detailVC = DetailVC()
         let detailViewModel = viewModel.detailViewModel(for: didSelectItem.id)
         detailVC.viewModel = detailViewModel

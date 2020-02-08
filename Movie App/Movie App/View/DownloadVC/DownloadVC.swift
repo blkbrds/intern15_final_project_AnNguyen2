@@ -8,13 +8,13 @@
 
 import UIKit
 
-class FavoriteVC: BaseViewController {
+class DownloadVC: BaseViewController {
 
     @IBOutlet weak private var favoriteTableView: UITableView!
     @IBOutlet weak private var noItemsLabel: UILabel!
     private var rightEditBarButtonItem: UIBarButtonItem?
     private var leftDeleteBarButtonItem: UIBarButtonItem?
-    private let viewModel = FavoriteViewModel()
+    private let viewModel = DownloadViewModel()
     enum Action {
         case reload, load
     }
@@ -29,7 +29,7 @@ class FavoriteVC: BaseViewController {
     }
 
     override func setupUI() {
-        title = "Favorites"
+        title = "Downloads"
         configFavoriteTableView()
         rightEditBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(handleEditItems))
         navigationItem.rightBarButtonItem = rightEditBarButtonItem
@@ -69,7 +69,7 @@ class FavoriteVC: BaseViewController {
         updateUI()
         favoriteTableView.tableFooterView = UIView(frame: .zero)
         favoriteTableView.showsVerticalScrollIndicator = true
-        favoriteTableView.register(FavoriteCell.self)
+        favoriteTableView.register(DownloadCell.self)
         favoriteTableView.backgroundColor = App.Color.mainColor
         favoriteTableView.allowsSelectionDuringEditing = true
         favoriteTableView.allowsMultipleSelectionDuringEditing = true
@@ -115,7 +115,7 @@ class FavoriteVC: BaseViewController {
 }
 
 //MARK: - UITableViewDelegate
-extension FavoriteVC: UITableViewDelegate {
+extension DownloadVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let detailVC = DetailVC()
         let movie = viewModel.getMovie(in: indexPath)
@@ -132,13 +132,13 @@ extension FavoriteVC: UITableViewDelegate {
 }
 
 //MARK: - UITableViewDataSource
-extension FavoriteVC: UITableViewDataSource {
+extension DownloadVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.movies.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(FavoriteCell.self)
+        let cell = tableView.dequeueReusableCell(DownloadCell.self)
         cell.delegate = self
         let movie = viewModel.getMovie(in: indexPath)
         cell.setupView(movie: movie, indexPath: indexPath)
@@ -147,8 +147,8 @@ extension FavoriteVC: UITableViewDataSource {
 }
 
 //MARK: - FavoriteCellDelegate
-extension FavoriteVC: FavoriteCellDelegate {
-    func favoriteCell(_ cell: FavoriteCell, delete item: Movie?, in indexPath: IndexPath?, perform action: FavoriteCellActionType) {
+extension DownloadVC: DownloadCellDelegate {
+    func favoriteCell(_ cell: DownloadCell, delete item: Movie?, in indexPath: IndexPath?, perform action: DownloadCellActionType) {
         deleteAlert(msg: "Do you want to delete \(item?.originalTitle ?? "") in your favorites?") { (_) in
             self.viewModel.removeMovieInFavorite(movie: item) { [weak self] (done, error) in
                 guard let this = self else { return }

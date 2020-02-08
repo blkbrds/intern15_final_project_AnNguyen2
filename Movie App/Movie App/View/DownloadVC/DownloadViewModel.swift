@@ -8,7 +8,7 @@
 
 import Foundation
 
-final class FavoriteViewModel {
+final class DownloadViewModel {
     var movies: [Movie] = []
     var isEmptyItems: Bool {
         return movies.isEmpty

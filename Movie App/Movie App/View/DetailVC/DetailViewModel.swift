@@ -17,7 +17,7 @@ final class DetailViewModel {
     var urlVideo: URL?
     var keyVideo: String?
     var localUrl: URL?
-    var isFavorited: Bool = false
+    var isSaved: Bool = false
 
     init() { }
 
@@ -49,8 +49,8 @@ final class DetailViewModel {
         return movies[indexPath.section]
     }
 
-    func getIsFavorited() -> Bool {
-        return isFavorited
+    func isDownloaded() -> Bool {
+        return isSaved
     }
 
     func localVideoUrl() -> URL? {
@@ -234,14 +234,14 @@ final class DetailViewModel {
             if let _ = error {
                 return
             }
-            self.isFavorited = true
+            self.isSaved = true
         }
     }
 
     func addMoviewToFavorite(completion: @escaping Completion) {
         guard let movie = movie else { return }
         RealmManager.shared().addNewObject(object: movie) { (done, error) in
-            self.isFavorited = true
+            self.isSaved = true
             completion(done, error)
         }
     }
@@ -249,7 +249,7 @@ final class DetailViewModel {
     func removeInFavorite(completion: @escaping Completion) {
         guard let movie = movie else { return }
         RealmManager.shared().deleteObject(object: movie, forPrimaryKey: movie.id) { (done, error) in
-            self.isFavorited = false
+            self.isSaved = false
             completion(done, error)
         }
     }

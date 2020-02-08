@@ -24,8 +24,8 @@ class BaseTabBarController: UITabBarController {
         searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage.init(systemName: "magnifyingglass"), tag: 1)
         let navSearchController = BaseNavigationController(rootViewController: searchVC)
 
-        let favoriteVC = FavoriteVC()
-        favoriteVC.tabBarItem = UITabBarItem(title: "Favorites", image: UIImage.init(systemName: "heart"), tag: 3)
+        let favoriteVC = DownloadVC()
+        favoriteVC.tabBarItem = UITabBarItem(title: "Download", image: UIImage.init(systemName: "arrow.down.to.line.alt"), tag: 3)
         let navFavoriteController = BaseNavigationController(rootViewController: favoriteVC)
 
         viewControllers = [navHomeController, navSearchController, navFavoriteController]

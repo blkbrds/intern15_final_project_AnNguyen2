@@ -8,15 +8,15 @@
 
 import UIKit
 
-enum FavoriteCellActionType {
+enum DownloadCellActionType {
     case delete
 }
 
-protocol FavoriteCellDelegate: class {
-    func favoriteCell(_ cell: FavoriteCell, delete item: Movie?, in indexPath: IndexPath?,  perform action: FavoriteCellActionType)
+protocol DownloadCellDelegate: class {
+    func favoriteCell(_ cell: DownloadCell, delete item: Movie?, in indexPath: IndexPath?,  perform action: DownloadCellActionType)
 }
 
-class FavoriteCell: UITableViewCell {
+class DownloadCell: UITableViewCell {
     
     @IBOutlet weak private var movieImageView: UIImageView!
     @IBOutlet weak private var movieNameLabel: UILabel!
@@ -27,7 +27,7 @@ class FavoriteCell: UITableViewCell {
     private var movie: Movie?
     private var indexPath: IndexPath?
     
-    weak var delegate: FavoriteCellDelegate?
+    weak var delegate: DownloadCellDelegate?
     
     override func awakeFromNib() {
         super.awakeFromNib()

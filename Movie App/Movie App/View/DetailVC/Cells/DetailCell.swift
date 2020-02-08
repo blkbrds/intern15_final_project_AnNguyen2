@@ -13,7 +13,7 @@ enum DetailCellActionType {
 }
 
 protocol DetailCellDelegate: class {
-    func detailCell(_ homeCell: DetailCell, didSelectItem: Movie, perform action: DetailCellActionType)
+    func detailCell(_ cell: DetailCell, didSelectItem: Movie, perform action: DetailCellActionType)
 }
 
 class DetailCell: UITableViewCell {
