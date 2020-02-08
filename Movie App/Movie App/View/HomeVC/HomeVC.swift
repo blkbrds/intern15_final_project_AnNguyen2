@@ -106,6 +106,7 @@ extension HomeVC: UITableViewDataSource {
             return UITableViewCell()
         }
         let movies = viewModel.getMovies(for: indexPath.section)
+        cell.delegate = self
         cell.setupData(movies: movies)
         return cell
     }
@@ -127,5 +128,15 @@ extension HomeVC: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 170
+    }
+}
+
+//MARK: -DetailCellDelegate
+extension HomeVC: HomeCellDelegate {
+    func homeCell(_ homeCell: HomeCell, didSelectItem: Movie, perform action: HomeCellActionType) {
+        let detailVC = DetailVC()
+        let detailViewModel = viewModel.detailViewModel(for: didSelectItem.id)
+        detailVC.viewModel = detailViewModel
+        navigationController?.pushViewController(detailVC, animated: true)
     }
 }
