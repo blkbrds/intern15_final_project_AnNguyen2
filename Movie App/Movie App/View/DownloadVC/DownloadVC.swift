@@ -32,6 +32,7 @@ class DownloadVC: BaseViewController {
         title = "Downloads"
         configFavoriteTableView()
         rightEditBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(handleEditChangedItems))
+        leftDeleteBarButtonItem = UIBarButtonItem(image: UIImage.init(systemName: "trash"), style: .plain, target: self, action: #selector(handleDeleteItems))
         navigationItem.rightBarButtonItem = rightEditBarButtonItem
     }
 
@@ -69,7 +70,6 @@ class DownloadVC: BaseViewController {
     }
 
     private func configFavoriteTableView() {
-        updateUI()
         favoriteTableView.tableFooterView = UIView(frame: .zero)
         favoriteTableView.showsVerticalScrollIndicator = true
         favoriteTableView.register(DownloadCell.self)
@@ -92,12 +92,11 @@ class DownloadVC: BaseViewController {
         favoriteTableView.setEditing(isNotEditing, animated: true)
         if favoriteTableView.isEditing {
             rightEditBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleEditChangedItems))
-            leftDeleteBarButtonItem = UIBarButtonItem(image: UIImage.init(systemName: "trash"), style: .plain, target: self, action: #selector(handleDeleteItems))
+            navigationItem.leftBarButtonItem = leftDeleteBarButtonItem
         } else {
             rightEditBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(handleEditChangedItems))
-            leftDeleteBarButtonItem = nil
+            navigationItem.leftBarButtonItem = nil
         }
-        navigationItem.leftBarButtonItem = leftDeleteBarButtonItem
         navigationItem.rightBarButtonItem = rightEditBarButtonItem
     }
 
