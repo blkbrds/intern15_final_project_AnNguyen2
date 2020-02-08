@@ -33,6 +33,10 @@ final class MoviesViewModel {
         self.movieCategory = type
     }
 
+    func detailViewModel(for id: Int) -> DetailViewModel {
+        return DetailViewModel(by: id)
+    }
+
     func handleUrl(page: Int = 1) {
         guard let category = self.movieCategory else { url = ""; return }
         switch category {

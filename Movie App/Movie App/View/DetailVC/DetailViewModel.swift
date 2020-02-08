@@ -25,6 +25,42 @@ final class DetailViewModel {
         self.movieID = id
     }
 
+    func resetMovie() {
+        movie = nil
+    }
+
+    func getMovie() -> Movie? {
+        return movie
+    }
+
+    func getVideoUrl() -> URL? {
+        return urlVideo
+    }
+
+    func getTitle(section: Int) -> String {
+        return movieCategories[section].title
+    }
+
+    func numberOfSections() -> Int {
+        return movies.count
+    }
+
+    func moviesIn(indexPath: IndexPath) -> [Movie] {
+        return movies[indexPath.section]
+    }
+
+    func getIsFavorited() -> Bool {
+        return isFavorited
+    }
+
+    func localVideoUrl() -> URL? {
+        return localUrl
+    }
+    
+    func getVideoUrlOnline() -> URL? {
+        return urlVideo
+    }
+
     func detailViewModel(for id: Int) -> DetailViewModel {
         return DetailViewModel(by: id)
     }
@@ -209,8 +245,8 @@ final class DetailViewModel {
             completion(done, error)
         }
     }
-    
-    func removeInFavorite(completion: @escaping Completion){
+
+    func removeInFavorite(completion: @escaping Completion) {
         guard let movie = movie else { return }
         RealmManager.shared().deleteObject(object: movie, forPrimaryKey: movie.id) { (done, error) in
             self.isFavorited = false

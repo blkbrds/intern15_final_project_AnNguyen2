@@ -1,11 +1,3 @@
-//
-//  DetailVC.swift
-//  Movie App
-//
-//  Created by An Nguyễn on 1/20/20.
-//  Copyright © 2020 An Nguyễn. All rights reserved.
-//
-
 import UIKit
 import AVKit
 
@@ -39,7 +31,7 @@ class DetailVC: BaseViewController {
     }
 
     private func updateUI() {
-        let movie = viewModel.movie
+        let movie = viewModel.getMovie()
         taglineLabel.text = movie?.tagLine ?? "..."
         overviewMovieLabel.text = movie?.overview ?? "..."
         movieNameLabel.text = movie?.originalTitle ?? "..."
@@ -47,21 +39,22 @@ class DetailVC: BaseViewController {
         releaseDateLabel.text = movie?.releaseDate ?? "..."
         idmScoreLabel.text = "IDM \(movie?.voteAverage ?? 0)"
         let urlString = APIManager.Path.baseImage3URL + (movie?.posterPath ?? "")
-        APIManager.Downloader.downloadImage(with: urlString) { (image, error) in
+        APIManager.Downloader.downloadImage(with: urlString) { [weak self] (image, error) in
+            guard let this = self else { return }
             if let error = error {
                 print(error, "downloadImage")
                 return
             }
             DispatchQueue.main.async {
-                self.movieImageView.image = image
-                self.moviePosterImageView.image = image
+                this.movieImageView.image = image
+                this.moviePosterImageView.image = image
             }
-            self.checkMovieDownLoad()
+            this.checkMovieDownLoad()
         }
     }
 
     private func checkMovieInFavorite() {
-        if viewModel.isFavorited {
+        if viewModel.getIsFavorited() {
             favoriteButton.tintColor = App.Color.favoritedButton
             favoriteButton.setImage(UIImage.init(systemName: "heart.fill"), for: .normal)
             print("Movie In Favorite!")
@@ -71,17 +64,17 @@ class DetailVC: BaseViewController {
             print("Movie not In Favorite!")
         }
     }
-    
-    private func checkMovieDownLoad(){
-        if let _ = self.viewModel.localUrl {
-            self.downloadButton.tintColor = UIColor.green
-            self.downloadButton.setImage(UIImage.init(systemName: "checkmark.circle.fill"), for: .normal)
+
+    private func checkMovieDownLoad() {
+        if let _ = viewModel.getVideoUrl() {
+            downloadButton.tintColor = UIColor.green
+            downloadButton.setImage(UIImage.init(systemName: "checkmark.circle.fill"), for: .normal)
         }
     }
 
     private func updateUIForMoreLikeTableView(sectionIndex: Int) {
         let indexSet = IndexSet(integer: sectionIndex)
-        self.moreLikeThisMoviesTableView.reloadSections(indexSet, with: .fade)
+        moreLikeThisMoviesTableView.reloadSections(indexSet, with: .fade)
     }
 
     private func fetchData(for action: Action) {
@@ -92,12 +85,13 @@ class DetailVC: BaseViewController {
         }
         loadActivityIndicator.startAnimating()
         loadActivityIndicator.isHidden = false
-        viewModel.fetchMovieData { (done, error) in
+        viewModel.fetchMovieData {[weak self] (done, error) in
+            guard let this = self else { return }
             if done {
-                self.checkMovieInFavorite()
-                self.updateUI()
+                this.checkMovieInFavorite()
+                this.updateUI()
             } else if let error = error {
-                self.alert(errorString: error.localizedDescription)
+                this.alert(errorString: error.localizedDescription)
             }
         }
         loadActivityIndicator.stopAnimating()
@@ -110,21 +104,23 @@ class DetailVC: BaseViewController {
             viewModel.resetMovies()
             moreLikeThisMoviesTableView.reloadData()
         }
-        viewModel.fetchSimilarRecommendMovie { (done, index, error) in
+        viewModel.fetchSimilarRecommendMovie { [weak self] (done, index, error) in
+            guard let this = self else { return }
             if done {
-                self.updateUIForMoreLikeTableView(sectionIndex: index)
+                this.updateUIForMoreLikeTableView(sectionIndex: index)
             } else if let error = error {
-                self.alert(errorString: error.localizedDescription)
+                this.alert(errorString: error.localizedDescription)
             }
         }
     }
 
     private func getURLMovieVideo() {
-        viewModel.getURLMovieVideo { (done, error) in
+        viewModel.getURLMovieVideo { [weak self] (done, error) in
+            guard let this = self else { return }
             if done {
                 print("Get video url success!")
             } else if let error = error {
-                self.alert(errorString: error.localizedDescription)
+                this.alert(errorString: error.localizedDescription)
             }
         }
     }
@@ -156,11 +152,11 @@ class DetailVC: BaseViewController {
     }
 
     @IBAction private func playVideoButton(_ sender: Any) {
-        guard let urlOnline = viewModel.urlVideo else {
+        guard let urlOnline = viewModel.getVideoUrlOnline() else {
             alert(errorString: "URL video is empty!")
             return
         }
-        let url = viewModel.localUrl ?? urlOnline
+        let url = viewModel.localVideoUrl() ?? urlOnline
         print(url.absoluteString)
         let player = AVPlayer(url: url)
         let playerViewController = AVPlayerViewController()
@@ -171,19 +167,21 @@ class DetailVC: BaseViewController {
     }
 
     @IBAction private func favoriteButton(_ sender: Any) {
-        if viewModel.isFavorited {
-            viewModel.removeInFavorite { (done, error) in
+        if viewModel.getIsFavorited() {
+            viewModel.removeInFavorite { [weak self] (done, error) in
+                guard let this = self else { return }
                 if done {
-                    self.checkMovieInFavorite()
+                    this.checkMovieInFavorite()
                     print("Remove Favorite success.")
-                }else {
+                } else {
                     print(error?.localizedDescription ?? "")
                 }
             }
         } else {
-            viewModel.addMoviewToFavorite { (done, error) in
+            viewModel.addMoviewToFavorite { [weak self] (done, error) in
+                guard let this = self else { return }
                 if done {
-                    self.checkMovieInFavorite()
+                    this.checkMovieInFavorite()
                     print("addMoviewToFavorite")
                 } else {
                     print(error?.localizedDescription ?? "")
@@ -193,21 +191,22 @@ class DetailVC: BaseViewController {
     }
 
     @IBAction private func downloadButton(_ sender: Any) {
-        if let _ = viewModel.localUrl { return }
+        if let _ = viewModel.localVideoUrl() { return }
         print("Download...")
         downloadButton.setImage(UIImage.init(systemName: "slowmo"), for: .normal)
-        viewModel.saveOfflineVideo { (url, error) in
+        viewModel.saveOfflineVideo {[weak self] (url, error) in
+            guard let this = self else { return }
             if let error = error {
-                self.alert(errorString: error.localizedDescription)
+                this.alert(errorString: error.localizedDescription)
             }
-            self.downloadButton.tintColor = UIColor.green
-            self.downloadButton.setImage(UIImage.init(systemName: "checkmark.circle.fill"), for: .normal)
+            this.downloadButton.tintColor = UIColor.green
+            this.downloadButton.setImage(UIImage.init(systemName: "checkmark.circle.fill"), for: .normal)
             print("Download success!")
         }
     }
 
     @IBAction private func shareButton(_ sender: Any) {
-        guard let movie = viewModel.movie, let url = movie.homePage.url else {
+        guard let movie = viewModel.getMovie(), let url = movie.homePage.url else {
             alert(errorString: APIError.errorURL.localizedDescription)
             return
         }
@@ -217,7 +216,7 @@ class DetailVC: BaseViewController {
     }
 
     @IBAction private func openWebsiteButton(_ sender: Any) {
-        guard let movie = viewModel.movie, let url = movie.homePage.url else {
+        guard let movie = viewModel.getMovie(), let url = movie.homePage.url else {
             alert(errorString: "URL website error!")
             return
         }
@@ -231,7 +230,7 @@ extension DetailVC: UITableViewDataSource {
         let headerView = UIView()
         headerView.backgroundColor = App.Color.mainColor
         let titleLabel = Label()
-        titleLabel.text = viewModel.movieCategories[section].title
+        titleLabel.text = viewModel.getTitle(section: section)
         headerView.addSubview(titleLabel)
         titleLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 5).isActive = true
         titleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 10).isActive = true
@@ -241,13 +240,13 @@ extension DetailVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(DetailCell.self)
         cell.delegate = self
-        let movies = viewModel.movies[indexPath.section]
+        let movies = viewModel.moviesIn(indexPath: indexPath)
         cell.setupData(movies: movies)
         return cell
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.movieCategories.count
+        return viewModel.numberOfSections()
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
