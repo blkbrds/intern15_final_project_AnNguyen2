@@ -18,6 +18,7 @@ final class DetailViewModel {
     var keyVideo: String?
     var localUrl: URL?
     var isSaved: Bool = false
+    var isLoadVideoOnline: Bool = false
 
     init() { }
 
@@ -32,7 +33,7 @@ final class DetailViewModel {
     func getMovie() -> Movie? {
         return movie
     }
-    
+
     func setupMovie(movie: Movie) {
         self.movie = movie
         isSaved = true
@@ -54,7 +55,7 @@ final class DetailViewModel {
         return movies[indexPath.section]
     }
 
-    func isDownloaded() -> Bool {
+    func downloaded() -> Bool {
         return isSaved
     }
 
@@ -78,6 +79,10 @@ final class DetailViewModel {
 
     func setDataImageMovie(data: Data?) {
         movie?.imageData = data
+    }
+
+    func isLoadingVideo() -> Bool {
+        return isLoadVideoOnline
     }
 
     func fetchMovieData(completion: @escaping Completion) {
@@ -147,6 +152,7 @@ final class DetailViewModel {
             completion(false, APIError.emptyID)
             return
         }
+        isLoadVideoOnline = true
         let url = APIManager.Path.Trailer(id: id).url
         API.shared().request(with: url) { (result) in
             switch result {
@@ -169,6 +175,7 @@ final class DetailViewModel {
                 }
                 self.keyVideo = key
                 XCDYouTubeClient.default().getVideoWithIdentifier("\(key)") { (video, error) in
+                    self.isLoadVideoOnline = false
                     if let _ = error {
                         completion(false, APIError.canNotGetVideoURL)
                         return
@@ -252,7 +259,7 @@ final class DetailViewModel {
                 let itemUrl = URL(fileURLWithPath: filePath)
                 try fileManager.removeItem(at: itemUrl)
                 print("Delete local movie video sucess!")
-            }else {
+            } else {
                 print("Video not exist!")
             }
         } catch {

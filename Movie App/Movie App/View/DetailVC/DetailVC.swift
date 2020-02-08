@@ -27,7 +27,7 @@ class DetailVC: BaseViewController {
     }
 
     override func setupData() {
-        if viewModel.isDownloaded() {
+        if viewModel.downloaded() {
             viewModel.getLocalVideoUrl()
             updateUI()
             return
@@ -79,7 +79,7 @@ class DetailVC: BaseViewController {
     }
 
     private func changeIconButtonDownload() {
-        if viewModel.isDownloaded() {
+        if viewModel.downloaded() {
             downloadButton.tintColor = UIColor.green
             downloadButton.setBackgroundImage(UIImage.init(systemName: "checkmark.circle.fill"), for: .normal)
             print("Movie is download!")
@@ -154,16 +154,8 @@ class DetailVC: BaseViewController {
     }
 
     private func handleDownload() {
-        if viewModel.isDownloaded() {
-            viewModel.removeInDownload { [weak self] (done, error) in
-                guard let this = self else { return }
-                if done {
-                    this.changeIconButtonDownload()
-                    print("Removed movie from download!.")
-                } else {
-                    print(error?.localizedDescription ?? "")
-                }
-            }
+        if viewModel.downloaded() {
+            alert(msg: "Movie did saved!", buttons: ["OK"], handler: nil)
         } else {
             print("Downloading...")
             viewModel.addMoviewToDownload { [weak self] (done, error) in
@@ -194,6 +186,10 @@ class DetailVC: BaseViewController {
     }
 
     @IBAction private func playVideoButton(_ sender: Any) {
+        if viewModel.isLoadingVideo() {
+            alert(errorString: "Video is loading, please wait...")
+            return
+        }
         var urlTemp: URL? = nil
         if let localUrl = viewModel.localVideoUrl() {
             urlTemp = localUrl
