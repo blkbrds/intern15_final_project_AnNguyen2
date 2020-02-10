@@ -1,7 +1,7 @@
 import UIKit
 import AVKit
 
-class DetailVC: BaseViewController {
+final class DetailVC: BaseViewController {
     @IBOutlet weak private var loadActivityIndicator: UIActivityIndicatorView!
     @IBOutlet weak private var detailScrollView: UIScrollView!
     @IBOutlet weak private var moviePosterImageView: UIImageView!

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MovieCell: UICollectionViewCell {
+final class MovieCell: UICollectionViewCell {
 
     @IBOutlet private weak var voteCountLabel: UILabel!
     @IBOutlet private weak var movieImageView: ImageView!

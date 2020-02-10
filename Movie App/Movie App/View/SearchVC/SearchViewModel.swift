@@ -15,6 +15,7 @@ final class SearchViewModel {
     var totalPages: Int = 0
     var totalResults: Int = 0
     var query: String = ""
+    var oldQuery: String = ""
     var oldTime: Date = Date()
     var oldTimer: Timer?
     var isEmptyMovie: Bool {
@@ -51,6 +52,14 @@ final class SearchViewModel {
 
     func updateQuery(text: String) {
         query = text
+    }
+    
+    func updateOldQuery(text: String) {
+        oldQuery = text
+    }
+    
+    func getOldQuery() -> String {
+        return oldQuery
     }
     
     func getTimer() -> Timer? {

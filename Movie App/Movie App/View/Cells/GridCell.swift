@@ -8,7 +8,7 @@
 
 import UIKit
 
-class GridCell: UICollectionViewCell {
+final class GridCell: UICollectionViewCell {
 
     @IBOutlet private weak var voteCountLabel: UILabel!
     @IBOutlet private weak var movieImageView: UIImageView!

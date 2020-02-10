@@ -16,7 +16,7 @@ protocol HomeCellDelegate: class {
     func homeCell(_ homeCell: HomeCell, didSelectItem: Movie, perform action: HomeCellActionType)
 }
 
-class HomeCell: UITableViewCell {
+final class HomeCell: UITableViewCell {
 
     @IBOutlet private weak var moviesCollectionView: UICollectionView!
     @IBOutlet private weak var loadActivityIndicator: UIActivityIndicatorView!

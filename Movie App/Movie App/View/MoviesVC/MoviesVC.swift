@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MoviesVC: BaseViewController {
+final class MoviesVC: BaseViewController {
 
     @IBOutlet weak private var moviesCollectionView: UICollectionView!
     @IBOutlet private weak var loadActivityIndicator: UIActivityIndicatorView!
@@ -19,15 +19,14 @@ class MoviesVC: BaseViewController {
     enum Action {
         case reload, load
     }
-    private var isShowFilter: Bool = false
     private var filterViewCustomBottomAnchor: NSLayoutConstraint?
     private var filterViewCustomTopAnchor: NSLayoutConstraint?
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configMoviesCollectionView()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateCollectionView()
@@ -42,7 +41,7 @@ class MoviesVC: BaseViewController {
             filterViewCustom.translatesAutoresizingMaskIntoConstraints = false
             filterViewCustomBottomAnchor = filterViewCustom.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
             filterViewCustomTopAnchor = filterViewCustom.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-            let filterHeight: CGFloat = viewModel.movieCategory == .trending ? 170 : 300
+            let filterHeight: CGFloat = viewModel.movieCategory == .trending ? 130 : 200
             NSLayoutConstraint.activate([
                 filterViewCustom.heightAnchor.constraint(equalToConstant: filterHeight),
                 filterViewCustom.widthAnchor.constraint(equalToConstant: view.bounds.width),
@@ -53,7 +52,7 @@ class MoviesVC: BaseViewController {
             filterViewCustom.setupAlertFilterViewCustom(genres: self.viewModel.genres)
         }
     }
-    
+
     override func setupData() {
         fetchData(for: .load)
         guard let category = viewModel.getMovieCategory() else { return }
@@ -67,6 +66,15 @@ class MoviesVC: BaseViewController {
                 }
             }
         }
+    }
+    
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        let safeAreaInsetsLeft: CGFloat = view.safeAreaInsets.left
+        print("safeAreaInsets left", safeAreaInsetsLeft)
+        let width = view.bounds.width - 2 * safeAreaInsetsLeft
+        changedLayout(with: width)
+        moviesCollectionView.reloadData()
     }
 
     private func fetchData(for action: Action, page: Int = 1) {
@@ -89,9 +97,10 @@ class MoviesVC: BaseViewController {
     private func updateUI() {
         moviesCollectionView?.reloadData()
     }
-    
-    private func updateCollectionView(){
-        changedLayout()
+
+    private func updateCollectionView() {
+        let width = moviesCollectionView.bounds.width
+        changedLayout(with: width)
         moviesCollectionView.delegate = self
         moviesCollectionView.dataSource = self
     }
@@ -122,17 +131,17 @@ class MoviesVC: BaseViewController {
         }
     }
 
-    private func changedLayout() {
+    private func changedLayout(with width: CGFloat) {
         let layout = LayoutCustom() //Flow layout
         layout.scrollDirection = .vertical
         if viewModel.status == .row {
-            let widthItem = view.bounds.width
+            let widthItem = width
             let heightItem: CGFloat = 120
             layout.minimumLineSpacing = 0
             layout.sectionInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
             layout.itemSize = CGSize(width: widthItem, height: heightItem)
         } else {
-            let widthItem = (moviesCollectionView.bounds.width - 30) / 3
+            let widthItem = (width - 30) / 3
             let heightItem = 1.4 * widthItem
             layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
             layout.minimumLineSpacing = 5
@@ -160,7 +169,8 @@ class MoviesVC: BaseViewController {
 
     @objc private func handleChangedStatus() {
         viewModel.changedStatus()
-        changedLayout()
+        let width = moviesCollectionView.bounds.width
+        changedLayout(with: width)
         moviesCollectionView.reloadData()
     }
 

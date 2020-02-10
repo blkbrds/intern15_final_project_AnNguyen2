@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SearchVC: BaseViewController {
+final class SearchVC: BaseViewController {
     @IBOutlet weak private var searchCollectionView: UICollectionView!
     @IBOutlet weak private var loadActivityIndicator: UIActivityIndicatorView!
     @IBOutlet weak private var noResultTextStackView: UIStackView!
@@ -26,9 +26,20 @@ class SearchVC: BaseViewController {
         super.viewDidAppear(animated)
         updateCollectionView()
     }
+    
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        let safeAreaInsetsLeft: CGFloat = view.safeAreaInsets.left
+        print("coordinator safeAreaInsets left", safeAreaInsetsLeft)
+        let width = view.bounds.width - 2 * safeAreaInsetsLeft
+        layoutForSearchCollectionView(width: width)
+        searchCollectionView.reloadData()
+    }
+
 
     private func updateCollectionView() {
-        layoutForSearchCollectionView()
+        let width = searchCollectionView.bounds.width
+        layoutForSearchCollectionView(width: width)
         searchCollectionView.delegate = self
         searchCollectionView.dataSource = self
     }
@@ -72,9 +83,9 @@ class SearchVC: BaseViewController {
     }
 
     //MARK: - Layout collectionView
-    private func layoutForSearchCollectionView() {
+    private func layoutForSearchCollectionView(width: CGFloat) {
         let collectionViewFlowLayout = UICollectionViewFlowLayout()
-        let itemWidth: CGFloat = (searchCollectionView.bounds.width - 30) / 3
+        let itemWidth: CGFloat = (width - 30) / 3
         let itemHeight: CGFloat = itemWidth * 1.4
         collectionViewFlowLayout.itemSize = CGSize(width: itemWidth, height: itemHeight)
         collectionViewFlowLayout.minimumLineSpacing = 5
@@ -88,7 +99,8 @@ class SearchVC: BaseViewController {
         searchCollectionView.register(GridCell.self)
         refeshControl.addTarget(self, action: #selector(handleReloadData), for: .valueChanged)
         searchCollectionView.refreshControl = refeshControl
-        layoutForSearchCollectionView()
+        let width = searchCollectionView.bounds.width
+        layoutForSearchCollectionView(width: width)
     }
 
     @objc private func handleReloadData() {
@@ -104,9 +116,10 @@ extension SearchVC: UISearchResultsUpdating {
         viewModel.getTimer()?.invalidate()
         let timer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { (_) in
             self.viewModel.updateQuery(text: text)
-            if self.viewModel.isNotLoadData() {
+            if self.viewModel.isNotLoadData() && self.viewModel.getOldQuery() != text {
                 self.fetchData(with: .reload)
                 print("Reload! \(text)")
+                self.viewModel.updateOldQuery(text: text)
             }
         }
         viewModel.updateOldTimer(timer: timer)

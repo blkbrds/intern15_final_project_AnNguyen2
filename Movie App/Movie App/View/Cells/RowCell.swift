@@ -8,7 +8,7 @@
 
 import UIKit
 
-class RowCell: UICollectionViewCell {
+final class RowCell: UICollectionViewCell {
 
     @IBOutlet weak private var movieImageView: UIImageView!
     @IBOutlet weak private var movieNameLabel: UILabel!

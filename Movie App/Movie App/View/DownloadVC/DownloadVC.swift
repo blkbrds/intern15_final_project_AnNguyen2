@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DownloadVC: BaseViewController {
+final class DownloadVC: BaseViewController {
 
     @IBOutlet weak private var favoriteTableView: UITableView!
     @IBOutlet weak private var noItemsLabel: UILabel!

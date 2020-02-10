@@ -16,7 +16,7 @@ protocol DetailCellDelegate: class {
     func detailCell(_ cell: DetailCell, didSelectItem: Movie, perform action: DetailCellActionType)
 }
 
-class DetailCell: UITableViewCell {
+final class DetailCell: UITableViewCell {
 
     @IBOutlet private weak var moviesCollectionView: UICollectionView!
     @IBOutlet private weak var loadActivityIndicator: UIActivityIndicatorView!

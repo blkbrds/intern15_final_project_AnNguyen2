@@ -8,7 +8,7 @@
 
 import UIKit
 
-class HomeVC: BaseViewController {
+final class HomeVC: BaseViewController {
 
     @IBOutlet private weak var movieTableView: UITableView!
     fileprivate let viewModel = HomeViewModel()

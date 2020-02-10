@@ -16,7 +16,7 @@ protocol DownloadCellDelegate: class {
     func favoriteCell(_ cell: DownloadCell, delete item: Movie?, in indexPath: IndexPath?,  perform action: DownloadCellActionType)
 }
 
-class DownloadCell: UITableViewCell {
+final class DownloadCell: UITableViewCell {
     
     @IBOutlet weak private var movieImageView: UIImageView!
     @IBOutlet weak private var movieNameLabel: UILabel!
