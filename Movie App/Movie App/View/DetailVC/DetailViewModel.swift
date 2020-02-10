@@ -16,6 +16,7 @@ final class DetailViewModel {
     var movieCategories: [MovieCategory] = [.similar, .recommendations]
     var urlVideo: URL?
     var keyVideo: String?
+    var isLoading: [Bool] = [true, true]
 
     init() { }
 
@@ -42,7 +43,7 @@ final class DetailViewModel {
     func numberOfSections() -> Int {
         return movies.count
     }
-    
+
     func moviesIn(indexPath: IndexPath) -> [Movie] {
         return movies[indexPath.section]
     }
@@ -51,8 +52,12 @@ final class DetailViewModel {
         return DetailViewModel(by: id)
     }
 
+    func getLoading(indexPath: IndexPath) -> Bool {
+        return isLoading[indexPath.section]
+    }
+
     func resetMovies() {
-        for i in 0..<movieCategories.count {
+        for i in 0..<movies.count {
             movies[i] = []
         }
     }
@@ -78,11 +83,48 @@ final class DetailViewModel {
             }
         }
     }
+    
+    
+    func fetchMoviesSimilar(completion: @escaping CompletionWithIndex){
+        guard let id = movieID else {
+            isLoading[0] = false
+            completion(false, 0, APIError.emptyID)
+            return
+        }
+        let similaUrl = APIManager.Path.Similar(id: "\(id)").url
+        API.shared().request(with: similaUrl) { (result) in
+            switch result {
+            case .failure(let error):
+                self.isLoading[0] = false
+                completion(false, 0, error)
+            case .success(let data):
+                if let data = data {
+                    let json = data.toJSObject()
+                    var items: [Movie] = []
+                    if let results = json["results"] as? JSArray {
+                        for item in results {
+                            let movie = Movie(json: item)
+                            items.append(movie)
+                        }
+                    }
+                    self.movies[0] = items
+                    self.isLoading[0] = false
+                    completion(true, 0, nil)
+                }else {
+                    self.isLoading[0] = false
+                    completion(false, 0, APIError.emptyData)
+                }
+            }
+        }
+    }
 
 
     func fetchSimilarRecommendMovie(completion: @escaping CompletionWithIndex) {
         guard let id = movieID else {
+            isLoading[0] = false
+            isLoading[1] = false
             completion(false, 0, APIError.emptyID)
+            completion(false, 1, APIError.emptyID)
             return
         }
         let urls: [String] = [
@@ -93,22 +135,25 @@ final class DetailViewModel {
             API.shared().request(with: urls[i]) { (result) in
                 switch result {
                 case .failure(let error):
+                    self.isLoading[i] = false
                     completion(false, i, error)
                 case .success(let data):
-                    guard let data = data else {
-                        completion(false, i, APIError.emptyData)
-                        return
-                    }
-                    let json = data.toJSObject()
-                    var items: [Movie] = []
-                    if let results = json["results"] as? JSArray {
-                        for item in results {
-                            let movie = Movie(json: item)
-                            items.append(movie)
+                    if let data = data {
+                        let json = data.toJSObject()
+                        var items: [Movie] = []
+                        if let results = json["results"] as? JSArray {
+                            for item in results {
+                                let movie = Movie(json: item)
+                                items.append(movie)
+                            }
                         }
+                        self.movies[i] = items
+                        self.isLoading[i] = false
+                        completion(true, i, nil)
+                    }else {
+                        self.isLoading[i] = false
+                        completion(false, i, APIError.error("\(self.movieCategories[i].title) is empty data"))
                     }
-                    self.movies[i] = items
-                    completion(true, i, nil)
                 }
             }
         }

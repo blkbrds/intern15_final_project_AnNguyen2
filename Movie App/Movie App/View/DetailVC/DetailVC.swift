@@ -111,7 +111,7 @@ class DetailVC: BaseViewController {
             if done {
                 print("Get video url success!")
             } else if let error = error {
-                this.alert(errorString: error.localizedDescription)
+                this.alert(errorString: "Error video: \(error.localizedDescription)")
             }
         }
     }
@@ -199,7 +199,8 @@ extension DetailVC: UITableViewDataSource {
         }
         cell.delegate = self
         let movies = viewModel.moviesIn(indexPath: indexPath)
-        cell.setupData(movies: movies)
+        let isLoading = viewModel.getLoading(indexPath: indexPath)
+        cell.setupData(movies: movies, isLoading: isLoading)
         return cell
     }
 
