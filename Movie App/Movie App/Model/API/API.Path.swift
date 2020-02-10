@@ -8,22 +8,47 @@
 
 import Foundation
 
+enum TrendingType: String {
+    case week = "Week"
+    case day = "Day"
+}
+
 extension APIManager.Path {
     struct TV {
-        var sort_by: String = "popularity.desc"
         var page: Int = 1
         var with_genres: Int = 12
         var url: String {
-            return APIManager.Path.baseURL / "discover" / "tv" + "?api_key=\(App.Key.apiKey)&language=en-US&sort_by=\(sort_by)&page=\(page)&timezone=America%2FNew_York&with_genres=\(with_genres)&include_null_first_air_dates=false"
+            return APIManager.Path.baseURL / "discover" / "tv" + "?api_key=\(App.Key.apiKey)&language=en-US&sort_by=popularity.desc&page=\(page)&timezone=America%2FNew_York&with_genres=\(with_genres)&include_null_first_air_dates=false"
+        }
+        
+        init() {}
+        
+        init(page: Int) {
+            self.page = page
+        }
+        
+        init(page: Int, with_genres: Int) {
+            self.page = page
+            self.with_genres = with_genres
         }
     }
 
     struct Discover {
-        var sort_by: String = "popularity.desc"
         var page: Int = 1
         var with_genres: Int = 12
         var url: String {
-            return APIManager.Path.baseURL / "discover" / "movie" + "?api_key=\(App.Key.apiKey)&language=en-US&sort_by=\(sort_by)&include_adult=false&include_video=false&page=\(page)&with_genres=\(with_genres)"
+            return APIManager.Path.baseURL / "discover" / "movie" + "?api_key=\(App.Key.apiKey)&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=\(page)&with_genres=\(with_genres)"
+        }
+        
+        init() {}
+        
+        init(page: Int) {
+            self.page = page
+        }
+        
+        init(page: Int, with_genres: Int) {
+            self.page = page
+            self.with_genres = with_genres
         }
     }
 
@@ -35,13 +60,21 @@ extension APIManager.Path {
     }
 
     struct Trending {
-        enum TrendingType: String {
-            case week, day
-        }
         var page: Int = 1
         var trendingType: TrendingType = .week
         var url: String {
             return APIManager.Path.baseURL / "trending" / "movie" / "\(trendingType.rawValue)?api_key=\(App.Key.apiKey)"
+        }
+        
+        init() {}
+        
+        init(page: Int) {
+            self.page = page
+        }
+        
+        init(page: Int, trendingType: TrendingType ) {
+            self.page = page
+            self.trendingType = trendingType
         }
     }
 
@@ -87,6 +120,18 @@ extension APIManager.Path {
         var page: Int = 1
         var url: String {
             return APIManager.Path.baseURL / "search" / "movie" + "?api_key=\(App.Key.apiKey)&language=en-US&query=\(query)&page=\(page)&include_adult=false"
+        }
+    }
+    
+    struct GenresTV {
+        var url: String {
+            return APIManager.Path.baseURL / "genre" / "movie" / "list?api_key=\(App.Key.apiKey)&language=en-US"
+        }
+    }
+    
+    struct GenresMovie {
+        var url: String {
+            return APIManager.Path.baseURL / "genre" / "tv" / "list?api_key=\(App.Key.apiKey)&language=en-US"
         }
     }
 }
