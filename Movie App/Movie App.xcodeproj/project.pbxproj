@@ -50,6 +50,7 @@
 		8E2F28F323E7FB02006F9DED /* FloatExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2F28F223E7FB02006F9DED /* FloatExt.swift */; };
 		8E4837DE23EAE6260062C9B2 /* ButtonExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4837DD23EAE6260062C9B2 /* ButtonExt.swift */; };
 		8E70CCB923F1518A0044BA24 /* DetailCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E70CCB823F1518A0044BA24 /* DetailCellViewModel.swift */; };
+		8E70CCBB23F1AD9A0044BA24 /* HomeCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E70CCBA23F1AD9A0044BA24 /* HomeCellViewModel.swift */; };
 		8E81437223E26F0B00E68EF7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E81437123E26F0B00E68EF7 /* SceneDelegate.swift */; };
 		8E81437923E26F1000E68EF7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E81437823E26F1000E68EF7 /* Assets.xcassets */; };
 		8E81437C23E26F1000E68EF7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E81437A23E26F1000E68EF7 /* LaunchScreen.storyboard */; };
@@ -120,6 +121,7 @@
 		8E2F28F223E7FB02006F9DED /* FloatExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatExt.swift; sourceTree = "<group>"; };
 		8E4837DD23EAE6260062C9B2 /* ButtonExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonExt.swift; sourceTree = "<group>"; };
 		8E70CCB823F1518A0044BA24 /* DetailCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCellViewModel.swift; sourceTree = "<group>"; };
+		8E70CCBA23F1AD9A0044BA24 /* HomeCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCellViewModel.swift; sourceTree = "<group>"; };
 		8E81436C23E26F0B00E68EF7 /* Movie App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Movie App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E81437123E26F0B00E68EF7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		8E81437823E26F1000E68EF7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -212,6 +214,7 @@
 			children = (
 				8E2F28D623E7C953006F9DED /* HomeCell.swift */,
 				8E2F28D423E7C953006F9DED /* HomeCell.xib */,
+				8E70CCBA23F1AD9A0044BA24 /* HomeCellViewModel.swift */,
 				8E2F28D523E7C953006F9DED /* MovieCell.swift */,
 				8E2F28D323E7C953006F9DED /* MovieCell.xib */,
 			);
@@ -609,6 +612,7 @@
 				8ED48F0423EAB0B60098F0FB /* DetailCell.swift in Sources */,
 				8E1EEFE423E8E93300FAD69B /* ImageViewExt.swift in Sources */,
 				8E1EEFF423E94D3100FAD69B /* UIViewControllerExt.swift in Sources */,
+				8E70CCBB23F1AD9A0044BA24 /* HomeCellViewModel.swift in Sources */,
 				8E2F28F323E7FB02006F9DED /* FloatExt.swift in Sources */,
 				8E2F28AF23E7C1D2006F9DED /* StringExt.swift in Sources */,
 				8E2F28B123E7C1D2006F9DED /* DictionaryExt.swift in Sources */,

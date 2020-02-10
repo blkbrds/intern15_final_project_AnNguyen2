@@ -49,7 +49,8 @@ class HomeVC: BaseViewController {
         viewModel.fetchData { [weak self] (done, index, error) in
             guard let this = self else { return }
             if done {
-                this.updateUI(sectionIndex: index)
+                this.movieTableView.reloadData()
+                //this.updateUI(sectionIndex: index)
             } else if let error = error {
                 this.alert(errorString: error.localizedDescription)
             }
@@ -105,9 +106,10 @@ extension HomeVC: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: Config.withReuseIdentifier) as? HomeCell else {
             return UITableViewCell()
         }
-        let movies = viewModel.getMovies(for: indexPath.section)
         cell.delegate = self
-        cell.setupData(movies: movies)
+        let movies = viewModel.getMovies(for: indexPath.section)
+        let isLoading = viewModel.isLoadingData(indexPath: indexPath)
+        cell.setupData(movies: movies, isLoading: isLoading)
         return cell
     }
 

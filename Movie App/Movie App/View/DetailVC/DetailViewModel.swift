@@ -82,24 +82,24 @@ final class DetailViewModel {
         }
     }
 
-    func fetchSimilarRecommendMovie(completion: @escaping CompletionWithIndex) {
+    func fetchSimilarRecommendMovie(completion: @escaping Completion) {
         guard let id = movieID else {
             isLoading[0] = false
             isLoading[1] = false
-            completion(false, 0, APIError.emptyID)
-            completion(false, 1, APIError.emptyID)
             return
         }
         let urls: [String] = [
             APIManager.Path.Similar(id: "\(id)").url,
             APIManager.Path.Recommendations(id: "\(id)").url,
         ]
+        let group = DispatchGroup()
+        print("Loading data...")
         for i in 0..<urls.count {
+            group.enter()
             API.shared().request(with: urls[i]) { (result) in
                 switch result {
-                case .failure(let error):
+                case .failure(_):
                     self.isLoading[i] = false
-                    completion(false, i, error)
                 case .success(let data):
                     if let data = data {
                         let json = data.toJSObject()
@@ -111,14 +111,16 @@ final class DetailViewModel {
                             }
                         }
                         self.movies[i] = items
-                        self.isLoading[i] = false
-                        completion(true, i, nil)
-                    }else {
-                        self.isLoading[i] = false
-                        completion(false, i, APIError.error("\(self.movieCategories[i].title) is empty data"))
                     }
                 }
+                self.isLoading[i] = false
+                group.leave()
+                print("Loaded data \(i)...")
             }
+        }
+        group.notify(queue: .main) {
+            print("Finished task")
+            completion(true, nil)
         }
     }
 

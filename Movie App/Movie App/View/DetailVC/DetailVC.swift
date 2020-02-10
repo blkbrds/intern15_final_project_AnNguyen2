@@ -64,9 +64,8 @@ class DetailVC: BaseViewController {
         }
     }
 
-    private func updateUIForMoreLikeTableView(sectionIndex: Int) {
-        let indexSet = IndexSet(integer: sectionIndex)
-        moreLikeThisMoviesTableView.reloadSections(indexSet, with: .fade)
+    private func updateUIForMoreLikeTableView() {
+        moreLikeThisMoviesTableView.reloadData()
     }
 
     private func fetchData(for action: Action) {
@@ -95,13 +94,12 @@ class DetailVC: BaseViewController {
             viewModel.resetMovies()
             moreLikeThisMoviesTableView.reloadData()
         }
-        viewModel.fetchSimilarRecommendMovie { [weak self] (done, index, error) in
+        viewModel.fetchSimilarRecommendMovie { [weak self] (done, error) in
             guard let this = self else { return }
-            if done {
-                this.updateUIForMoreLikeTableView(sectionIndex: index)
-            } else if let error = error {
+            if let error = error {
                 this.alert(errorString: error.localizedDescription)
             }
+            this.updateUIForMoreLikeTableView()
         }
     }
 

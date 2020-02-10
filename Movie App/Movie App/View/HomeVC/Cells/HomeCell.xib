@@ -26,6 +26,12 @@
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                     </collectionView>
+                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Server response no data!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="leM-7k-5Xl">
+                        <rect key="frame" x="64" y="64.5" width="192" height="21"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                     <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="hHK-Vd-jaf">
                         <rect key="frame" x="150" y="65" width="20" height="20"/>
                         <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -35,8 +41,10 @@
                     <constraint firstItem="hHK-Vd-jaf" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="9vz-v7-ANl"/>
                     <constraint firstAttribute="bottom" secondItem="Qom-9f-CoL" secondAttribute="bottom" id="Cg8-6S-RFe"/>
                     <constraint firstItem="Qom-9f-CoL" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="HUc-pB-poi"/>
+                    <constraint firstItem="leM-7k-5Xl" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="Miz-bR-KE3"/>
                     <constraint firstItem="Qom-9f-CoL" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="NYR-3v-CFv"/>
                     <constraint firstItem="hHK-Vd-jaf" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="erb-3b-ZUU"/>
+                    <constraint firstItem="leM-7k-5Xl" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="oPg-Ey-ZPk"/>
                     <constraint firstAttribute="trailing" secondItem="Qom-9f-CoL" secondAttribute="trailing" id="xeq-q9-pr6"/>
                 </constraints>
             </tableViewCellContentView>
@@ -44,6 +52,7 @@
             <connections>
                 <outlet property="loadActivityIndicator" destination="hHK-Vd-jaf" id="L3P-zi-go4"/>
                 <outlet property="moviesCollectionView" destination="Qom-9f-CoL" id="iUH-zM-Khk"/>
+                <outlet property="serverResponseNoDataLabel" destination="leM-7k-5Xl" id="4a4-Kp-rl4"/>
             </connections>
             <point key="canvasLocation" x="140.57971014492756" y="117.85714285714285"/>
         </tableViewCell>

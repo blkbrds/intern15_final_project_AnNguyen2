@@ -27,12 +27,7 @@ class DetailCell: UITableViewCell {
     @IBOutlet private weak var moviesCollectionView: UICollectionView!
     @IBOutlet private weak var loadActivityIndicator: UIActivityIndicatorView!
     @IBOutlet private weak var serverResponseNoDataLabel: UILabel!
-    private var viewModel = DetailCellViewModel() {
-        didSet {
-            moviesCollectionView.reloadData()
-            updateUI(isLoading: viewModel.getLoading())
-        }
-    }
+    private var viewModel = DetailCellViewModel()
     
     weak var delegate: DetailCellDelegate?
 
@@ -58,6 +53,8 @@ class DetailCell: UITableViewCell {
 
     func setupData(movies: [Movie], isLoading: Bool) {
         viewModel = DetailCellViewModel(movies: movies, isLoading: isLoading)
+        updateUI(isLoading: isLoading)
+        moviesCollectionView.reloadData()
     }
 
     private func configMoviesCollectionView() {
