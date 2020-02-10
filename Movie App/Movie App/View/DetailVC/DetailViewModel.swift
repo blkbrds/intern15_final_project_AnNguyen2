@@ -57,9 +57,7 @@ final class DetailViewModel {
     }
 
     func resetMovies() {
-        for i in 0..<movies.count {
-            movies[i] = []
-        }
+        movies = Array(repeating: [], count: movieCategories.count)
     }
 
     func fetchMovieData(completion: @escaping Completion) {
