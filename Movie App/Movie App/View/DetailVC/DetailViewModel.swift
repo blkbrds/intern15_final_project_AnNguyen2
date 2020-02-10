@@ -81,41 +81,6 @@ final class DetailViewModel {
             }
         }
     }
-    
-    
-    func fetchMoviesSimilar(completion: @escaping CompletionWithIndex){
-        guard let id = movieID else {
-            isLoading[0] = false
-            completion(false, 0, APIError.emptyID)
-            return
-        }
-        let similaUrl = APIManager.Path.Similar(id: "\(id)").url
-        API.shared().request(with: similaUrl) { (result) in
-            switch result {
-            case .failure(let error):
-                self.isLoading[0] = false
-                completion(false, 0, error)
-            case .success(let data):
-                if let data = data {
-                    let json = data.toJSObject()
-                    var items: [Movie] = []
-                    if let results = json["results"] as? JSArray {
-                        for item in results {
-                            let movie = Movie(json: item)
-                            items.append(movie)
-                        }
-                    }
-                    self.movies[0] = items
-                    self.isLoading[0] = false
-                    completion(true, 0, nil)
-                }else {
-                    self.isLoading[0] = false
-                    completion(false, 0, APIError.emptyData)
-                }
-            }
-        }
-    }
-
 
     func fetchSimilarRecommendMovie(completion: @escaping CompletionWithIndex) {
         guard let id = movieID else {
