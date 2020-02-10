@@ -144,7 +144,7 @@ extension DownloadVC: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(DownloadCell.self)
         cell.delegate = self
         let movie = viewModel.getMovie(in: indexPath)
-        cell.setupView(movie: movie, indexPath: indexPath)
+        cell.setupViewModel(movie: movie, indexPath: indexPath)
         return cell
     }
 }

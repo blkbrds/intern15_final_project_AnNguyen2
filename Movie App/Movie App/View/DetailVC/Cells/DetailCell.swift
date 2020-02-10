@@ -69,7 +69,7 @@ extension DetailCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(with: MovieCell.self, for: indexPath)
         let movie = movies[indexPath.row]
-        cell.setupView(movie: movie)
+        cell.setupViewModel(movie: movie)
         return cell
     }
 }

@@ -6,25 +6,24 @@
 //  Copyright © 2020 An Nguyễn. All rights reserved.
 //
 
-import UIKit
 import Foundation
 
-let imageCache = NSCache<NSString, UIImage>()
+let imageCache = NSCache<NSString, NSData>()
 
 extension APIManager.Downloader {
-    static func downloadImage(with urlString: String, completion: @escaping (_ image: UIImage?, _ error: Error?) -> Void) {
+    static func downloadImage(with urlString: String, completion: @escaping (_ data: Data?, _ error: Error?) -> Void) {
         imageCache.countLimit = 100
-        if let cachedImage = imageCache.object(forKey: urlString as NSString) {
-            completion(cachedImage, nil)
+        if let cachedImageData = imageCache.object(forKey: urlString as NSString) {
+            completion(Data(cachedImageData), nil)
         } else {
             API.shared().request(with: urlString) { (result) in
                 switch result {
                 case .failure(let error):
                     completion(nil, error)
                 case .success(let data):
-                    if let data = data, let image = UIImage(data: data) {
-                        imageCache.setObject(image, forKey: urlString as NSString)
-                        completion(image, nil)
+                    if let data = data {
+                        imageCache.setObject(data as NSData, forKey: urlString as NSString)
+                        completion(data, nil)
                     }else {
                         completion(nil, APIError.emptyData)
                     }

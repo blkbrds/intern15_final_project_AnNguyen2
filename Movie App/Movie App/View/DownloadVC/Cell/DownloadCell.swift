@@ -24,9 +24,8 @@ final class DownloadCell: UITableViewCell {
     @IBOutlet weak private var overviewLabel: UILabel!
     @IBOutlet weak private var voteCountLabel: UILabel!
     @IBOutlet weak private var deleteMovieButton: UIButton!
-    private var movie: Movie?
-    private var indexPath: IndexPath?
     
+    private var viewModel = DownloadCellViewModel()
     weak var delegate: DownloadCellDelegate?
     
     override func awakeFromNib() {
@@ -40,28 +39,23 @@ final class DownloadCell: UITableViewCell {
         voteCountLabel.text = "..."
         voteCountLabel.borderLabel()
     }
-    
-    func setupView(movie: Movie, indexPath: IndexPath) {
-        self.movie = movie
-        movieImageView.image = #imageLiteral(resourceName: "default_image")
+
+    func setupViewModel(movie: Movie, indexPath: IndexPath) {
+        viewModel = DownloadCellViewModel(movie: movie, indexPath: indexPath)
+        guard let movie = viewModel.getMovie() else { return }
         voteCountLabel.text = " \(movie.voteCount.parseToThousandUnit()) K"
         overviewLabel.text = movie.overview
         releaseDateLabel.text = movie.releaseDate?.toString()
         movieNameLabel.text = movie.originalTitle
-        let urlString = APIManager.Path.baseImage5URL + movie.posterPath
-        APIManager.Downloader.downloadImage(with: urlString) {[weak self] (image, error) in
-            guard let this = self else { return }
-            if let error = error {
-                print(error)
-                return
-            }
-            DispatchQueue.main.async {
-                this.movieImageView.image = image
-            }
+        if let data = viewModel.getImageData() {
+            movieImageView.image = UIImage(data: data)
+        }else {
+            movieImageView.image = #imageLiteral(resourceName: "default_image")
         }
     }
     
     @IBAction private func deleteMovieButton(sender: Any){
+        guard let movie = viewModel.getMovie(), let indexPath = viewModel.getIndexPath() else { return }
         delegate?.favoriteCell(self, delete: movie, in: indexPath,  perform: .delete)
     }
 }

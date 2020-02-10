@@ -135,7 +135,7 @@ extension SearchVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(with: GridCell.self, for: indexPath)
         let movie = viewModel.getMovie(indexPath: indexPath)
-        cell.setupView(movie: movie)
+        cell.setupViewModel(movie: movie)
         return cell
     }
 }

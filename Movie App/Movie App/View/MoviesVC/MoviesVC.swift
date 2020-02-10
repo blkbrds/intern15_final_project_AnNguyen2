@@ -21,7 +21,7 @@ final class MoviesVC: BaseViewController {
     }
     private var filterViewCustomBottomAnchor: NSLayoutConstraint?
     private var filterViewCustomTopAnchor: NSLayoutConstraint?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         configMoviesCollectionView()
@@ -67,7 +67,7 @@ final class MoviesVC: BaseViewController {
             }
         }
     }
-    
+
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
         let safeAreaInsetsLeft: CGFloat = view.safeAreaInsets.left
@@ -217,11 +217,11 @@ extension MoviesVC: UICollectionViewDataSource {
         let movie = viewModel.getMovie(at: indexPath)
         if viewModel.status == .row {
             let rowCell = collectionView.dequeueReusableCell(with: RowCell.self, for: indexPath)
-            rowCell.setupView(movie: movie)
+            rowCell.setupViewModel(movie: movie)
             return rowCell
         } else {
             let gridCell = collectionView.dequeueReusableCell(with: GridCell.self, for: indexPath)
-            gridCell.setupView(movie: movie)
+            gridCell.setupViewModel(movie: movie)
             return gridCell
         }
     }
