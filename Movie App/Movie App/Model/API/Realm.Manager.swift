@@ -10,7 +10,6 @@ import Foundation
 import RealmSwift
 
 final class RealmManager {
-    private var notificationToken: NotificationToken?
     private let realm: Realm = {
         do {
             return try Realm()
@@ -25,10 +24,10 @@ final class RealmManager {
         return RealmManager()
     }
 
-    func deleteObjects<T: Object, K>(object: T.Type, forPrimaryKeys: [K], completion: @escaping Completion) {
+    func deleteObjects<T: Object, K>(type: T.Type, forPrimaryKeys: [K], completion: @escaping Completion) {
         var objectsOfRealm: [T] = []
         forPrimaryKeys.forEach({
-            if let objectForRealm = realm.object(ofType: T.self, forPrimaryKey: $0) {
+            if let objectForRealm = realm.object(ofType: type, forPrimaryKey: $0) {
                 objectsOfRealm.append(objectForRealm)
             }
         })

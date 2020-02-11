@@ -78,7 +78,7 @@ final class DownloadViewModel {
         forPrimaryKeys.forEach({
             deleteVieo(movieID: $0)
         })
-        RealmManager.shared().deleteObjects(object: Movie.self, forPrimaryKeys: forPrimaryKeys) { (done, error) in
+        RealmManager.shared().deleteObjects(type: Movie.self, forPrimaryKeys: forPrimaryKeys) { (done, error) in
             completion(done, error)
         }
     }

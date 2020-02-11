@@ -162,6 +162,7 @@ extension DownloadVC: DownloadCellDelegate {
                     }
                     this.viewModel.removeMovie(at: indexPath)
                     this.favoriteTableView.deleteRows(at: [indexPath], with: .left)
+                    this.updateUI()
                 } else {
                     print(error?.localizedDescription ?? "")
                 }

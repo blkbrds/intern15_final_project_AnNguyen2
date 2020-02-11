@@ -36,7 +36,7 @@ extension APIManager.Downloader {
     static func downloadVideo(with url: String, nameFile: String, progressValue: @escaping (_ progress: Double) -> Void, completion: @escaping(_ videoData: Data?, _ error: Error?) -> Void) {
         let destination: DownloadRequest.DownloadFileDestination = { _, _ in
             let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            let fileURL = documentsURL.appendingPathComponent("AAA")
+            let fileURL = documentsURL.appendingPathComponent("\(nameFile).mp4")
             return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
         }
         Alamofire.download(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil, to: destination)

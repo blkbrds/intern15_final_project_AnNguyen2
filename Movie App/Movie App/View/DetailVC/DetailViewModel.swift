@@ -216,7 +216,7 @@ final class DetailViewModel {
         }
         APIManager.Downloader.downloadVideo(
             with: url.absoluteString,
-            nameFile: "\(movie.id).mp4",
+            nameFile: "\(movie.id)",
             progressValue: { (progress) in
                 progressUpdating(progress, nil)
 
