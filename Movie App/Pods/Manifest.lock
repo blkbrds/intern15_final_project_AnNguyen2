@@ -2,23 +2,27 @@ PODS:
   - Alamofire (4.9.1)
   - MVVM-Swift (5.0.1)
   - ObjectMapper (3.5.1)
+  - XCDYouTubeKit (2.8.2)
 
 DEPENDENCIES:
   - Alamofire
   - MVVM-Swift
   - ObjectMapper
+  - XCDYouTubeKit
 
 SPEC REPOS:
   trunk:
     - Alamofire
     - MVVM-Swift
     - ObjectMapper
+    - XCDYouTubeKit
 
 SPEC CHECKSUMS:
   Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
   MVVM-Swift: 0333cd8a16abfe0e93a1423bfddb49b8c11065e1
   ObjectMapper: 70187b8941977c62ccfb423caf6b50be405cabf0
+  XCDYouTubeKit: 79baadb0560673a67c771eba45f83e353fd12c1f
 
-PODFILE CHECKSUM: fd696134a1657807fa4503a05b0c632c16be9cd1
+PODFILE CHECKSUM: d97e732120343c739c8be3bb8140d78f55c7b01b
 
 COCOAPODS: 1.8.1

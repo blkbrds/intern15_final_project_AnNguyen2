@@ -9,11 +9,11 @@
 import Foundation
 
 typealias Completion = (Bool, APIError?) -> Void
-typealias HomeCompletion = (Bool, Int, APIError?) -> Void
+typealias CompletionWithIndex = (Bool, Int, APIError?) -> Void
 
 
 enum MovieCategory: CaseIterable {
-    case tv, discover, popular, topRated, trending
+    case tv, discover, popular, topRated, trending, similar, recommendations
 
     var title: String {
         switch self {
@@ -27,7 +27,12 @@ enum MovieCategory: CaseIterable {
             return "Top rated"
         case .tv:
             return "TV"
+        case .recommendations:
+            return "Recommendations"
+        case .similar:
+            return "Similar"
         }
+
     }
 
     var defaultURL: String {
@@ -42,6 +47,8 @@ enum MovieCategory: CaseIterable {
             return APIManager.Path.TopRated().url
         case .tv:
             return APIManager.Path.TV().url
+        default:
+            return ""
         }
     }
 }
@@ -49,39 +56,47 @@ enum MovieCategory: CaseIterable {
 final class HomeViewModel {
     let movieCategories: [MovieCategory] = [.popular, .discover, .topRated, .trending, .tv]
     var movies: [[Movie]] = [[], [], [], [], []]
-    
+    var isLoading: [Bool] = Array(repeating: true, count: 5)
+
     func moviesViewModel(at index: Int) -> MoviesViewModel {
         return MoviesViewModel(type: movieCategories[index])
     }
     
-    func getTitleForHeader(at index: Int) -> String{
+    func detailViewModel(for id: Int) -> DetailViewModel {
+        return DetailViewModel(by: id)
+    }
+
+    func getTitleForHeader(at index: Int) -> String {
         return movieCategories[index].title
     }
-    
+
     func getMovies(for section: Int) -> [Movie] {
         return movies[section]
     }
-    
-    func numberOfSections() -> Int{
+
+    func numberOfSections() -> Int {
         return movies.count
     }
-        
+
     func resetMovies() {
-        for i in 0..<movieCategories.count {
-            movies[i] = []
-        }
+        movies = Array(repeating: [], count: movieCategories.count)
+    }
+    
+    func isLoadingData(indexPath: IndexPath) -> Bool {
+        return isLoading[indexPath.section]
     }
 
-    func fetchData(completion: @escaping HomeCompletion) {
+    func fetchData(completion: @escaping CompletionWithIndex) {
         let urls = movieCategories.map({ $0.defaultURL })
+        let group = DispatchGroup()
         for i in 0..<urls.count {
+            group.enter()
             API.shared().request(with: urls[i]) { (result) in
                 switch result {
-                case .failure(let error):
-                    completion(false, i, error)
+                case .failure(_):
+                    print("")
                 case .success(let data):
                     guard let data = data else {
-                        completion(false, i,  APIError.emptyData)
                         return
                     }
                     let json = data.toJSObject()
@@ -93,9 +108,15 @@ final class HomeViewModel {
                         }
                     }
                     self.movies[i] = items
-                    completion(true, i,  nil)
                 }
+                group.leave()
+                self.isLoading[i] = false
+                print("Loaded \(i)")
             }
+        }
+        group.notify(queue: .main) {
+            print("Loaded all.")
+            completion(true, 0, nil)
         }
     }
 }

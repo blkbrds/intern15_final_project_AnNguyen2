@@ -20,6 +20,8 @@ class Movie {
     var voteAverage: Float
     var releaseDate: String
     var page: Int = 0
+    var tagLine: String
+    var homePage: String
     
     init(json: JSObject) {
         self.id = json["id"] as? Int ?? 0
@@ -32,5 +34,7 @@ class Movie {
         self.overview = json["overview"] as? String ?? ""
         self.voteAverage = json["vote_average"] as? Float ?? 0.0
         self.releaseDate = json["release_date"] as? String ?? ""
+        self.tagLine = json["tagline"] as? String ?? ""
+        self.homePage = json["homepage"] as? String ?? ""
     }
 }

@@ -163,7 +163,7 @@ class MoviesVC: BaseViewController {
     @objc private func handleChangedStatus() {
         viewModel.changedStatus()
         changedLayout()
-        moviesCollectionView.reloadData()
+        updateUI()
     }
 
     @objc private func handleReloadData() {
@@ -179,8 +179,10 @@ class MoviesVC: BaseViewController {
 //MARK: -UICollectionViewDelegate
 extension MoviesVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        //TODO: -Show detail
         let detailVC = DetailVC()
+        let movie = viewModel.movies[indexPath.row]
+        let detailViewModel = viewModel.detailViewModel(for: movie.id)
+        detailVC.viewModel = detailViewModel
         navigationController?.pushViewController(detailVC, animated: true)
     }
 

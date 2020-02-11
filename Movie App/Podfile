@@ -15,5 +15,7 @@ target 'Movie App' do
   
   # Network
   pod 'Alamofire' # Elegant HTTP Networking in Swift.
+  
+  pod "XCDYouTubeKit" #Get url video youtube
 
 end

@@ -134,4 +134,12 @@ extension APIManager.Path {
             return APIManager.Path.baseURL / "genre" / "tv" / "list?api_key=\(App.Key.apiKey)&language=en-US"
         }
     }
+    
+    
+    struct Trailer {
+        var id: Int
+        var url: String {
+            return APIManager.Path.baseURL / "movie" / "\(id)/videos?api_key=\(App.Key.apiKey)"
+        }
+    }
 }
