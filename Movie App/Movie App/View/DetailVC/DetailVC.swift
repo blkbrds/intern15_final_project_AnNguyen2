@@ -62,7 +62,7 @@ final class DetailVC: BaseViewController {
             moviesTableViewHeightContraint.constant = 0
             return
         }
-        APIManager.Downloader.downloadImage(with: urlString) { [weak self] (data, error, urlStr) in
+        APIManager.Downloader.downloadImage(with: urlString) { [weak self] (data, error) in
             guard let this = self else { return }
             if let error = error {
                 print(error, "downloadImage")
@@ -91,9 +91,8 @@ final class DetailVC: BaseViewController {
         }
     }
 
-    private func updateUIForMoreLikeTableView(sectionIndex: Int) {
-        let indexSet = IndexSet(integer: sectionIndex)
-        moreLikeThisMoviesTableView.reloadSections(indexSet, with: .fade)
+    private func updateUIForMoreLikeTableView() {
+        moreLikeThisMoviesTableView.reloadData()
     }
 
     private func fetchData(for action: Action) {
@@ -123,13 +122,12 @@ final class DetailVC: BaseViewController {
             viewModel.resetMovies()
             moreLikeThisMoviesTableView.reloadData()
         }
-        viewModel.fetchSimilarRecommendMovie { [weak self] (done, index, error) in
+        viewModel.fetchSimilarRecommendMovie { [weak self] (done, error) in
             guard let this = self else { return }
-            if done {
-                this.updateUIForMoreLikeTableView(sectionIndex: index)
-            } else if let error = error {
+            if let error = error {
                 this.alert(errorString: error.localizedDescription)
             }
+            this.updateUIForMoreLikeTableView()
         }
     }
 
@@ -139,7 +137,7 @@ final class DetailVC: BaseViewController {
             if done {
                 print("Get video url success!")
             } else if let error = error {
-                this.alert(errorString: error.localizedDescription)
+                this.alert(errorString: "Error video: \(error.localizedDescription)")
             }
         }
     }
@@ -250,7 +248,8 @@ extension DetailVC: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(DetailCell.self)
         cell.delegate = self
         let movies = viewModel.moviesIn(indexPath: indexPath)
-        cell.setupData(movies: movies)
+        let isLoading = viewModel.getLoading(indexPath: indexPath)
+        cell.setupData(movies: movies, isLoading: isLoading)
         return cell
     }
 

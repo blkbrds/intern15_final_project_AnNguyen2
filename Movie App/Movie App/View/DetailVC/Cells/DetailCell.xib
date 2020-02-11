@@ -25,16 +25,24 @@
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                     </collectionView>
-                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="soP-Je-2yd">
+                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="soP-Je-2yd">
                         <rect key="frame" x="150" y="75" width="20" height="20"/>
                         <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </activityIndicatorView>
+                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Server response no data!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z2I-QP-HMc">
+                        <rect key="frame" x="64" y="74.5" width="192" height="21"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <constraints>
                     <constraint firstItem="soP-Je-2yd" firstAttribute="centerX" secondItem="db9-p7-KcM" secondAttribute="centerX" id="93h-o0-9mn"/>
+                    <constraint firstItem="Z2I-QP-HMc" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="BZO-aq-JKW"/>
                     <constraint firstItem="db9-p7-KcM" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="c4w-yz-YjK"/>
                     <constraint firstItem="db9-p7-KcM" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="eJh-X9-Wqm"/>
                     <constraint firstItem="soP-Je-2yd" firstAttribute="centerY" secondItem="db9-p7-KcM" secondAttribute="centerY" id="ffE-DW-liw"/>
+                    <constraint firstItem="Z2I-QP-HMc" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="o7y-V4-kNy"/>
                     <constraint firstAttribute="trailing" secondItem="db9-p7-KcM" secondAttribute="trailing" id="qMA-zl-u48"/>
                     <constraint firstAttribute="bottom" secondItem="db9-p7-KcM" secondAttribute="bottom" id="qWf-y7-fQ1"/>
                 </constraints>
@@ -42,6 +50,7 @@
             <connections>
                 <outlet property="loadActivityIndicator" destination="soP-Je-2yd" id="1VJ-uA-Hf2"/>
                 <outlet property="moviesCollectionView" destination="db9-p7-KcM" id="y5T-vH-HBD"/>
+                <outlet property="serverResponseNoDataLabel" destination="Z2I-QP-HMc" id="Qiw-zo-1vN"/>
             </connections>
             <point key="canvasLocation" x="137.68115942028987" y="105.80357142857143"/>
         </tableViewCell>

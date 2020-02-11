@@ -59,6 +59,7 @@ enum MovieCategory: CaseIterable {
 final class HomeViewModel {
     let movieCategories: [MovieCategory] = [.popular, .discover, .topRated, .trending, .tv, .upcoming]
     var movies: [[Movie]] = [[], [], [], [], [], []]
+    var isLoading: [Bool] = Array(repeating: true, count: 6)
 
     func moviesViewModel(at index: Int) -> MoviesViewModel {
         return MoviesViewModel(type: movieCategories[index])
@@ -81,21 +82,24 @@ final class HomeViewModel {
     }
 
     func resetMovies() {
-        for i in 0..<movieCategories.count {
-            movies[i] = []
-        }
+        movies = Array(repeating: [], count: movieCategories.count)
+    }
+    
+    func isLoadingData(indexPath: IndexPath) -> Bool {
+        return isLoading[indexPath.section]
     }
 
     func fetchData(completion: @escaping CompletionWithIndex) {
         let urls = movieCategories.map({ $0.defaultURL })
+        let group = DispatchGroup()
         for i in 0..<urls.count {
+            group.enter()
             API.shared().request(with: urls[i]) { (result) in
                 switch result {
-                case .failure(let error):
-                    completion(false, i, error)
+                case .failure(_):
+                    print("")
                 case .success(let data):
                     guard let data = data else {
-                        completion(false, i, APIError.emptyData)
                         return
                     }
                     let json = data.toJSObject()
@@ -107,9 +111,15 @@ final class HomeViewModel {
                         }
                     }
                     self.movies[i] = items
-                    completion(true, i, nil)
                 }
+                group.leave()
+                self.isLoading[i] = false
+                print("Loaded \(i)")
             }
+        }
+        group.notify(queue: .main) {
+            print("Loaded all.")
+            completion(true, 0, nil)
         }
     }
 }

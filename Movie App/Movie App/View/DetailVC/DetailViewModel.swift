@@ -19,6 +19,7 @@ final class DetailViewModel {
     var localUrl: URL?
     var isSaved: Bool = false
     var isLoadVideoOnline: Bool = false
+    var isLoading: [Bool] = [true, true]
 
     init() { }
 
@@ -71,10 +72,12 @@ final class DetailViewModel {
         return DetailViewModel(by: id)
     }
 
+    func getLoading(indexPath: IndexPath) -> Bool {
+        return isLoading[indexPath.section]
+    }
+
     func resetMovies() {
-        for i in 0..<movieCategories.count {
-            movies[i] = []
-        }
+        movies = Array(repeating: [], count: movieCategories.count)
     }
 
     func setDataImageMovie(data: Data?) {
@@ -112,38 +115,46 @@ final class DetailViewModel {
             }
         }
     }
-
-    func fetchSimilarRecommendMovie(completion: @escaping CompletionWithIndex) {
+    
+    func fetchSimilarRecommendMovie(completion: @escaping Completion) {
         guard let id = movieID else {
-            completion(false, 0, APIError.emptyID)
+            isLoading[0] = false
+            isLoading[1] = false
             return
         }
         let urls: [String] = [
             APIManager.Path.Similar(id: "\(id)").url,
             APIManager.Path.Recommendations(id: "\(id)").url,
         ]
+        let group = DispatchGroup()
+        print("Loading data...")
         for i in 0..<urls.count {
+            group.enter()
             API.shared().request(with: urls[i]) { (result) in
                 switch result {
-                case .failure(let error):
-                    completion(false, i, error)
+                case .failure(_):
+                    self.isLoading[i] = false
                 case .success(let data):
-                    guard let data = data else {
-                        completion(false, i, APIError.emptyData)
-                        return
-                    }
-                    let json = data.toJSObject()
-                    var items: [Movie] = []
-                    if let results = json["results"] as? JSArray {
-                        for item in results {
-                            let movie = Movie(json: item)
-                            items.append(movie)
+                    if let data = data {
+                        let json = data.toJSObject()
+                        var items: [Movie] = []
+                        if let results = json["results"] as? JSArray {
+                            for item in results {
+                                let movie = Movie(json: item)
+                                items.append(movie)
+                            }
                         }
+                        self.movies[i] = items
                     }
-                    self.movies[i] = items
-                    completion(true, i, nil)
                 }
+                self.isLoading[i] = false
+                group.leave()
+                print("Loaded data \(i)...")
             }
+        }
+        group.notify(queue: .main) {
+            print("Finished task")
+            completion(true, nil)
         }
     }
 
