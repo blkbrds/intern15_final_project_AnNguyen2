@@ -49,7 +49,8 @@ class HomeVC: BaseViewController {
         viewModel.fetchData { [weak self] (done, index, error) in
             guard let this = self else { return }
             if done {
-                this.updateUI(sectionIndex: index)
+                this.movieTableView.reloadData()
+                //this.updateUI(sectionIndex: index)
             } else if let error = error {
                 this.alert(errorString: error.localizedDescription)
             }
@@ -105,8 +106,10 @@ extension HomeVC: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: Config.withReuseIdentifier) as? HomeCell else {
             return UITableViewCell()
         }
+        cell.delegate = self
         let movies = viewModel.getMovies(for: indexPath.section)
-        cell.setupData(movies: movies)
+        let isLoading = viewModel.isLoadingData(indexPath: indexPath)
+        cell.setupData(movies: movies, isLoading: isLoading)
         return cell
     }
 
@@ -127,5 +130,15 @@ extension HomeVC: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 170
+    }
+}
+
+//MARK: -DetailCellDelegate
+extension HomeVC: HomeCellDelegate {
+    func homeCell(_ homeCell: HomeCell, didSelectItem: Movie, perform action: HomeCellActionType) {
+        let detailVC = DetailVC()
+        let detailViewModel = viewModel.detailViewModel(for: didSelectItem.id)
+        detailVC.viewModel = detailViewModel
+        navigationController?.pushViewController(detailVC, animated: true)
     }
 }

@@ -37,7 +37,7 @@ class DetailVC: BaseViewController {
     }
 
     private func updateUI() {
-        let movie = viewModel.movie
+        let movie = viewModel.getMovie()
         taglineLabel.text = movie?.tagLine ?? "..."
         overviewMovieLabel.text = movie?.overview ?? "..."
         movieNameLabel.text = movie?.originalTitle ?? "..."
@@ -45,36 +45,37 @@ class DetailVC: BaseViewController {
         releaseDateLabel.text = movie?.releaseDate ?? "..."
         idmScoreLabel.text = "IDM \(movie?.voteAverage ?? 0)"
         let urlString = APIManager.Path.baseImage3URL + (movie?.posterPath ?? "")
-        APIManager.Downloader.downloadImage(with: urlString) { (image, error) in
+        APIManager.Downloader.downloadImage(with: urlString) { [weak self] (image, error) in
+            guard let this = self else { return }
             if let error = error {
                 print(error, "downloadImage")
                 return
             }
             DispatchQueue.main.async {
-                self.movieImageView.image = image
-                self.moviePosterImageView.image = image
+                this.movieImageView.image = image
+                this.moviePosterImageView.image = image
             }
         }
     }
 
-    private func updateUIForMoreLikeTableView(sectionIndex: Int) {
-        let indexSet = IndexSet(integer: sectionIndex)
-        self.moreLikeThisMoviesTableView.reloadSections(indexSet, with: .fade)
+    private func updateUIForMoreLikeTableView() {
+        moreLikeThisMoviesTableView.reloadData()
     }
 
     private func fetchData(for action: Action) {
         getURLMovieVideo()
         if action == .reload {
-            viewModel.movie = nil
+            viewModel.resetMovie()
             updateUI()
         }
         loadActivityIndicator.startAnimating()
         loadActivityIndicator.isHidden = false
-        viewModel.fetchMovieData { (done, error) in
+        viewModel.fetchMovieData { [weak self] (done, error) in
+            guard let this = self else { return }
             if done {
-                self.updateUI()
+                this.updateUI()
             } else if let error = error {
-                self.alert(errorString: error.localizedDescription)
+                this.alert(errorString: error.localizedDescription)
             }
         }
         loadActivityIndicator.stopAnimating()
@@ -87,21 +88,22 @@ class DetailVC: BaseViewController {
             viewModel.resetMovies()
             moreLikeThisMoviesTableView.reloadData()
         }
-        viewModel.fetchSimilarRecommendMovie { (done, index, error) in
-            if done {
-                self.updateUIForMoreLikeTableView(sectionIndex: index)
-            } else if let error = error {
-                self.alert(errorString: error.localizedDescription)
+        viewModel.fetchSimilarRecommendMovie { [weak self] (done, error) in
+            guard let this = self else { return }
+            if let error = error {
+                this.alert(errorString: error.localizedDescription)
             }
+            this.updateUIForMoreLikeTableView()
         }
     }
 
     private func getURLMovieVideo() {
-        viewModel.getURLMovieVideo { (done, error) in
+        viewModel.getURLMovieVideo {[weak self] (done, error) in
+            guard let this = self else { return }
             if done {
                 print("Get video url success!")
             } else if let error = error {
-                self.alert(errorString: error.localizedDescription)
+                this.alert(errorString: "Error video: \(error.localizedDescription)")
             }
         }
     }
@@ -133,7 +135,7 @@ class DetailVC: BaseViewController {
     }
 
     @IBAction private func playVideoButton(_ sender: Any) {
-        guard let url = viewModel.urlVideo else {
+        guard let url = viewModel.getVideoUrl() else {
             alert(errorString: "URL video is empty!")
             return
         }
@@ -159,7 +161,7 @@ class DetailVC: BaseViewController {
     }
 
     @IBAction private func shareButton(_ sender: Any) {
-        guard let movie = viewModel.movie, let url = movie.homePage.url else {
+        guard let movie = viewModel.getMovie(), let url = movie.homePage.url else {
             alert(errorString: APIError.errorURL.localizedDescription)
             return
         }
@@ -169,7 +171,7 @@ class DetailVC: BaseViewController {
     }
 
     @IBAction private func openWebsiteButton(_ sender: Any) {
-        guard let movie = viewModel.movie, let url = movie.homePage.url else {
+        guard let movie = viewModel.getMovie(), let url = movie.homePage.url else {
             alert(errorString: "URL website error!")
             return
         }
@@ -183,7 +185,7 @@ extension DetailVC: UITableViewDataSource {
         let headerView = UIView()
         headerView.backgroundColor = App.Color.mainColor
         let titleLabel = Label()
-        titleLabel.text = viewModel.movieCategories[section].title
+        titleLabel.text = viewModel.getTitle(section: section)
         headerView.addSubview(titleLabel)
         titleLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 5).isActive = true
         titleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 10).isActive = true
@@ -193,13 +195,14 @@ extension DetailVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(DetailCell.self)
         cell.delegate = self
-        let movies = viewModel.movies[indexPath.section]
-        cell.setupData(movies: movies)
+        let movies = viewModel.moviesIn(indexPath: indexPath)
+        let isLoading = viewModel.getLoading(indexPath: indexPath)
+        cell.setupData(movies: movies, isLoading: isLoading)
         return cell
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.movieCategories.count
+        return viewModel.numberOfSections()
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

@@ -25,11 +25,15 @@ final class MoviesViewModel {
     var isShowFilter: Bool = false
     var genreFilter: Genre?
     var trendingTypeFilter: TrendingType?
-
+    
     init() { }
 
     init(type: MovieCategory = .discover) {
         self.movieCategory = type
+    }
+
+    func detailViewModel(for id: Int) -> DetailViewModel {
+        return DetailViewModel(by: id)
     }
 
     func handleUrl(page: Int = 1) {
