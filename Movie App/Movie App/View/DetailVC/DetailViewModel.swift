@@ -211,7 +211,7 @@ final class DetailViewModel {
             return
         }
         guard let movie = movie else {
-            progressUpdating(0, APIError.error("Movie!"))
+            progressUpdating(0, APIError.error("Movie is empty!"))
             return
         }
         APIManager.Downloader.downloadVideo(
@@ -219,11 +219,12 @@ final class DetailViewModel {
             nameFile: "\(movie.id)",
             progressValue: { (progress) in
                 progressUpdating(progress, nil)
-
             }, completion: { data, error in
                 if let _ = error {
                     progressUpdating(0, APIError.error("Can't download video movie!"))
+                    return
                 }
+                self.isSaved = true
             })
     }
 
@@ -251,6 +252,7 @@ final class DetailViewModel {
         guard let movie = movie else { return }
         RealmManager.shared().getObjectForKey(object: Movie.self, forPrimaryKey: movie.id) { (movie, error) in
             if let _ = error {
+                self.isSaved = false
                 return
             }
             self.isSaved = true
@@ -260,14 +262,12 @@ final class DetailViewModel {
     func addMovieContentToDownload(completion: @escaping Completion) {
         guard let movie = movie else { return }
         RealmManager.shared().addNewObject(object: movie) { (done, error) in
-            self.isSaved = true
             completion(done, error)
         }
     }
 
     func deleteVieo(movieID: Int) {
         let fileManager = FileManager.default
-
         do {
             let documentDirectory = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
             let filePath: String = documentDirectory.path + "/\(movieID).mp4"
@@ -288,8 +288,11 @@ final class DetailViewModel {
         guard let movie = movie else { return }
         self.deleteVieo(movieID: movie.id)
         RealmManager.shared().deleteObject(object: movie, forPrimaryKey: movie.id) { (done, error) in
-            self.isSaved = false
             completion(done, error)
         }
+    }
+
+    func changeSavedState() {
+        isSaved = !isSaved
     }
 }

@@ -21,11 +21,7 @@ final class DownloadVC: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        fetchData(for: .load)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleReloadData), name: .didChangedData, object: nil)
     }
 
     override func setupUI() {
@@ -76,13 +72,17 @@ final class DownloadVC: BaseViewController {
         favoriteTableView.backgroundColor = App.Color.mainColor
         favoriteTableView.allowsSelectionDuringEditing = true
         favoriteTableView.allowsMultipleSelectionDuringEditing = true
-        refeshControl.addTarget(self, action: #selector(handleReloadData), for: .valueChanged)
+        refeshControl.addTarget(self, action: #selector(handleReloadDataForRefreshControl), for: .valueChanged)
         favoriteTableView.refreshControl = refeshControl
         favoriteTableView.delegate = self
         favoriteTableView.dataSource = self
     }
-
+    
     @objc private func handleReloadData() {
+        fetchData(for: .reload)
+    }
+
+    @objc private func handleReloadDataForRefreshControl() {
         fetchData(for: .reload)
         refeshControl.endRefreshing()
     }
@@ -106,7 +106,7 @@ final class DownloadVC: BaseViewController {
         viewModel.removeMoviesInFavorite(movies: movies) { [weak self] (done, error) in
             guard let this = self else { return }
             if done {
-                this.fetchData(for: .reload)
+                NotificationCenter.default.post(name: .didChangedData, object: nil)
                 this.updateUI()
                 print("Delete movies success!")
             } else {
@@ -156,13 +156,10 @@ extension DownloadVC: DownloadCellDelegate {
             self.viewModel.removeMovieInFavorite(movie: item) { [weak self] (done, error) in
                 guard let this = self else { return }
                 if done {
-                    guard let indexPath = indexPath else {
-                        this.fetchData(for: .load)
-                        return
-                    }
+                    guard let indexPath = indexPath else { return }
                     this.viewModel.removeMovie(at: indexPath)
                     this.favoriteTableView.deleteRows(at: [indexPath], with: .left)
-                    this.updateUI()
+                    NotificationCenter.default.post(name: .didChangedData, object: nil)
                 } else {
                     print(error?.localizedDescription ?? "")
                 }

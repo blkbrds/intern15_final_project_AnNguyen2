@@ -55,7 +55,7 @@ final class HomeCell: UITableViewCell {
         loadActivityIndicator.isHidden = false
         moviesCollectionView.register(MovieCell.self)
         let layout = LayoutCustom() //Flow layout
-        moviesCollectionView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        moviesCollectionView.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 0)
         moviesCollectionView.collectionViewLayout = layout
         moviesCollectionView.showsHorizontalScrollIndicator = false
         moviesCollectionView.backgroundColor = App.Color.mainColor

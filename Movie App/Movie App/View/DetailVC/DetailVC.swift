@@ -17,7 +17,7 @@ final class DetailVC: BaseViewController {
     @IBOutlet weak private var moreLikeThisMoviesTableView: UITableView!
     @IBOutlet weak private var downloadButton: UIButton!
     @IBOutlet weak private var moviesTableViewHeightContraint: NSLayoutConstraint!
-    @IBOutlet weak private var progressDownload: UICircularProgressRing!
+    @IBOutlet weak private var progressDownloadCircularProgressRing: UICircularProgressRing!
 
     var viewModel = DetailViewModel()
     enum Action {
@@ -26,6 +26,9 @@ final class DetailVC: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        NotificationCenter.default.addObserver(self, selector: #selector(handleReloadData), name: .didChangedData, object: nil)
+        progressDownloadCircularProgressRing.font = UIFont.systemFont(ofSize: 10)
+
     }
 
     override func setupData() {
@@ -40,7 +43,7 @@ final class DetailVC: BaseViewController {
     override func setupUI() {
         title = "Details"
         detailScrollView.backgroundColor = App.Color.mainColor
-        refeshControl.addTarget(self, action: #selector(handleRefreshData), for: .valueChanged)
+        refeshControl.addTarget(self, action: #selector(handleRefreshControlReloadData), for: .valueChanged)
         detailScrollView.refreshControl = refeshControl
         movieImageView.borderImage()
         playVideoButton.borderButton()
@@ -100,7 +103,7 @@ final class DetailVC: BaseViewController {
     private func fetchData(for action: Action) {
         getURLMovieVideo()
         if action == .reload {
-            viewModel.movie = nil
+            viewModel.resetMovie()
             updateUI()
         }
         loadActivityIndicator.startAnimating()
@@ -108,11 +111,11 @@ final class DetailVC: BaseViewController {
         viewModel.fetchMovieData { [weak self] (done, error) in
             guard let this = self else { return }
             if done {
-                this.changeIconButtonDownload()
                 this.updateUI()
             } else if let error = error {
                 this.alert(errorString: error.localizedDescription)
             }
+            this.changeIconButtonDownload()
         }
         loadActivityIndicator.stopAnimating()
         loadActivityIndicator.isHidden = true
@@ -161,6 +164,7 @@ final class DetailVC: BaseViewController {
                     guard let this = self else { return }
                     if done {
                         this.changeIconButtonDownload()
+                        NotificationCenter.default.post(name: .didChangedData, object: nil)
                         print("Delete success!")
                     } else {
                         print("Delete failure!")
@@ -168,36 +172,46 @@ final class DetailVC: BaseViewController {
                 }
             }
         } else {
+            if viewModel.isLoadingVideo() {
+                alert(errorString: "Video is loading, please wait...")
+                return
+            }
             print("Downloading...")
             viewModel.addMovieContentToDownload { [weak self] (done, error) in
                 guard let _ = self else { return }
                 if done {
+                    NotificationCenter.default.post(name: .didChangedData, object: nil)
                     print("Saved movie content to download!")
                 } else {
                     print(error?.localizedDescription ?? "")
                 }
             }
-            downloadButton.setBackgroundImage(UIImage.init(systemName: "slowmo"), for: .normal)
-            downloadButton.tintColor = UIColor.clear
-            progressDownload.isHidden = false
-            progressDownload.value = 0
+            downloadButton.isHidden = true
+            progressDownloadCircularProgressRing.isHidden = false
+            progressDownloadCircularProgressRing.value = 0
             viewModel.downloadMovie { [weak self] (progress, error) in
                 guard let this = self else { return }
                 if let error = error {
                     this.alert(errorString: error.localizedDescription)
+                    this.changeIconButtonDownload()
                     return
                 }
-                this.progressDownload.value = CGFloat(progress * 100)
+                this.progressDownloadCircularProgressRing.value = CGFloat(progress * 100)
                 if progress == 1 {
-                    this.downloadButton.tintColor = App.Color.titleColor
-                    this.progressDownload.isHidden = true
+                    this.downloadButton.isHidden = false
+                    this.progressDownloadCircularProgressRing.isHidden = true
                     this.changeIconButtonDownload()
                 }
             }
         }
     }
+    
+    @objc private func handleReloadData() {
+        viewModel.checkMovieInDownload()
+        changeIconButtonDownload()
+    }
 
-    @objc private func handleRefreshData() {
+    @objc private func handleRefreshControlReloadData() {
         fetchData(for: .reload)
         fetchSimilarRecommendMovie(for: .reload)
         refeshControl.endRefreshing()

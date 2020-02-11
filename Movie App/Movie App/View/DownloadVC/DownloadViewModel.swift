@@ -56,7 +56,6 @@ final class DownloadViewModel {
     
     func deleteVieo(movieID: Int) {
         let fileManager = FileManager.default
-        
         do {
             let documentDirectory = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
             let filePath: String = documentDirectory.path + "/\(movieID).mp4"
@@ -83,10 +82,3 @@ final class DownloadViewModel {
         }
     }
 }
-
-
-//extension DownloadViewModel: URLSessionDownloadDelegate {
-//    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-//        
-//    }
-//}
