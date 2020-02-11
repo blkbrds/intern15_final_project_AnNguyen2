@@ -65,7 +65,7 @@ final class RealmManager {
     func addNewObject<T: Object>(object: T, completion: @escaping Completion) {
         do {
             try realm.write {
-                realm.add(object)
+                realm.create(T.self, value: object, update: .all)
                 completion(true, nil)
             }
         } catch {

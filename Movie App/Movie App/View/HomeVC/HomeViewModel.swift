@@ -83,6 +83,7 @@ final class HomeViewModel {
 
     func resetMovies() {
         movies = Array(repeating: [], count: movieCategories.count)
+        isLoading = Array(repeating: true, count: 6)
     }
     
     func isLoadingData(indexPath: IndexPath) -> Bool {

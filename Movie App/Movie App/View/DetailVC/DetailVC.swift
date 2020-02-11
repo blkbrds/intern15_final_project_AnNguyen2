@@ -154,7 +154,17 @@ final class DetailVC: BaseViewController {
 
     private func handleDownload() {
         if viewModel.downloaded() {
-            alert(msg: "Movie did saved!", buttons: ["OK"], handler: nil)
+            deleteAlert(msg: "Do you want to delete movie in download?") { (_) in
+                self.viewModel.removeMovie {[weak self] (done, error) in
+                    guard let this = self else { return }
+                    if done {
+                        this.changeIconButtonDownload()
+                        print("Delete success!")
+                    }else {
+                        print("Delete failure!")
+                    }
+                }
+            }
         } else {
             print("Downloading...")
             viewModel.addMoviewToDownload { [weak self] (done, error) in

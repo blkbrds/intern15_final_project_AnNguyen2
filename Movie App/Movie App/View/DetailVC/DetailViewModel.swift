@@ -259,25 +259,6 @@ final class DetailViewModel {
         }
     }
 
-    func deleteVieo() {
-        guard let id = movieID else { return }
-        let fileManager = FileManager.default
-        do {
-            let documentDirectory = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-            let filePath: String = documentDirectory.path + "/\(id).mp4"
-            if fileManager.fileExists(atPath: filePath) {
-                print("Exist")
-                let itemUrl = URL(fileURLWithPath: filePath)
-                try fileManager.removeItem(at: itemUrl)
-                print("Delete local movie video sucess!")
-            } else {
-                print("Video not exist!")
-            }
-        } catch {
-            print(APIError.errorURL.localizedDescription)
-        }
-    }
-
     func checkMovieInDownload() {
         guard let movie = movie else { return }
         RealmManager.shared().getObjectForKey(object: Movie.self, forPrimaryKey: movie.id) { (movie, error) in
@@ -295,14 +276,31 @@ final class DetailViewModel {
             completion(done, error)
         }
     }
+    
+    func deleteVieo(movieID: Int) {
+        let fileManager = FileManager.default
+        
+        do {
+            let documentDirectory = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            let filePath: String = documentDirectory.path + "/\(movieID).mp4"
+            if fileManager.fileExists(atPath: filePath) {
+                print("Exist")
+                let itemUrl = URL(fileURLWithPath: filePath)
+                try fileManager.removeItem(at: itemUrl)
+                print("Delete local movie video sucess!")
+            }else {
+                print("Video not exist!")
+            }
+        } catch {
+            print(APIError.errorURL.localizedDescription)
+        }
+    }
 
-    func removeInDownload(completion: @escaping Completion) {
+    func removeMovie(completion: @escaping Completion) {
         guard let movie = movie else { return }
+        self.deleteVieo(movieID: movie.id)
         RealmManager.shared().deleteObject(object: movie, forPrimaryKey: movie.id) { (done, error) in
             self.isSaved = false
-            if done {
-                self.deleteVieo()
-            }
             completion(done, error)
         }
     }
