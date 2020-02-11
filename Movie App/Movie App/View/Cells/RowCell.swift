@@ -36,9 +36,9 @@ final class RowCell: UICollectionViewCell {
         overviewLabel.text = movie.overview
         releaseDateLabel.text = movie.releaseDate?.toString()
         movieNameLabel.text = movie.originalTitle
-        viewModel.loadImageData { [weak self] (done, error) in
+        viewModel.loadImageData { [weak self] (done, error, urlStr) in
             guard let this = self else { return }
-            if done, let data = this.viewModel.getImageData() {
+            if done, let data = this.viewModel.getImageData(), APIManager.Path.baseImage3URL + movie.posterPath == urlStr {
                 this.movieImageView.image = UIImage(data: data)
             }
         }

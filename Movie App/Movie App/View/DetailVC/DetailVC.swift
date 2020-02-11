@@ -62,7 +62,7 @@ final class DetailVC: BaseViewController {
             moviesTableViewHeightContraint.constant = 0
             return
         }
-        APIManager.Downloader.downloadImage(with: urlString) { [weak self] (data, error) in
+        APIManager.Downloader.downloadImage(with: urlString) { [weak self] (data, error, urlStr) in
             guard let this = self else { return }
             if let error = error {
                 print(error, "downloadImage")

@@ -26,16 +26,16 @@ final class RowCellViewModel {
         return imageData
     }
     
-    func loadImageData(completion: @escaping Completion){
+    func loadImageData(completion: @escaping (Bool, APIError?, String) -> Void){
         guard let movie = movie else { return }
-        let urlString = APIManager.Path.baseImage5URL + movie.posterPath
+        let urlString = APIManager.Path.baseImage3URL + movie.posterPath
         APIManager.Downloader.downloadImage(with: urlString) {(data, error) in
             if let error = error {
-                completion(false, APIError.error(error.localizedDescription))
+                completion(false, APIError.error(error.localizedDescription), urlString)
                 return
             }
             self.imageData = data
-            completion(true, nil)
+            completion(true, nil, urlString)
         }
     }
 }
