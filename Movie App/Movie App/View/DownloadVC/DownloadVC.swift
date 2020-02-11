@@ -137,7 +137,7 @@ extension DownloadVC: UITableViewDelegate {
 //MARK: - UITableViewDataSource
 extension DownloadVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.movies.count
+        return viewModel.numberOfRowsInSection()
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -156,7 +156,12 @@ extension DownloadVC: DownloadCellDelegate {
             self.viewModel.removeMovieInFavorite(movie: item) { [weak self] (done, error) in
                 guard let this = self else { return }
                 if done {
-                    this.fetchData(for: .load)
+                    guard let indexPath = indexPath else {
+                        this.fetchData(for: .load)
+                        return
+                    }
+                    this.viewModel.removeMovie(at: indexPath)
+                    this.favoriteTableView.deleteRows(at: [indexPath], with: .left)
                 } else {
                     print(error?.localizedDescription ?? "")
                 }

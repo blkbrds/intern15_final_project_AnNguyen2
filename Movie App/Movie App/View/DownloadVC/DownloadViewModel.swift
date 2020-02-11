@@ -17,6 +17,14 @@ final class DownloadViewModel {
     func resetMovies() {
         movies = []
     }
+    
+    func removeMovie(at: IndexPath) {
+        movies.remove(at: at.row)
+    }
+    
+    func numberOfRowsInSection() -> Int {
+        return movies.count
+    }
 
     func getMovie(in indexPath: IndexPath) -> Movie {
         return movies[indexPath.row]
@@ -75,3 +83,10 @@ final class DownloadViewModel {
         }
     }
 }
+
+
+//extension DownloadViewModel: URLSessionDownloadDelegate {
+//    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+//        
+//    }
+//}

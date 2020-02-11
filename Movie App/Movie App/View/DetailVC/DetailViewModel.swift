@@ -15,7 +15,6 @@ final class DetailViewModel {
     var movies: [[Movie]] = [[], []]
     var movieCategories: [MovieCategory] = [.similar, .recommendations]
     var urlVideo: URL?
-    var keyVideo: String?
     var localUrl: URL?
     var isSaved: Bool = false
     var isLoadVideoOnline: Bool = false
@@ -24,7 +23,7 @@ final class DetailViewModel {
     init() { }
 
     init(by id: Int) {
-        self.movieID = id
+        movieID = id
     }
 
     func resetMovie() {
@@ -115,11 +114,12 @@ final class DetailViewModel {
             }
         }
     }
-    
+
     func fetchSimilarRecommendMovie(completion: @escaping Completion) {
         guard let id = movieID else {
             isLoading[0] = false
             isLoading[1] = false
+            completion(false, APIError.emptyID)
             return
         }
         let urls: [String] = [
@@ -184,7 +184,6 @@ final class DetailViewModel {
                     completion(false, APIError.emptyData)
                     return
                 }
-                self.keyVideo = key
                 XCDYouTubeClient.default().getVideoWithIdentifier("\(key)") { (video, error) in
                     self.isLoadVideoOnline = false
                     if let _ = error {
@@ -202,41 +201,30 @@ final class DetailViewModel {
         }
     }
 
-    func saveOfflineVideo(completion: @escaping(_ data: URL?, _ error: Error?) -> Void) {
+    func downloadMovie(progressUpdating: @escaping (Double, Error?) -> Void) {
         guard let url = urlVideo else {
-            completion(nil, APIError.invalidURL)
+            progressUpdating(0, APIError.invalidURL)
             return
         }
         if let _ = localUrl {
-            completion(nil, APIError.error("Saved!"))
+            progressUpdating(0, APIError.error("Saved!"))
             return
         }
-        API.shared().request(with: url.absoluteString) { (result) in
-            switch result {
-            case .failure(let error):
-                completion(nil, error)
-                return
-            case .success(let data):
-                guard let data = data else {
-                    completion(nil, APIError.emptyData)
-                    return
-                }
-                let fileManager = FileManager.default
-                do {
-                    let documentDirectory = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-                    guard let movie = self.movie else {
-                        completion(nil, APIError.emptyID)
-                        return
-                    }
-                    let fileURL = documentDirectory.appendingPathComponent("\(movie.id).mp4")
-                    print(fileURL.path)
-                    try data.write(to: fileURL)
-                    completion(fileURL, nil)
-                } catch {
-                    completion(nil, APIError.errorURL)
-                }
-            }
+        guard let movie = movie else {
+            progressUpdating(0, APIError.error("Movie!"))
+            return
         }
+        APIManager.Downloader.downloadVideo(
+            with: url.absoluteString,
+            nameFile: "\(movie.id).mp4",
+            progressValue: { (progress) in
+                progressUpdating(progress, nil)
+
+            }, completion: { data, error in
+                if let _ = error {
+                    progressUpdating(0, APIError.error("Can't download video movie!"))
+                }
+            })
     }
 
     func getLocalVideoUrl() {
@@ -269,17 +257,17 @@ final class DetailViewModel {
         }
     }
 
-    func addMoviewToDownload(completion: @escaping Completion) {
+    func addMovieContentToDownload(completion: @escaping Completion) {
         guard let movie = movie else { return }
         RealmManager.shared().addNewObject(object: movie) { (done, error) in
             self.isSaved = true
             completion(done, error)
         }
     }
-    
+
     func deleteVieo(movieID: Int) {
         let fileManager = FileManager.default
-        
+
         do {
             let documentDirectory = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
             let filePath: String = documentDirectory.path + "/\(movieID).mp4"
@@ -288,7 +276,7 @@ final class DetailViewModel {
                 let itemUrl = URL(fileURLWithPath: filePath)
                 try fileManager.removeItem(at: itemUrl)
                 print("Delete local movie video sucess!")
-            }else {
+            } else {
                 print("Video not exist!")
             }
         } catch {

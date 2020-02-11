@@ -4,4 +4,5 @@ ${BUILT_PRODUCTS_DIR}/MVVM-Swift/MVVM.framework
 ${BUILT_PRODUCTS_DIR}/ObjectMapper/ObjectMapper.framework
 ${BUILT_PRODUCTS_DIR}/Realm/Realm.framework
 ${BUILT_PRODUCTS_DIR}/RealmSwift/RealmSwift.framework
+${BUILT_PRODUCTS_DIR}/UICircularProgressRing/UICircularProgressRing.framework
 ${BUILT_PRODUCTS_DIR}/XCDYouTubeKit/XCDYouTubeKit.framework

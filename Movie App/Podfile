@@ -19,5 +19,9 @@ target 'Movie App' do
   pod "XCDYouTubeKit" #Get url video youtube
   
   pod 'RealmSwift'
+  
+  pod 'UICircularProgressRing'
+  
+  pod 'SwiftLint'
 
 end

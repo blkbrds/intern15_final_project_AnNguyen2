@@ -1,5 +1,6 @@
 import UIKit
 import AVKit
+import UICircularProgressRing
 
 final class DetailVC: BaseViewController {
     @IBOutlet weak private var loadActivityIndicator: UIActivityIndicatorView!
@@ -16,6 +17,7 @@ final class DetailVC: BaseViewController {
     @IBOutlet weak private var moreLikeThisMoviesTableView: UITableView!
     @IBOutlet weak private var downloadButton: UIButton!
     @IBOutlet weak private var moviesTableViewHeightContraint: NSLayoutConstraint!
+    @IBOutlet weak private var progressDownload: UICircularProgressRing!
 
     var viewModel = DetailViewModel()
     enum Action {
@@ -155,19 +157,19 @@ final class DetailVC: BaseViewController {
     private func handleDownload() {
         if viewModel.downloaded() {
             deleteAlert(msg: "Do you want to delete movie in download?") { (_) in
-                self.viewModel.removeMovie {[weak self] (done, error) in
+                self.viewModel.removeMovie { [weak self] (done, error) in
                     guard let this = self else { return }
                     if done {
                         this.changeIconButtonDownload()
                         print("Delete success!")
-                    }else {
+                    } else {
                         print("Delete failure!")
                     }
                 }
             }
         } else {
             print("Downloading...")
-            viewModel.addMoviewToDownload { [weak self] (done, error) in
+            viewModel.addMovieContentToDownload { [weak self] (done, error) in
                 guard let _ = self else { return }
                 if done {
                     print("Saved movie content to download!")
@@ -176,14 +178,21 @@ final class DetailVC: BaseViewController {
                 }
             }
             downloadButton.setBackgroundImage(UIImage.init(systemName: "slowmo"), for: .normal)
-            viewModel.saveOfflineVideo { [weak self] (url, error) in
+            downloadButton.tintColor = UIColor.clear
+            progressDownload.isHidden = false
+            progressDownload.value = 0
+            viewModel.downloadMovie { [weak self] (progress, error) in
                 guard let this = self else { return }
                 if let error = error {
                     this.alert(errorString: error.localizedDescription)
                     return
                 }
-                this.changeIconButtonDownload()
-                print("Download video success!")
+                this.progressDownload.value = CGFloat(progress * 100)
+                if progress == 1 {
+                    this.downloadButton.tintColor = App.Color.titleColor
+                    this.progressDownload.isHidden = true
+                    this.changeIconButtonDownload()
+                }
             }
         }
     }

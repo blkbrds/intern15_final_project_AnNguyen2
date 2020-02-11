@@ -7,6 +7,8 @@ PODS:
   - Realm/Headers (4.3.0)
   - RealmSwift (4.3.0):
     - Realm (= 4.3.0)
+  - SwiftLint (0.38.2)
+  - UICircularProgressRing (6.5.0)
   - XCDYouTubeKit (2.8.2)
 
 DEPENDENCIES:
@@ -14,6 +16,8 @@ DEPENDENCIES:
   - MVVM-Swift
   - ObjectMapper
   - RealmSwift
+  - SwiftLint
+  - UICircularProgressRing
   - XCDYouTubeKit
 
 SPEC REPOS:
@@ -23,6 +27,8 @@ SPEC REPOS:
     - ObjectMapper
     - Realm
     - RealmSwift
+    - SwiftLint
+    - UICircularProgressRing
     - XCDYouTubeKit
 
 SPEC CHECKSUMS:
@@ -31,8 +37,10 @@ SPEC CHECKSUMS:
   ObjectMapper: 70187b8941977c62ccfb423caf6b50be405cabf0
   Realm: 9357c3589555793e1860a7104a7412bca4a48d99
   RealmSwift: 402f1e379a8ef82c635313037b043f0f06de880c
+  SwiftLint: 8f5d2f903e1c9bcbc832fd16771e80a263ac6cbb
+  UICircularProgressRing: e6852e8f88e296cbbbe2720cccb55241acda6708
   XCDYouTubeKit: 79baadb0560673a67c771eba45f83e353fd12c1f
 
-PODFILE CHECKSUM: 79c798d384e9e79428ec24b9f43f8d2f0753d921
+PODFILE CHECKSUM: 373b68873f5d64bccf056054c21c042194576ca3
 
 COCOAPODS: 1.8.1
