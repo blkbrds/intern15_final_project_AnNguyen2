@@ -23,5 +23,7 @@ target 'Movie App' do
   pod 'UICircularProgressRing'
   
   pod 'SwiftLint'
+  
+  pod 'Toast-Swift'
 
 end

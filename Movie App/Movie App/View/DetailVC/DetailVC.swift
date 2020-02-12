@@ -26,9 +26,8 @@ final class DetailVC: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(handleReloadData), name: .didChangedData, object: nil)
-        progressDownloadCircularProgressRing.font = UIFont.systemFont(ofSize: 10)
-
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleReloadData),name: .didChangedData, object: nil)
     }
 
     override func setupData() {
@@ -43,6 +42,7 @@ final class DetailVC: BaseViewController {
     override func setupUI() {
         title = "Details"
         detailScrollView.backgroundColor = App.Color.mainColor
+        progressDownloadCircularProgressRing.font = UIFont.systemFont(ofSize: 10)
         refeshControl.addTarget(self, action: #selector(handleRefreshControlReloadData), for: .valueChanged)
         detailScrollView.refreshControl = refeshControl
         movieImageView.borderImage()
@@ -70,7 +70,7 @@ final class DetailVC: BaseViewController {
         APIManager.Downloader.downloadImage(with: urlString) { [weak self] (data, error) in
             guard let this = self else { return }
             if let error = error {
-                print(error, "downloadImage")
+                this.view.makeToast("\(error.localizedDescription) (image)")
                 return
             }
             let imageData = data
@@ -87,11 +87,13 @@ final class DetailVC: BaseViewController {
     private func changeIconButtonDownload() {
         if viewModel.downloaded() {
             downloadButton.tintColor = UIColor.green
-            downloadButton.setBackgroundImage(UIImage.init(systemName: "checkmark.circle.fill"), for: .normal)
+            downloadButton.setBackgroundImage(
+                UIImage.init(systemName: "checkmark.circle.fill"), for: .normal)
             print("Movie is download!")
         } else {
             downloadButton.tintColor = UIColor.white
-            downloadButton.setBackgroundImage(UIImage.init(systemName: "arrow.down.to.line.alt"), for: .normal)
+            downloadButton.setBackgroundImage(
+                UIImage.init(systemName: "arrow.down.to.line.alt"), for: .normal)
             print("Movie is not download!")
         }
     }
@@ -140,7 +142,7 @@ final class DetailVC: BaseViewController {
         viewModel.getURLMovieVideo { [weak self] (done, error) in
             guard let this = self else { return }
             if done {
-                print("Get video url success!")
+                this.view.makeToast("Get video url success!")
             } else if let error = error {
                 this.alert(errorString: "Error video: \(error.localizedDescription)")
             }
@@ -165,9 +167,9 @@ final class DetailVC: BaseViewController {
                     if done {
                         this.changeIconButtonDownload()
                         NotificationCenter.default.post(name: .didChangedData, object: nil)
-                        print("Delete success!")
+                        this.view.makeToast("Delete success!")
                     } else {
-                        print("Delete failure!")
+                        this.view.makeToast("Delete failure!")
                     }
                 }
             }
@@ -178,10 +180,10 @@ final class DetailVC: BaseViewController {
             }
             print("Downloading...")
             viewModel.addMovieContentToDownload { [weak self] (done, error) in
-                guard let _ = self else { return }
+                guard let this = self else { return }
                 if done {
                     NotificationCenter.default.post(name: .didChangedData, object: nil)
-                    print("Saved movie content to download!")
+                    this.view.makeToast("Saved movie content, video is downloading...")
                 } else {
                     print(error?.localizedDescription ?? "")
                 }

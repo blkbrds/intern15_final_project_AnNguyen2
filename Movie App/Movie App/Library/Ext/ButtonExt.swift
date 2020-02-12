@@ -9,7 +9,7 @@
 import UIKit
 
 extension UIButton {
-    func borderButton(){
+    func borderButton() {
         layer.cornerRadius = 6
         clipsToBounds = true
     }

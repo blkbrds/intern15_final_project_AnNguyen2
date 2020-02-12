@@ -16,8 +16,12 @@ enum MethodType: String {
 extension API {
 
     //with url string
-    func request(method: MethodType = .get, with urlString: String, body: Data? = nil,
-        headers: [String: String]? = nil, completion: @escaping (APIResult) -> Void) {
+    func request(
+        method: MethodType = .get,
+        with urlString: String,
+        body: Data? = nil,
+        headers: [String: String]? = nil,
+        completion: @escaping (APIResult) -> Void) {
         guard let url = urlString.url else {
             completion(.failure(.errorURL))
             return
@@ -30,7 +34,7 @@ extension API {
         config.timeoutIntervalForRequest = 60
         config.waitsForConnectivity = true
         let session = URLSession.shared
-        let dataTask = session.dataTask(with: request) { (data, res, error) in
+        let dataTask = session.dataTask(with: request) { (data, _, error) in
             DispatchQueue.main.async {
                 if let error = error {
                     completion(.failure(.error(error.localizedDescription)))

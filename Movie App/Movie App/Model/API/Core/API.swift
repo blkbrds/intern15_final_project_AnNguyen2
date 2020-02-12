@@ -15,7 +15,7 @@ enum APIResult {
     case failure(APIError)
 }
 
-//MARK: - Defines
+// MARK: - Defines
 enum APIError: Error {
     case error(String)
     case errorURL

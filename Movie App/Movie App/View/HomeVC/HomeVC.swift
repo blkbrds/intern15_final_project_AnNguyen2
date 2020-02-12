@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Toast_Swift
 
 final class HomeVC: BaseViewController {
 
@@ -118,7 +119,7 @@ extension HomeVC: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 160
+        return 165
     }
 }
 

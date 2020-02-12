@@ -41,13 +41,13 @@ final class RealmManager {
         }
     }
 
-    func getAllObjects<T: Object>(object: T.Type) -> [T] {
-        let objects = Array(realm.objects(object))
+    func getAllObjects<T: Object>(type: T.Type) -> [T] {
+        let objects = Array(realm.objects(type))
         return objects
     }
 
-    func deleteObject<T: Object, K>(object: T, forPrimaryKey: K, completion: @escaping Completion) {
-        guard let objectForRealm = realm.object(ofType: T.self, forPrimaryKey: forPrimaryKey) else {
+    func deleteObject<T: Object, K>(type: T.Type, forPrimaryKey: K, completion: @escaping Completion) {
+        guard let objectForRealm = realm.object(ofType: type, forPrimaryKey: forPrimaryKey) else {
             completion(false, APIError.error("Empty Object with for Primary Key."))
             return
         }

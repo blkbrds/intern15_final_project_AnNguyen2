@@ -103,7 +103,8 @@ extension APIManager.Path {
         var id: String
         var page: Int = 1
         var url: String {
-            return APIManager.Path.baseURL / "movie" / "\(id)" / "recommendations?api_key=\(App.Key.apiKey)&language=en-US&page=\(page)"
+            return APIManager.Path.baseURL / "movie" / "\(id)"
+                / "recommendations?api_key=\(App.Key.apiKey)&language=en-US&page=\(page)"
         }
     }
 

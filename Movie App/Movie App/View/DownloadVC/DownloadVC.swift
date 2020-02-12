@@ -21,14 +21,16 @@ final class DownloadVC: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(handleReloadData), name: .didChangedData, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleReloadData), name: .didChangedData, object: nil)
     }
 
     override func setupUI() {
         title = "Downloads"
         configFavoriteTableView()
         rightEditBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(handleEditChangedItems))
-        leftDeleteBarButtonItem = UIBarButtonItem(image: UIImage.init(systemName: "trash"), style: .plain, target: self, action: #selector(handleDeleteItems))
+        leftDeleteBarButtonItem = UIBarButtonItem(
+            image: UIImage.init(systemName: "trash"), style: .plain, target: self, action: #selector(handleDeleteItems))
         navigationItem.rightBarButtonItem = rightEditBarButtonItem
     }
 
@@ -108,9 +110,9 @@ final class DownloadVC: BaseViewController {
             if done {
                 NotificationCenter.default.post(name: .didChangedData, object: nil)
                 this.updateUI()
-                print("Delete movies success!")
+                this.view.makeToast("Delete movies success!")
             } else {
-                print(error?.localizedDescription ?? "")
+                this.view.makeToast(error?.localizedDescription ?? "")
             }
         }
     }
@@ -160,8 +162,9 @@ extension DownloadVC: DownloadCellDelegate {
                     this.viewModel.removeMovie(at: indexPath)
                     this.favoriteTableView.deleteRows(at: [indexPath], with: .left)
                     NotificationCenter.default.post(name: .didChangedData, object: nil)
+                    this.view.makeToast("Delete success!")
                 } else {
-                    print(error?.localizedDescription ?? "")
+                    this.view.makeToast(error?.localizedDescription ?? "")
                 }
             }
         }

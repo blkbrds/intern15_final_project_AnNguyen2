@@ -17,6 +17,7 @@ class LayoutCustom: UICollectionViewFlowLayout {
     func setupLayout() {
         self.itemSize = CGSize(width: 110, height: 150)
         self.minimumLineSpacing = 0
+        self.minimumInteritemSpacing = 0
         self.scrollDirection = .horizontal
     }
 

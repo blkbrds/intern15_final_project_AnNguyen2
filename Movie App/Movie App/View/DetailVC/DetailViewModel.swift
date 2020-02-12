@@ -184,18 +184,19 @@ final class DetailViewModel {
                     completion(false, APIError.emptyData)
                     return
                 }
-                XCDYouTubeClient.default().getVideoWithIdentifier("\(key)") { (video, error) in
-                    self.isLoadVideoOnline = false
-                    if let _ = error {
-                        completion(false, APIError.canNotGetVideoURL)
-                        return
-                    }
-                    guard let video = video else {
-                        completion(false, APIError.error("Video not exist!"))
-                        return
-                    }
-                    self.urlVideo = video.streamURL
-                    completion(true, nil)
+                XCDYouTubeClient.default()
+                    .getVideoWithIdentifier("\(key)") { (video, error) in
+                        self.isLoadVideoOnline = false
+                        if let _ = error {
+                            completion(false, APIError.canNotGetVideoURL)
+                            return
+                        }
+                        guard let video = video else {
+                            completion(false, APIError.error("Video not exist!"))
+                            return
+                        }
+                        self.urlVideo = video.streamURL
+                        completion(true, nil)
                 }
             }
         }
@@ -219,7 +220,8 @@ final class DetailViewModel {
             nameFile: "\(movie.id)",
             progressValue: { (progress) in
                 progressUpdating(progress, nil)
-            }, completion: { data, error in
+            },
+            completion: { data, error in
                 if let _ = error {
                     progressUpdating(0, APIError.error("Can't download video movie!"))
                     return
@@ -231,7 +233,8 @@ final class DetailViewModel {
     func getLocalVideoUrl() {
         let fileManager = FileManager.default
         do {
-            let documentDirectory = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            let documentDirectory = try fileManager.url(
+                for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
             guard let movie = self.movie else {
                 print("Video movie in local is empty!")
                 return
@@ -250,7 +253,8 @@ final class DetailViewModel {
 
     func checkMovieInDownload() {
         guard let movie = movie else { return }
-        RealmManager.shared().getObjectForKey(object: Movie.self, forPrimaryKey: movie.id) { (movie, error) in
+        RealmManager.shared().getObjectForKey(
+            object: Movie.self, forPrimaryKey: movie.id) { (movie, error) in
             if let _ = error {
                 self.isSaved = false
                 return
@@ -269,7 +273,8 @@ final class DetailViewModel {
     func deleteVieo(movieID: Int) {
         let fileManager = FileManager.default
         do {
-            let documentDirectory = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            let documentDirectory = try fileManager.url(
+                for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
             let filePath: String = documentDirectory.path + "/\(movieID).mp4"
             if fileManager.fileExists(atPath: filePath) {
                 print("Exist")
@@ -287,8 +292,12 @@ final class DetailViewModel {
     func removeMovie(completion: @escaping Completion) {
         guard let movie = movie else { return }
         self.deleteVieo(movieID: movie.id)
-        RealmManager.shared().deleteObject(object: movie, forPrimaryKey: movie.id) { (done, error) in
-            completion(done, error)
+        RealmManager.shared()
+            .deleteObject(type: Movie.self, forPrimaryKey: movie.id) { (done, error) in
+                if done {
+                    self.isSaved = false
+                }
+                completion(done, error)
         }
     }
 

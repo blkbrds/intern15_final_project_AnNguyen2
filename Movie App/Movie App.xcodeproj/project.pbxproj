@@ -505,6 +505,7 @@
 				8E81436923E26F0B00E68EF7 /* Frameworks */,
 				8E81436A23E26F0B00E68EF7 /* Resources */,
 				3F1CD1B3FFC00C64F7B16A2A /* [CP] Embed Pods Frameworks */,
+				8E12C96C23F3AA400028E6E9 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -589,6 +590,24 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Movie App/Pods-Movie App-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		8E12C96C23F3AA400028E6E9 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "
+";
 		};
 		9771004CF6CD98BDB5AE9EA5 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;

@@ -35,7 +35,7 @@ final class DownloadViewModel {
     }
 
     func fetchData(completion: @escaping Completion) {
-        let movies = RealmManager.shared().getAllObjects(object: Movie.self)
+        let movies = RealmManager.shared().getAllObjects(type: Movie.self)
         self.movies = movies
         completion(true, nil)
     }
@@ -43,7 +43,7 @@ final class DownloadViewModel {
     func removeMovieInFavorite(movie: Movie?, completion: @escaping Completion) {
         guard let movie = movie else { return }
         deleteVieo(movieID: movie.id)
-        RealmManager.shared().deleteObject(object: movie, forPrimaryKey: movie.id) { (done, error) in
+        RealmManager.shared().deleteObject(type: Movie.self, forPrimaryKey: movie.id) { (done, error) in
             if done {
                 completion(done, error)
                 print("Delete movie")

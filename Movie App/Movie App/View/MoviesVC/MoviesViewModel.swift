@@ -45,7 +45,6 @@ final class MoviesViewModel {
                 url = APIManager.Path.Trending(page: page, trendingType: trendingType) .url
             } else {
                 url = APIManager.Path.Trending(page: page) .url
-
             }
         case .discover:
             if let genre = genreFilter {

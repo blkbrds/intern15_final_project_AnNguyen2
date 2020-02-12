@@ -39,11 +39,9 @@ final class Movie: Object {
         self.tagLine = json["tagline"] as? String ?? ""
         self.homePage = json["homepage"] as? String ?? ""
     }
-    
-    required init() {
-        //fatalError("init() has not been implemented")
-    }
-    
+
+    required init() { }
+
     override static func primaryKey() -> String? {
         return "id"
     }

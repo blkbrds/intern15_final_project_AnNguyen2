@@ -14,7 +14,7 @@ extension UICollectionView {
         let nib = UINib(nibName: identifier, bundle: .main)
         register(nib, forCellWithReuseIdentifier: identifier)
     }
-    
+
     func dequeueReusableCell<T>(with cellClass: T.Type, for indexPath: IndexPath) -> T {
         let identifier = String(describing: cellClass)
         guard let cell = dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as? T else {

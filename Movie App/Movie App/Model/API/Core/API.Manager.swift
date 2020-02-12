@@ -9,7 +9,7 @@
 import Foundation
 
 struct APIManager {
-    //MARK: Config
+    // MARK: Config
     struct Path {
         static let baseURL = "https://api.themoviedb.org/3"
         static let baseImage3URL = "https://image.tmdb.org/t/p/w300"
