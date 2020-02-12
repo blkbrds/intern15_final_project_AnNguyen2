@@ -136,7 +136,7 @@ final class MoviesVC: BaseViewController {
         layout.scrollDirection = .vertical
         if viewModel.status == .row {
             let widthItem = width
-            let heightItem: CGFloat = 120
+            let heightItem: CGFloat = 130
             layout.minimumLineSpacing = 0
             layout.sectionInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
             layout.itemSize = CGSize(width: widthItem, height: heightItem)
