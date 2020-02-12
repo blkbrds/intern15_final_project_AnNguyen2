@@ -79,7 +79,7 @@ final class MoviesVC: BaseViewController {
 
     private func fetchData(for action: Action, page: Int = 1) {
         if action == .reload {
-            viewModel.movies = []
+            viewModel.resetMovies()
             updateUI()
         }
         loadActivityIndicator.isHidden = false

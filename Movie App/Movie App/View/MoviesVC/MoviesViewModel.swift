@@ -186,4 +186,8 @@ final class MoviesViewModel {
     func getMovieCategory() -> MovieCategory? {
         return movieCategory
     }
+    
+    func resetMovies() {
+        movies = []
+    }
 }

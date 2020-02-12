@@ -19,12 +19,6 @@ final class HomeVC: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        APIManager.Downloader.downloadVideo(with: "", nameFile: "BBB", progressValue: { progress in
-            
-        }, completion: { data, error in
-            
-        })
-        
     }
 
     override func setupUI() {
