@@ -246,6 +246,7 @@ final class DetailViewModel {
                 print("local video, \(self.localUrl?.absoluteString ?? "")")
                 print("Get success video movie in local!")
             } else {
+                self.localUrl = nil
                 print("Video movie in local is empty!")
             }
         } catch {

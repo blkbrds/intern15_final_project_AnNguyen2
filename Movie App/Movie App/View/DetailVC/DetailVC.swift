@@ -220,7 +220,7 @@ final class DetailVC: BaseViewController {
     }
 
     @objc private func handleRefreshControlReloadData() {
-        if viewModel.downloaded() {
+        if viewModel.downloaded(), viewModel.canPop() {
             viewModel.getMovieDownloaded()
             updateUI()
             refeshControl.endRefreshing()
