@@ -71,14 +71,14 @@ final class SearchVC: BaseViewController {
             loadActivityIndicator?.isHidden = false
         }
         viewModel.fetchSearchData(page: page) { [weak self] (_, error) in
-            guard let this = self else { return }
-            if error != nil || this.viewModel.isEmptyMovie {
-                this.noResultTextStackView.isHidden = false
+            guard let `self` = self else { return }
+            if error != nil || self.viewModel.isEmptyMovie {
+                self.noResultTextStackView.isHidden = false
             } else {
-                this.noResultTextStackView.isHidden = true
+                self.noResultTextStackView.isHidden = true
             }
-            this.updateUI()
-            print(this.viewModel.numberOfItems())
+            self.updateUI()
+            print(self.viewModel.numberOfItems())
         }
     }
 

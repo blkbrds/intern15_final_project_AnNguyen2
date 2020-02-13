@@ -80,7 +80,7 @@ final class DetailViewModel {
     func isLoadingVideo() -> Bool {
         return isLoadVideoOnline
     }
-    
+
     func canPop() -> Bool {
         return canPopToDownload
     }
@@ -96,7 +96,8 @@ final class DetailViewModel {
             return
         }
         let url = APIManager.Path.Details(id: "\(id)").url
-        API.shared().request(with: url) { (result) in
+        API.shared().request(with: url) { [weak self] (result) in
+            guard let `self` = self else { return }
             switch result {
             case .failure(let error):
                 completion(false, error)
@@ -129,7 +130,8 @@ final class DetailViewModel {
         print("Loading data...")
         for i in 0..<urls.count {
             group.enter()
-            API.shared().request(with: urls[i]) { (result) in
+            API.shared().request(with: urls[i]) { [weak self] (result) in
+                guard let `self` = self else { return }
                 switch result {
                 case .failure(_):
                     self.isLoading[i] = false
@@ -164,7 +166,8 @@ final class DetailViewModel {
         }
         isLoadVideoOnline = true
         let url = APIManager.Path.Trailer(id: id).url
-        API.shared().request(with: url) { (result) in
+        API.shared().request(with: url) { [weak self] (result) in
+            guard let `self` = self else { return }
             switch result {
             case .failure(let error):
                 completion(false, error)
@@ -218,10 +221,12 @@ final class DetailViewModel {
         APIManager.Downloader.downloadVideo(
             with: url.absoluteString,
             nameFile: "\(movie.id)",
-            progressValue: { (progress) in
+            progressValue: { [weak self] (progress) in
+                guard let _ = self else { return }
                 progressUpdating(progress, nil)
             },
-            completion: { data, error in
+            completion: { [weak self] data, error in
+                guard let `self` = self else { return }
                 if let _ = error {
                     self.isSaved = false
                     progressUpdating(0, APIError.error("Can't download video movie!"))
@@ -260,7 +265,9 @@ final class DetailViewModel {
             return
         }
         RealmManager.shared().getObjectForKey(
-            object: Movie.self, forPrimaryKey: movie.id) { (movie, error) in
+            object: Movie.self,
+            forPrimaryKey: movie.id) { [weak self] (movie, error) in
+            guard let `self` = self else { return }
             if let _ = error {
                 self.isSaved = false
                 return
@@ -272,8 +279,10 @@ final class DetailViewModel {
 
     func addMovieContentToDownload(completion: @escaping Completion) {
         guard let movie = movie else { return }
-        RealmManager.shared().addNewObject(object: movie) { (done, error) in
-            completion(done, error)
+        RealmManager.shared()
+            .addNewObject(object: movie) { [weak self] (done, error) in
+                guard let _ = self else { return }
+                completion(done, error)
         }
     }
 
@@ -300,7 +309,9 @@ final class DetailViewModel {
         guard let movie = movie else { return }
         deleteVieo(movieID: movie.id)
         RealmManager.shared()
-            .deleteObject(type: Movie.self, forPrimaryKey: movie.id) { (done, error) in
+            .deleteObject(type: Movie.self,
+                forPrimaryKey: movie.id) { [weak self] (done, error) in
+                guard let `self` = self else { return }
                 if done {
                     self.isSaved = false
                 }

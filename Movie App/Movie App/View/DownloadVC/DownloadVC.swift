@@ -58,11 +58,11 @@ final class DownloadVC: BaseViewController {
             updateUI()
         }
         viewModel.fetchData { [weak self] (done, error) in
-            guard let this = self else { return }
+            guard let `self` = self else { return }
             if done {
-                this.updateUI()
+                self.updateUI()
             } else if let error = error {
-                this.alert(errorString: error.localizedDescription)
+                self.alert(errorString: error.localizedDescription)
             }
         }
     }
@@ -106,13 +106,13 @@ final class DownloadVC: BaseViewController {
         guard let indexPaths = favoriteTableView.indexPathsForSelectedRows else { return }
         let movies: [Movie] = indexPaths.map({ viewModel.getMovie(in: $0) })
         viewModel.removeMoviesInFavorite(movies: movies) { [weak self] (done, error) in
-            guard let this = self else { return }
+            guard let `self` = self else { return }
             if done {
                 NotificationCenter.default.post(name: .didChangedData, object: nil)
-                this.updateUI()
-                this.view.makeToast("Delete movies success!")
+                self.updateUI()
+                self.view.makeToast("Delete movies success!")
             } else {
-                this.view.makeToast(error?.localizedDescription ?? "")
+                self.view.makeToast(error?.localizedDescription ?? "")
             }
         }
     }
@@ -160,15 +160,15 @@ extension DownloadVC: DownloadCellDelegate {
     func favoriteCell(_ cell: DownloadCell, delete item: Movie?, in indexPath: IndexPath?, perform action: DownloadCellActionType) {
         deleteAlert(msg: "Do you want to delete \(item?.originalTitle ?? "") in your favorites?") { (_) in
             self.viewModel.removeMovieInFavorite(movie: item) { [weak self] (done, error) in
-                guard let this = self else { return }
+                guard let `self` = self else { return }
                 if done {
                     guard let indexPath = indexPath else { return }
-                    this.viewModel.removeMovie(at: indexPath)
-                    this.favoriteTableView.deleteRows(at: [indexPath], with: .left)
+                    self.viewModel.removeMovie(at: indexPath)
+                    self.favoriteTableView.deleteRows(at: [indexPath], with: .left)
                     NotificationCenter.default.post(name: .didChangedData, object: nil)
-                    this.view.makeToast("Delete success!")
+                    self.view.makeToast("Delete success!")
                 } else {
-                    this.view.makeToast(error?.localizedDescription ?? "")
+                    self.view.makeToast(error?.localizedDescription ?? "")
                 }
             }
         }

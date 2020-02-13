@@ -68,19 +68,19 @@ final class DetailVC: BaseViewController {
             return
         }
         APIManager.Downloader.downloadImage(with: urlString) { [weak self] (data, error) in
-            guard let this = self else { return }
+            guard let `self` = self else { return }
             if let error = error {
-                this.view.makeToast("\(error.localizedDescription) (image)")
+                self.view.makeToast("\(error.localizedDescription) (image)")
                 return
             }
             let imageData = data
-            this.viewModel.setDataImageMovie(data: imageData)
+            self.viewModel.setDataImageMovie(data: imageData)
             guard let data = data else { return }
             DispatchQueue.main.async {
-                this.movieImageView.image = UIImage(data: data)
-                this.moviePosterImageView.image = UIImage(data: data)
+                self.movieImageView.image = UIImage(data: data)
+                self.moviePosterImageView.image = UIImage(data: data)
             }
-            this.changeIconButtonDownload()
+            self.changeIconButtonDownload()
         }
     }
 
@@ -111,13 +111,13 @@ final class DetailVC: BaseViewController {
         loadActivityIndicator.startAnimating()
         loadActivityIndicator.isHidden = false
         viewModel.fetchMovieData { [weak self] (done, error) in
-            guard let this = self else { return }
+            guard let `self` = self else { return }
             if done {
-                this.updateUI()
+                self.updateUI()
             } else if let error = error {
-                this.alert(errorString: error.localizedDescription)
+                self.alert(errorString: error.localizedDescription)
             }
-            this.changeIconButtonDownload()
+            self.changeIconButtonDownload()
         }
         loadActivityIndicator.stopAnimating()
         loadActivityIndicator.isHidden = true
@@ -130,21 +130,21 @@ final class DetailVC: BaseViewController {
             moreLikeThisMoviesTableView.reloadData()
         }
         viewModel.fetchSimilarRecommendMovie { [weak self] (done, error) in
-            guard let this = self else { return }
+            guard let `self` = self else { return }
             if let error = error {
-                this.alert(errorString: error.localizedDescription)
+                self.alert(errorString: error.localizedDescription)
             }
-            this.updateUIForMoreLikeTableView()
+            self.updateUIForMoreLikeTableView()
         }
     }
 
     private func getURLMovieVideo() {
         viewModel.getURLMovieVideo { [weak self] (done, error) in
-            guard let this = self else { return }
+            guard let `self` = self else { return }
             if done {
-                this.view.makeToast("Get video url success!")
+                self.view.makeToast("Get video url success!")
             } else if let error = error {
-                this.alert(errorString: "Error video: \(error.localizedDescription)")
+                self.alert(errorString: "Error video: \(error.localizedDescription)")
             }
         }
     }
@@ -163,18 +163,18 @@ final class DetailVC: BaseViewController {
         if viewModel.downloaded() {
             deleteAlert(msg: "Do you want to delete movie in download?") { (_) in
                 self.viewModel.removeMovie { [weak self] (done, error) in
-                    guard let this = self else { return }
+                    guard let `self` = self else { return }
                     if let _ = error {
-                        this.view.makeToast("Delete failure!")
+                        self.view.makeToast("Delete failure!")
                         return
                     }
                     NotificationCenter.default.post(name: .didChangedData, object: nil)
-                    if done, this.viewModel.canPop() {
-                        this.navigationController?.popViewController(animated: true)
+                    if done, self.viewModel.canPop() {
+                        self.navigationController?.popViewController(animated: true)
                     }else {
-                        this.changeIconButtonDownload()
+                        self.changeIconButtonDownload()
                     }
-                    this.view.makeToast("Delete success!")
+                    self.view.makeToast("Delete success!")
                 }
             }
         } else {
@@ -184,29 +184,29 @@ final class DetailVC: BaseViewController {
             }
             print("Downloading...")
             viewModel.addMovieContentToDownload { [weak self] (done, error) in
-                guard let this = self else { return }
+                guard let `self` = self else { return }
                 if done {
                     NotificationCenter.default.post(name: .didChangedData, object: nil)
-                    this.view.makeToast("Saved movie content, video is downloading...")
+                    self.view.makeToast("Saved movie content, video is downloading...")
                 } else {
-                    this.view.makeToast(error?.localizedDescription ?? "")
+                    self.view.makeToast(error?.localizedDescription ?? "")
                 }
             }
             downloadButton.isHidden = true
             progressDownloadCircularProgressRing.isHidden = false
             progressDownloadCircularProgressRing.value = 0
             viewModel.downloadMovie { [weak self] (progress, error) in
-                guard let this = self else { return }
+                guard let `self` = self else { return }
                 if let _ = error {
-                    this.alert(errorString: "Error to download video!")
-                    this.changeIconButtonDownload()
+                    self.alert(errorString: "Error to download video!")
+                    self.changeIconButtonDownload()
                     return
                 }
-                this.progressDownloadCircularProgressRing.value = CGFloat(progress * 100)
+                self.progressDownloadCircularProgressRing.value = CGFloat(progress * 100)
                 if progress == 1 {
-                    this.downloadButton.isHidden = false
-                    this.progressDownloadCircularProgressRing.isHidden = true
-                    this.changeIconButtonDownload()
+                    self.downloadButton.isHidden = false
+                    self.progressDownloadCircularProgressRing.isHidden = true
+                    self.changeIconButtonDownload()
                 }
             }
         }

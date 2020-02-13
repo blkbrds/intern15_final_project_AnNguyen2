@@ -75,7 +75,8 @@ final class SearchViewModel {
         guard query != "" else { return }
         let url = APIManager.Path.Search(query: query, page: page).url
         isLoadData = true
-        API.shared().request(with: url) { (result) in
+        API.shared().request(with: url) {[weak self] (result) in
+            guard let `self` = self else { return }
             switch result {
             case .failure(let error):
                 completion(false, error)
