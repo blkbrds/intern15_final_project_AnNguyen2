@@ -19,6 +19,7 @@ final class DetailViewModel {
     var isSaved: Bool = false
     var isLoadVideoOnline: Bool = false
     var isLoading: [Bool] = [true, true]
+    var canPopToDownload: Bool = false
 
     init() { }
 
@@ -37,10 +38,7 @@ final class DetailViewModel {
     func setupMovie(movie: Movie) {
         self.movie = movie
         isSaved = true
-    }
-
-    func getVideoUrl() -> URL? {
-        return urlVideo
+        canPopToDownload = true
     }
 
     func getTitle(section: Int) -> String {
@@ -59,12 +57,8 @@ final class DetailViewModel {
         return isSaved
     }
 
-    func localVideoUrl() -> URL? {
-        return localUrl
-    }
-
-    func getVideoUrlOnline() -> URL? {
-        return urlVideo
+    func videoUrl() -> URL? {
+        return localUrl ?? urlVideo
     }
 
     func detailViewModel(for id: Int) -> DetailViewModel {
@@ -86,6 +80,10 @@ final class DetailViewModel {
     func isLoadingVideo() -> Bool {
         return isLoadVideoOnline
     }
+    
+    func canPop() -> Bool {
+        return canPopToDownload
+    }
 
     func fetchMovieData(completion: @escaping Completion) {
         guard let id = movieID else {
@@ -93,6 +91,7 @@ final class DetailViewModel {
             return
         }
         if let _ = movie {
+            getLocalVideoUrl()
             completion(true, nil)
             return
         }
@@ -109,7 +108,7 @@ final class DetailViewModel {
                 let json = data.toJSObject()
                 self.movie = Movie(json: json)
                 self.getLocalVideoUrl()
-                self.checkMovieInDownload()
+                self.getMovieDownloaded()
                 completion(true, nil)
             }
         }
@@ -204,6 +203,7 @@ final class DetailViewModel {
 
     func downloadMovie(progressUpdating: @escaping (Double, Error?) -> Void) {
         guard let url = urlVideo else {
+            print("AAA, APIError.invalidURL")
             progressUpdating(0, APIError.invalidURL)
             return
         }
@@ -223,6 +223,7 @@ final class DetailViewModel {
             },
             completion: { data, error in
                 if let _ = error {
+                    self.isSaved = false
                     progressUpdating(0, APIError.error("Can't download video movie!"))
                     return
                 }
@@ -242,6 +243,7 @@ final class DetailViewModel {
             let filePath: String = documentDirectory.path + "/\(movie.id).mp4"
             if let _ = fileManager.contents(atPath: filePath) {
                 self.localUrl = URL(fileURLWithPath: filePath)
+                print("local video, \(self.localUrl?.absoluteString ?? "")")
                 print("Get success video movie in local!")
             } else {
                 print("Video movie in local is empty!")
@@ -251,8 +253,11 @@ final class DetailViewModel {
         }
     }
 
-    func checkMovieInDownload() {
-        guard let movie = movie else { return }
+    func getMovieDownloaded() {
+        guard let movie = movie else {
+            getLocalVideoUrl()
+            return
+        }
         RealmManager.shared().getObjectForKey(
             object: Movie.self, forPrimaryKey: movie.id) { (movie, error) in
             if let _ = error {
@@ -261,6 +266,7 @@ final class DetailViewModel {
             }
             self.isSaved = true
         }
+        getLocalVideoUrl()
     }
 
     func addMovieContentToDownload(completion: @escaping Completion) {
@@ -291,7 +297,7 @@ final class DetailViewModel {
 
     func removeMovie(completion: @escaping Completion) {
         guard let movie = movie else { return }
-        self.deleteVieo(movieID: movie.id)
+        deleteVieo(movieID: movie.id)
         RealmManager.shared()
             .deleteObject(type: Movie.self, forPrimaryKey: movie.id) { (done, error) in
                 if done {
@@ -299,9 +305,5 @@ final class DetailViewModel {
                 }
                 completion(done, error)
         }
-    }
-
-    func changeSavedState() {
-        isSaved = !isSaved
     }
 }

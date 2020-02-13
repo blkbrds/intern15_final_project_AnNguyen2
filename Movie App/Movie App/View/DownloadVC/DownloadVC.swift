@@ -116,6 +116,10 @@ final class DownloadVC: BaseViewController {
             }
         }
     }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 }
 
 //MARK: - UITableViewDelegate

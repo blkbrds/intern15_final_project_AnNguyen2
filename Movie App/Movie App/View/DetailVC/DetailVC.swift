@@ -27,12 +27,12 @@ final class DetailVC: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleReloadData),name: .didChangedData, object: nil)
+            selector: #selector(handleReloadData), name: .didChangedData, object: nil)
     }
 
     override func setupData() {
         if viewModel.downloaded() {
-            viewModel.getLocalVideoUrl()
+            viewModel.getMovieDownloaded()
             updateUI()
             return
         }
@@ -42,7 +42,7 @@ final class DetailVC: BaseViewController {
     override func setupUI() {
         title = "Details"
         detailScrollView.backgroundColor = App.Color.mainColor
-        progressDownloadCircularProgressRing.font = UIFont.systemFont(ofSize: 10)
+        progressDownloadCircularProgressRing.font = UIFont.systemFont(ofSize: 9)
         refeshControl.addTarget(self, action: #selector(handleRefreshControlReloadData), for: .valueChanged)
         detailScrollView.refreshControl = refeshControl
         movieImageView.borderImage()
@@ -164,13 +164,17 @@ final class DetailVC: BaseViewController {
             deleteAlert(msg: "Do you want to delete movie in download?") { (_) in
                 self.viewModel.removeMovie { [weak self] (done, error) in
                     guard let this = self else { return }
-                    if done {
-                        this.changeIconButtonDownload()
-                        NotificationCenter.default.post(name: .didChangedData, object: nil)
-                        this.view.makeToast("Delete success!")
-                    } else {
+                    if let _ = error {
                         this.view.makeToast("Delete failure!")
+                        return
                     }
+                    NotificationCenter.default.post(name: .didChangedData, object: nil)
+                    if done, this.viewModel.canPop() {
+                        this.navigationController?.popViewController(animated: true)
+                    }else {
+                        this.changeIconButtonDownload()
+                    }
+                    this.view.makeToast("Delete success!")
                 }
             }
         } else {
@@ -185,7 +189,7 @@ final class DetailVC: BaseViewController {
                     NotificationCenter.default.post(name: .didChangedData, object: nil)
                     this.view.makeToast("Saved movie content, video is downloading...")
                 } else {
-                    print(error?.localizedDescription ?? "")
+                    this.view.makeToast(error?.localizedDescription ?? "")
                 }
             }
             downloadButton.isHidden = true
@@ -193,8 +197,8 @@ final class DetailVC: BaseViewController {
             progressDownloadCircularProgressRing.value = 0
             viewModel.downloadMovie { [weak self] (progress, error) in
                 guard let this = self else { return }
-                if let error = error {
-                    this.alert(errorString: error.localizedDescription)
+                if let _ = error {
+                    this.alert(errorString: "Error to download video!")
                     this.changeIconButtonDownload()
                     return
                 }
@@ -207,13 +211,21 @@ final class DetailVC: BaseViewController {
             }
         }
     }
-    
+
     @objc private func handleReloadData() {
-        viewModel.checkMovieInDownload()
+        if !viewModel.canPop() {
+            viewModel.getMovieDownloaded()
+        }
         changeIconButtonDownload()
     }
 
     @objc private func handleRefreshControlReloadData() {
+        if viewModel.downloaded() {
+            viewModel.getMovieDownloaded()
+            updateUI()
+            refeshControl.endRefreshing()
+            return
+        }
         fetchData(for: .reload)
         fetchSimilarRecommendMovie(for: .reload)
         refeshControl.endRefreshing()
@@ -224,18 +236,12 @@ final class DetailVC: BaseViewController {
             alert(errorString: "Video is loading, please wait...")
             return
         }
-        var urlTemp: URL? = nil
-        if let localUrl = viewModel.localVideoUrl() {
-            urlTemp = localUrl
-        } else if let onlineUrl = viewModel.getVideoUrlOnline() {
-            urlTemp = onlineUrl
-        } else {
+        guard let videoUrl = viewModel.videoUrl() else {
             alert(errorString: "Video is empty!")
             return
         }
-        guard let url = urlTemp else { return }
-        print(url.absoluteString)
-        let player = AVPlayer(url: url)
+        print(videoUrl.absoluteString)
+        let player = AVPlayer(url: videoUrl)
         let playerViewController = AVPlayerViewController()
         playerViewController.player = player
         present(playerViewController, animated: true) {
@@ -263,6 +269,10 @@ final class DetailVC: BaseViewController {
             return
         }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
 
