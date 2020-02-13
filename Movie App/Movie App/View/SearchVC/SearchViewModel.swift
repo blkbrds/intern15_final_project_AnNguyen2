@@ -70,6 +70,11 @@ final class SearchViewModel {
         oldTimer = timer
     }
 
+    func resetPage() {
+        currentPage = 0
+        totalPages = 0
+    }
+    
     func fetchSearchData(page: Int = 1, completion: @escaping Completion) {
         query = query.trimmed.replacingOccurrences(of: " ", with: "%20")
         guard query != "" else { return }

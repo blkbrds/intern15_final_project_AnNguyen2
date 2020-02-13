@@ -190,4 +190,8 @@ final class MoviesViewModel {
     func resetMovies() {
         movies = []
     }
+    
+    func getTotalPage() -> Int{
+        return totalPages
+    } 
 }

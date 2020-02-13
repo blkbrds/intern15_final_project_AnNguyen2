@@ -62,6 +62,7 @@ final class SearchVC: BaseViewController {
     private func fetchData(with action: Action, page: Int = 1) {
         if action == .reload {
             viewModel.resetMovies()
+            viewModel.resetPage()
             updateUI()
         }
         let searctText = navigationItem.searchController?.searchBar.text
@@ -73,6 +74,7 @@ final class SearchVC: BaseViewController {
         viewModel.fetchSearchData(page: page) { [weak self] (_, error) in
             guard let `self` = self else { return }
             if error != nil || self.viewModel.isEmptyMovie {
+                self.viewModel.resetPage()
                 self.noResultTextStackView.isHidden = false
             } else {
                 self.noResultTextStackView.isHidden = true
@@ -149,6 +151,7 @@ extension SearchVC: UICollectionViewDelegate {
         if scrollHeight + scrollViewContentOffsetY >= contentSizeHeight && viewModel.isNotLoadData(), viewModel.getTotalPags() > viewModel.getCurrentPage() {
             let nextPage = viewModel.getCurrentPage() + 1
             fetchData(with: .load, page: nextPage)
+            print(viewModel.currentPage, viewModel.totalPages)
             print("\(viewModel.numberOfItems()) items")
         }
         scrollView.keyboardDismissMode = .onDrag
