@@ -15,10 +15,10 @@ class LayoutCustom: UICollectionViewFlowLayout {
     }
 
     func setupLayout() {
-        self.itemSize = CGSize(width: 110, height: 150)
-        self.minimumLineSpacing = 0
-        self.minimumInteritemSpacing = 0
-        self.scrollDirection = .horizontal
+        itemSize = CGSize(width: 110, height: 150)
+        minimumLineSpacing = 0
+        minimumInteritemSpacing = 0
+        scrollDirection = .horizontal
     }
 
     required init?(coder: NSCoder) {
