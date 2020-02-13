@@ -29,13 +29,13 @@ class GridCell: UICollectionViewCell {
         voteCountLabel.text = " \(movie.voteCount.parseToThousandUnit()) K"
         let urlString = APIManager.Path.baseImage5URL + movie.posterPath
         APIManager.Downloader.downloadImage(with: urlString) {[weak self] (image, error) in
-            guard let this = self else { return }
+            guard let `self` = self else { return }
             if let error = error {
                 print(error)
                 return
             }
             DispatchQueue.main.async {
-                this.movieImageView.image = image
+                self.movieImageView.image = image
             }
         }
     }

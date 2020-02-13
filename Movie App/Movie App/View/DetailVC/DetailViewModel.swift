@@ -66,7 +66,8 @@ final class DetailViewModel {
             return
         }
         let url = APIManager.Path.Details(id: "\(id)").url
-        API.shared().request(with: url) { (result) in
+        API.shared().request(with: url) {[weak self] (result) in
+            guard let `self` = self else { return }
             switch result {
             case .failure(let error):
                 completion(false, error)
@@ -96,7 +97,8 @@ final class DetailViewModel {
         print("Loading data...")
         for i in 0..<urls.count {
             group.enter()
-            API.shared().request(with: urls[i]) { (result) in
+            API.shared().request(with: urls[i]) {[weak self] (result) in
+                guard let `self` = self else { return }
                 switch result {
                 case .failure(_):
                     self.isLoading[i] = false
@@ -130,7 +132,8 @@ final class DetailViewModel {
             return
         }
         let url = APIManager.Path.Trailer(id: id).url
-        API.shared().request(with: url) { (result) in
+        API.shared().request(with: url) { [weak self] (result) in
+            guard let `self` = self else { return }
             switch result {
             case .failure(let error):
                 completion(false, error)
@@ -150,7 +153,8 @@ final class DetailViewModel {
                     return
                 }
                 self.keyVideo = key
-                XCDYouTubeClient.default().getVideoWithIdentifier("\(key)") { (video, error) in
+                XCDYouTubeClient.default().getVideoWithIdentifier("\(key)") { [weak self] (video, error) in
+                    guard let `self` = self else { return }
                     if let _ = error {
                         completion(false, APIError.canNotGetVideoURL)
                         return
@@ -171,8 +175,8 @@ final class DetailViewModel {
             completion(nil, APIError.invalidURL)
             return
         }
-        API.shared().request(with: url.absoluteString) { (result) in
-
+        API.shared().request(with: url.absoluteString) { [weak self] (result) in
+            guard let _ = self else { return }
             switch result {
             case .failure(let error):
                 completion(nil, error)

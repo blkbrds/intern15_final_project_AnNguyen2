@@ -91,7 +91,8 @@ final class HomeViewModel {
         let group = DispatchGroup()
         for i in 0..<urls.count {
             group.enter()
-            API.shared().request(with: urls[i]) { (result) in
+            API.shared().request(with: urls[i]) {[weak self] (result) in
+                guard let `self` = self else { return }
                 switch result {
                 case .failure(_):
                     print("")

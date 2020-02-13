@@ -64,11 +64,11 @@ class MoviesVC: BaseViewController {
         guard let category = viewModel.getMovieCategory() else { return }
         if category == .discover || category == .tv || category == .trending {
             viewModel.fetchGenre { [weak self] (done, error) in
-                guard let this = self else { return }
+                guard let `self` = self else { return }
                 if done {
-                    this.filterViewCustom?.setupAlertFilterViewCustom(genres: this.viewModel.genres)
+                    self.filterViewCustom?.setupAlertFilterViewCustom(genres: self.viewModel.genres)
                 } else if let error = error {
-                    this.alert(errorString: error.localizedDescription)
+                    self.alert(errorString: error.localizedDescription)
                 }
             }
         }
@@ -81,13 +81,13 @@ class MoviesVC: BaseViewController {
         }
         loadActivityIndicator.isHidden = false
         viewModel.fetchDataWithFilter(page: page) { [weak self] (done, error) in
-            guard let this = self else { return }
+            guard let `self` = self else { return }
             if done {
-                this.updateUI()
+                self.updateUI()
             } else if let error = error {
-                this.alert(errorString: error.localizedDescription)
+                self.alert(errorString: error.localizedDescription)
             }
-            this.loadActivityIndicator.isHidden = true
+            self.loadActivityIndicator.isHidden = true
         }
     }
 
