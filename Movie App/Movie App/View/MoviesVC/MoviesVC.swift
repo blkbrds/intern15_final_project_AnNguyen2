@@ -114,8 +114,14 @@ final class MoviesVC: BaseViewController {
     }
 
     private func setupNavigationBar() {
-        fillterBarButtonItem = UIBarButtonItem(image: UIImage.init(systemName: "f.circle.fill"), style: .plain, target: self, action: #selector(handleFilterMovies))
-        statusBarButtonItem = UIBarButtonItem(image: UIImage.init(systemName: "square.grid.2x2"), style: .plain, target: self, action: #selector(handleChangedStatus))
+        fillterBarButtonItem = UIBarButtonItem(
+            image: UIImage.init(systemName: "f.circle.fill"),
+            style: .plain, target: self,
+            action: #selector(handleFilterMovies))
+        statusBarButtonItem = UIBarButtonItem(
+            image: UIImage.init(systemName: "square.grid.2x2"),
+            style: .plain, target: self,
+            action: #selector(handleChangedStatus))
         guard let category = viewModel.movieCategory else { return }
         if category == .discover || category == .tv || category == .trending { navigationItem.rightBarButtonItems = [statusBarButtonItem, fillterBarButtonItem]
         } else {
