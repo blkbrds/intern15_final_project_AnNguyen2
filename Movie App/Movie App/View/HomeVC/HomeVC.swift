@@ -47,12 +47,12 @@ class HomeVC: BaseViewController {
             movieTableView.reloadData()
         }
         viewModel.fetchData { [weak self] (done, index, error) in
-            guard let this = self else { return }
+            guard let `self` = self else { return }
             if done {
-                this.movieTableView.reloadData()
+                self.movieTableView.reloadData()
                 //this.updateUI(sectionIndex: index)
             } else if let error = error {
-                this.alert(errorString: error.localizedDescription)
+                self.alert(errorString: error.localizedDescription)
             }
         }
     }

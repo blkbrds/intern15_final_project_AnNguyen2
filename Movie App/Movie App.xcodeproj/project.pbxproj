@@ -48,9 +48,12 @@
 		8E2F28EF23E7CA96006F9DED /* LayoutCustom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2F28EE23E7CA96006F9DED /* LayoutCustom.swift */; };
 		8E2F28F123E7CAAD006F9DED /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2F28F023E7CAAD006F9DED /* Label.swift */; };
 		8E2F28F323E7FB02006F9DED /* FloatExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2F28F223E7FB02006F9DED /* FloatExt.swift */; };
+		8E3B6A0423F245AB0088224B /* DetailCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3B6A0323F245AB0088224B /* DetailCellViewModel.swift */; };
+		8E3B6A0623F245CA0088224B /* HomeCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3B6A0523F245CA0088224B /* HomeCellViewModel.swift */; };
 		8E4837DE23EAE6260062C9B2 /* ButtonExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4837DD23EAE6260062C9B2 /* ButtonExt.swift */; };
-		8E70CCB923F1518A0044BA24 /* DetailCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E70CCB823F1518A0044BA24 /* DetailCellViewModel.swift */; };
-		8E70CCBB23F1AD9A0044BA24 /* HomeCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E70CCBA23F1AD9A0044BA24 /* HomeCellViewModel.swift */; };
+		8E4837E023EAF6C40062C9B2 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4837DF23EAF6C40062C9B2 /* SearchViewModel.swift */; };
+		8E49C54C23EBBA6C009BFEF8 /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E49C54B23EBBA6C009BFEF8 /* CollectionView.swift */; };
+		8E49C54E23EBBA78009BFEF8 /* TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E49C54D23EBBA78009BFEF8 /* TableView.swift */; };
 		8E81437223E26F0B00E68EF7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E81437123E26F0B00E68EF7 /* SceneDelegate.swift */; };
 		8E81437923E26F1000E68EF7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E81437823E26F1000E68EF7 /* Assets.xcassets */; };
 		8E81437C23E26F1000E68EF7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E81437A23E26F1000E68EF7 /* LaunchScreen.storyboard */; };
@@ -119,9 +122,12 @@
 		8E2F28EE23E7CA96006F9DED /* LayoutCustom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutCustom.swift; sourceTree = "<group>"; };
 		8E2F28F023E7CAAD006F9DED /* Label.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
 		8E2F28F223E7FB02006F9DED /* FloatExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatExt.swift; sourceTree = "<group>"; };
+		8E3B6A0323F245AB0088224B /* DetailCellViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailCellViewModel.swift; sourceTree = "<group>"; };
+		8E3B6A0523F245CA0088224B /* HomeCellViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeCellViewModel.swift; sourceTree = "<group>"; };
 		8E4837DD23EAE6260062C9B2 /* ButtonExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonExt.swift; sourceTree = "<group>"; };
-		8E70CCB823F1518A0044BA24 /* DetailCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCellViewModel.swift; sourceTree = "<group>"; };
-		8E70CCBA23F1AD9A0044BA24 /* HomeCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCellViewModel.swift; sourceTree = "<group>"; };
+		8E4837DF23EAF6C40062C9B2 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
+		8E49C54B23EBBA6C009BFEF8 /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
+		8E49C54D23EBBA78009BFEF8 /* TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableView.swift; sourceTree = "<group>"; };
 		8E81436C23E26F0B00E68EF7 /* Movie App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Movie App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E81437123E26F0B00E68EF7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		8E81437823E26F1000E68EF7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -214,7 +220,7 @@
 			children = (
 				8E2F28D623E7C953006F9DED /* HomeCell.swift */,
 				8E2F28D423E7C953006F9DED /* HomeCell.xib */,
-				8E70CCBA23F1AD9A0044BA24 /* HomeCellViewModel.swift */,
+				8E3B6A0523F245CA0088224B /* HomeCellViewModel.swift */,
 				8E2F28D523E7C953006F9DED /* MovieCell.swift */,
 				8E2F28D323E7C953006F9DED /* MovieCell.xib */,
 			);
@@ -400,6 +406,8 @@
 				8E1EEFE123E8E93200FAD69B /* LabelExt.swift */,
 				8E1EEFF123E94C6A00FAD69B /* IntExt.swift */,
 				8E4837DD23EAE6260062C9B2 /* ButtonExt.swift */,
+				8E49C54B23EBBA6C009BFEF8 /* CollectionView.swift */,
+				8E49C54D23EBBA78009BFEF8 /* TableView.swift */,
 			);
 			path = Ext;
 			sourceTree = "<group>";
@@ -449,6 +457,7 @@
 			children = (
 				8E8143B923E2839C00E68EF7 /* SearchVC.swift */,
 				8E8143BA23E2839C00E68EF7 /* SearchVC.xib */,
+				8E4837DF23EAF6C40062C9B2 /* SearchViewModel.swift */,
 			);
 			path = SearchVC;
 			sourceTree = "<group>";
@@ -458,7 +467,7 @@
 			children = (
 				8ED48F0223EAB0B60098F0FB /* DetailCell.swift */,
 				8ED48F0323EAB0B60098F0FB /* DetailCell.xib */,
-				8E70CCB823F1518A0044BA24 /* DetailCellViewModel.swift */,
+				8E3B6A0323F245AB0088224B /* DetailCellViewModel.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -607,19 +616,21 @@
 				8E8143A323E282F600E68EF7 /* BaseViewController.swift in Sources */,
 				8E2F28DC23E7C965006F9DED /* HomeViewModel.swift in Sources */,
 				8E2F28EF23E7CA96006F9DED /* LayoutCustom.swift in Sources */,
+				8E49C54C23EBBA6C009BFEF8 /* CollectionView.swift in Sources */,
 				8E8143A223E282F600E68EF7 /* BaseTabBarController.swift in Sources */,
 				8E2F28DE23E7CA34006F9DED /* ImageView.swift in Sources */,
 				8ED48F0423EAB0B60098F0FB /* DetailCell.swift in Sources */,
 				8E1EEFE423E8E93300FAD69B /* ImageViewExt.swift in Sources */,
 				8E1EEFF423E94D3100FAD69B /* UIViewControllerExt.swift in Sources */,
-				8E70CCBB23F1AD9A0044BA24 /* HomeCellViewModel.swift in Sources */,
 				8E2F28F323E7FB02006F9DED /* FloatExt.swift in Sources */,
+				8E3B6A0423F245AB0088224B /* DetailCellViewModel.swift in Sources */,
 				8E2F28AF23E7C1D2006F9DED /* StringExt.swift in Sources */,
 				8E2F28B123E7C1D2006F9DED /* DictionaryExt.swift in Sources */,
 				8E2F28EC23E7CA72006F9DED /* DataExt.swift in Sources */,
 				8E1EEFF623E9537A00FAD69B /* Genre.swift in Sources */,
 				8E2F28B023E7C1D2006F9DED /* UIViewControllerExt.swift in Sources */,
 				8E2F28CF23E7C470006F9DED /* Color.swift in Sources */,
+				8E49C54E23EBBA78009BFEF8 /* TableView.swift in Sources */,
 				8E8143B723E2837A00E68EF7 /* HomeVC.swift in Sources */,
 				8E2F28B923E7C36E006F9DED /* App.swift in Sources */,
 				8E2F28C923E7C447006F9DED /* Movie.swift in Sources */,
@@ -634,11 +645,12 @@
 				8E1EEFF923E9636B00FAD69B /* FilterViewCustom.swift in Sources */,
 				8E8143A123E282F600E68EF7 /* BaseNavigationController.swift in Sources */,
 				8E8143BB23E2839C00E68EF7 /* SearchVC.swift in Sources */,
+				8E3B6A0623F245CA0088224B /* HomeCellViewModel.swift in Sources */,
 				8E8143AE23E2835E00E68EF7 /* DetailVC.swift in Sources */,
 				8E1EEFE323E8E93300FAD69B /* LabelExt.swift in Sources */,
 				8E2F28D923E7C953006F9DED /* MovieCell.swift in Sources */,
 				8E2F28E823E7CA58006F9DED /* API.swift in Sources */,
-				8E70CCB923F1518A0044BA24 /* DetailCellViewModel.swift in Sources */,
+				8E4837E023EAF6C40062C9B2 /* SearchViewModel.swift in Sources */,
 				8E2F28A623E7C11B006F9DED /* MoviesVC.swift in Sources */,
 				8E1EEFE023E8E8DD00FAD69B /* GridCell.swift in Sources */,
 			);
@@ -780,6 +792,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = SG8WKWH7TV;
 				INFOPLIST_FILE = "$(SRCROOT)/Movie App/Supports/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -799,6 +812,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = SG8WKWH7TV;
 				INFOPLIST_FILE = "$(SRCROOT)/Movie App/Supports/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

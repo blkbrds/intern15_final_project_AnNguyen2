@@ -8,12 +8,6 @@
 
 import UIKit
 
-private final class Config {
-    static let withReuseIdentifier = "movieCell"
-    static let nibNameCell = "MovieCell"
-    static let defautIdentifier = "defaultCell"
-}
-
 enum HomeCellActionType {
     case didSelectItem
 }
@@ -59,9 +53,7 @@ class HomeCell: UITableViewCell {
 
     private func configMoviesCollectionView() {
         loadActivityIndicator.isHidden = false
-        let nib = UINib(nibName: Config.nibNameCell, bundle: .main)
-        moviesCollectionView.register(nib, forCellWithReuseIdentifier: Config.withReuseIdentifier)
-        moviesCollectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: Config.defautIdentifier)
+        moviesCollectionView.register(MovieCell.self)
         let layout = LayoutCustom() //Flow layout
         moviesCollectionView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
         moviesCollectionView.collectionViewLayout = layout
@@ -79,12 +71,9 @@ extension HomeCell: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        var cell = collectionView.dequeueReusableCell(withReuseIdentifier: Config.defautIdentifier, for: indexPath)
-        if let movieCell = collectionView.dequeueReusableCell(withReuseIdentifier: Config.withReuseIdentifier, for: indexPath) as? MovieCell {
-            let movie = viewModel.getMovie(indexPath: indexPath)
-            movieCell.setupView(movie: movie)
-            cell = movieCell
-        }
+        let cell = collectionView.dequeueReusableCell(with: MovieCell.self, for: indexPath)
+        let movie = viewModel.getMovie(indexPath: indexPath)
+        cell.setupView(movie: movie)
         return cell
     }
 }

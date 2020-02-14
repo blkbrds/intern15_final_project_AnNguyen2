@@ -9,12 +9,6 @@
 import UIKit
 import AVKit
 
-final private class Config {
-    static let withReuseIdentifier = "detailCell"
-    static let nibNameCell = "DetailCell"
-    static let defautIdentifier = "defaultCell"
-}
-
 class DetailVC: BaseViewController {
     @IBOutlet weak private var loadActivityIndicator: UIActivityIndicatorView!
     @IBOutlet weak private var detailScrollView: UIScrollView!
@@ -52,14 +46,14 @@ class DetailVC: BaseViewController {
         idmScoreLabel.text = "IDM \(movie?.voteAverage ?? 0)"
         let urlString = APIManager.Path.baseImage3URL + (movie?.posterPath ?? "")
         APIManager.Downloader.downloadImage(with: urlString) { [weak self] (image, error) in
-            guard let this = self else { return }
+            guard let `self` = self else { return }
             if let error = error {
                 print(error, "downloadImage")
                 return
             }
             DispatchQueue.main.async {
-                this.movieImageView.image = image
-                this.moviePosterImageView.image = image
+                self.movieImageView.image = image
+                self.moviePosterImageView.image = image
             }
         }
     }
@@ -77,11 +71,11 @@ class DetailVC: BaseViewController {
         loadActivityIndicator.startAnimating()
         loadActivityIndicator.isHidden = false
         viewModel.fetchMovieData { [weak self] (done, error) in
-            guard let this = self else { return }
+            guard let `self` = self else { return }
             if done {
-                this.updateUI()
+                self.updateUI()
             } else if let error = error {
-                this.alert(errorString: error.localizedDescription)
+                self.alert(errorString: error.localizedDescription)
             }
         }
         loadActivityIndicator.stopAnimating()
@@ -95,21 +89,21 @@ class DetailVC: BaseViewController {
             moreLikeThisMoviesTableView.reloadData()
         }
         viewModel.fetchSimilarRecommendMovie { [weak self] (done, error) in
-            guard let this = self else { return }
+            guard let `self` = self else { return }
             if let error = error {
-                this.alert(errorString: error.localizedDescription)
+                self.alert(errorString: error.localizedDescription)
             }
-            this.updateUIForMoreLikeTableView()
+            self.updateUIForMoreLikeTableView()
         }
     }
 
     private func getURLMovieVideo() {
         viewModel.getURLMovieVideo {[weak self] (done, error) in
-            guard let this = self else { return }
+            guard let `self` = self else { return }
             if done {
                 print("Get video url success!")
             } else if let error = error {
-                this.alert(errorString: "Error video: \(error.localizedDescription)")
+                self.alert(errorString: "Error video: \(error.localizedDescription)")
             }
         }
     }
@@ -126,9 +120,7 @@ class DetailVC: BaseViewController {
 
     private func configMovieTableView() {
         moreLikeThisMoviesTableView.backgroundColor = App.Color.mainColor
-        let nib = UINib(nibName: Config.nibNameCell, bundle: .main)
-        moreLikeThisMoviesTableView.register(nib, forCellReuseIdentifier: Config.withReuseIdentifier)
-        moreLikeThisMoviesTableView.register(UITableViewCell.self, forCellReuseIdentifier: Config.defautIdentifier)
+        moreLikeThisMoviesTableView.register(DetailCell.self)
         let footerView = UIView()
         moreLikeThisMoviesTableView.showsVerticalScrollIndicator = false
         moreLikeThisMoviesTableView.tableFooterView = footerView
@@ -157,6 +149,16 @@ class DetailVC: BaseViewController {
 
     @IBAction private func favoriteButton(_ sender: Any) {
         print("favoriteButton")
+    }
+    
+    @IBAction private func downloadButton(_ sender: Any) {
+        viewModel.saveOfflineVideo {[weak self] (data, error) in
+            guard let `self` = self else { return }
+            if let error = error {
+                self.alert(errorString: error.localizedDescription)
+            }
+            print(data)
+        }
     }
 
     @IBAction private func shareButton(_ sender: Any) {
@@ -192,9 +194,7 @@ extension DetailVC: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: Config.withReuseIdentifier) as? DetailCell else {
-            return UITableViewCell()
-        }
+        let cell = tableView.dequeueReusableCell(DetailCell.self)
         cell.delegate = self
         let movies = viewModel.moviesIn(indexPath: indexPath)
         let isLoading = viewModel.getLoading(indexPath: indexPath)
