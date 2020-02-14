@@ -24,7 +24,7 @@ extension APIManager.Downloader {
                 case .failure(let error):
                     completion(nil, error)
                 case .success(let data):
-                    if let data = data {
+                    if let data = data, let _ = UIImage(data: data) {
                         imageCache.setObject(data as NSData, forKey: urlString as NSString)
                         completion(data, nil)
                     } else {

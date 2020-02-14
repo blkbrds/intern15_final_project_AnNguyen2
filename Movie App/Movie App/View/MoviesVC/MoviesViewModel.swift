@@ -25,8 +25,7 @@ final class MoviesViewModel {
     var isShowFilter: Bool = false
     var genreFilter: Genre?
     var trendingTypeFilter: TrendingType?
-
-
+    
     init() { }
 
     init(type: MovieCategory = .discover) {
@@ -76,7 +75,8 @@ final class MoviesViewModel {
             return
         }
         isLoadData = true
-        API.shared().request(with: url) { (result) in
+        API.shared().request(with: url) {[weak self] (result) in
+            guard let `self` = self else { return }
             switch result {
             case .failure(let error):
                 completion(false, error)
