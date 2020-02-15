@@ -115,7 +115,7 @@ final class MoviesVC: BaseViewController {
 
     private func setupNavigationBar() {
         fillterBarButtonItem = UIBarButtonItem(
-            image: UIImage.init(systemName: "f.circle.fill"),
+            image: UIImage.init(systemName: "memories.badge.plus"),
             style: .plain, target: self,
             action: #selector(handleFilterMovies))
         statusBarButtonItem = UIBarButtonItem(

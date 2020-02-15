@@ -195,18 +195,26 @@ final class DetailVC: BaseViewController {
             downloadButton.isHidden = true
             progressDownloadCircularProgressRing.isHidden = false
             progressDownloadCircularProgressRing.value = 0
-            viewModel.downloadMovie { [weak self] (progress, error) in
-                guard let `self` = self else { return }
-                if let _ = error {
-                    self.alert(errorString: "Error to download video!")
-                    self.changeIconButtonDownload()
-                    return
-                }
-                self.progressDownloadCircularProgressRing.value = CGFloat(progress * 100)
-                if progress == 1 {
-                    self.downloadButton.isHidden = false
-                    self.progressDownloadCircularProgressRing.isHidden = true
-                    self.changeIconButtonDownload()
+            DispatchQueue.global(qos: .background).async {
+                self.viewModel.downloadMovie { (progress, error) in
+                    if let _ = error {
+                        self.alert(errorString: "Error to download video!")
+                        self.changeIconButtonDownload()
+                        return
+                    }
+                    
+                    if let movie = self.viewModel.getMovie() {
+                        NotificationCenter.default.post(name: .progressDidChanged, object: nil, userInfo: ["value": CGFloat(progress * 100), "movieID": movie.id])
+
+                    }
+                    DispatchQueue.main.async {
+                        self.progressDownloadCircularProgressRing.value = CGFloat(progress * 100)
+                        if progress == 1 {
+                            self.downloadButton.isHidden = false
+                            self.progressDownloadCircularProgressRing.isHidden = true
+                            self.changeIconButtonDownload()
+                        }
+                    }
                 }
             }
         }
@@ -258,7 +266,7 @@ final class DetailVC: BaseViewController {
             alert(errorString: APIError.errorURL.localizedDescription)
             return
         }
-        let items: [Any] = ["Watch this movie \(url.absoluteString)"]
+        let items: [Any] = ["\(movie.originalTitle): \(url.absoluteString)"]
         let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
         present(activityViewController, animated: true)
     }

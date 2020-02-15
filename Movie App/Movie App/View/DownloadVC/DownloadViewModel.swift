@@ -22,6 +22,16 @@ final class DownloadViewModel {
         movies.remove(at: at.row)
     }
     
+    func getIndexPath(forID id: Int) -> IndexPath? {
+        for index in 0..<movies.count {
+            if movies[index].id == id {
+                return IndexPath(row: index, section: 0)
+                break
+            }
+        }
+        return nil
+    }
+    
     func numberOfRowsInSection() -> Int {
         return movies.count
     }

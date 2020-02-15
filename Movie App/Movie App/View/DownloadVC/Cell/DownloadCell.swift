@@ -24,6 +24,7 @@ final class DownloadCell: UITableViewCell {
     @IBOutlet weak private var overviewLabel: UILabel!
     @IBOutlet weak private var voteCountLabel: UILabel!
     @IBOutlet weak private var deleteMovieButton: UIButton!
+    @IBOutlet weak private var downloadProgress: UIProgressView!
     
     private var viewModel = DownloadCellViewModel()
     weak var delegate: DownloadCellDelegate?
@@ -38,6 +39,10 @@ final class DownloadCell: UITableViewCell {
         movieImageView.borderImage()
         voteCountLabel.text = "..."
         voteCountLabel.borderLabel()
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = UIColor.lightGray
+        selectedBackgroundView = backgroundView
+        
     }
 
     func setupViewModel(movie: Movie, indexPath: IndexPath) {
@@ -51,6 +56,16 @@ final class DownloadCell: UITableViewCell {
             movieImageView.image = UIImage(data: data)
         }else {
             movieImageView.image = #imageLiteral(resourceName: "default_image")
+        }
+    }
+    
+    func updateProgress(progress: Float) {
+        self.backgroundColor = .lightGray
+        downloadProgress.isHidden = false
+        downloadProgress.progress = progress
+        if downloadProgress.progress == 1 {
+            downloadProgress.isHidden = true
+            self.backgroundColor = .clear
         }
     }
     

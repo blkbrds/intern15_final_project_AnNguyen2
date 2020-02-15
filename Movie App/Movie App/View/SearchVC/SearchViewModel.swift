@@ -76,7 +76,7 @@ final class SearchViewModel {
     }
     
     func fetchSearchData(page: Int = 1, completion: @escaping Completion) {
-        query = query.trimmed.replacingOccurrences(of: " ", with: "%20")
+        query = query.trimmed.replacingOccurrences(of: " ", with: "+") //or %20
         guard query != "" else { return }
         let url = APIManager.Path.Search(query: query, page: page).url
         isLoadData = true

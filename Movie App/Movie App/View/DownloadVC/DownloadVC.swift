@@ -22,7 +22,9 @@ final class DownloadVC: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleReloadData), name: .didChangedData, object: nil)
+            selector: #selector(handleReloadData), name: .didChangedData, object: nil)
+        NotificationCenter.default.addObserver(self,
+            selector: #selector(handleProgressDidChanged), name: .progressDidChanged, object: nil)
     }
 
     override func setupUI() {
@@ -79,7 +81,17 @@ final class DownloadVC: BaseViewController {
         favoriteTableView.delegate = self
         favoriteTableView.dataSource = self
     }
-    
+
+    @objc func handleProgressDidChanged(notfication: Notification) {
+        let progressValue = notfication.userInfo?["value"] as? CGFloat ?? 0.0
+        let movieID = notfication.userInfo?["movieID"] as? Int ?? 0
+        guard let indexPath = viewModel.getIndexPath(forID: movieID) else { return }
+        guard let cell = favoriteTableView.cellForRow(at: indexPath) as? DownloadCell else { return }
+        let progress: Float = Float(progressValue / 100)
+        cell.updateProgress(progress: progress)
+        print(progress)
+    }
+
     @objc private func handleReloadData() {
         fetchData(for: .reload)
     }
@@ -116,7 +128,7 @@ final class DownloadVC: BaseViewController {
             }
         }
     }
-    
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }

@@ -10,4 +10,5 @@ import Foundation
 
 extension Notification.Name {
     static let didChangedData = Notification.Name("didChangedData")
+    static let progressDidChanged = Notification.Name("progressDidChanged")
 }

@@ -80,6 +80,13 @@
                             <action selector="deleteMovieButtonWithSender:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="LId-kH-rxt"/>
                         </connections>
                     </button>
+                    <progressView hidden="YES" opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="BJS-cx-4ux">
+                        <rect key="frame" x="10" y="116" width="300" height="4"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="4" id="eBQ-GA-BH3"/>
+                        </constraints>
+                        <color key="progressTintColor" systemColor="systemOrangeColor" red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </progressView>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 <constraints>
@@ -88,6 +95,7 @@
                     <constraint firstAttribute="bottom" secondItem="OuG-Wc-LMP" secondAttribute="bottom" id="G2H-AW-LBt"/>
                     <constraint firstItem="OuG-Wc-LMP" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="Lmh-hp-9Qo"/>
                     <constraint firstItem="PHb-2Q-xjM" firstAttribute="top" secondItem="XCA-0C-1xr" secondAttribute="top" constant="5" id="Ppl-92-SFe"/>
+                    <constraint firstAttribute="trailing" secondItem="BJS-cx-4ux" secondAttribute="trailing" constant="10" id="SQ0-Pp-w4m"/>
                     <constraint firstAttribute="trailing" secondItem="OuG-Wc-LMP" secondAttribute="trailing" constant="10" id="XhP-LV-azM"/>
                     <constraint firstAttribute="trailing" secondItem="trr-Xc-wqw" secondAttribute="trailing" constant="15" id="XwB-Aw-MuA"/>
                     <constraint firstItem="XCA-0C-1xr" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="5" id="d5o-VR-nXe"/>
@@ -95,6 +103,8 @@
                     <constraint firstItem="trr-Xc-wqw" firstAttribute="top" secondItem="PHb-2Q-xjM" secondAttribute="top" id="fJj-Ep-ahj"/>
                     <constraint firstItem="XCA-0C-1xr" firstAttribute="width" secondItem="XCA-0C-1xr" secondAttribute="height" multiplier="2.4/3" id="gO9-mR-tXd"/>
                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="9rz-iV-gd8" secondAttribute="trailing" constant="15" id="h9w-TG-FGz"/>
+                    <constraint firstAttribute="bottom" secondItem="BJS-cx-4ux" secondAttribute="bottom" id="hz9-N0-ueg"/>
+                    <constraint firstItem="BJS-cx-4ux" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="mAu-qo-nhd"/>
                     <constraint firstAttribute="trailing" secondItem="4Nt-Ml-gGk" secondAttribute="trailing" constant="15" id="q7O-yK-ey8"/>
                     <constraint firstItem="4Nt-Ml-gGk" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="qFG-Wr-sFN"/>
                     <constraint firstItem="9rz-iV-gd8" firstAttribute="bottom" secondItem="XCA-0C-1xr" secondAttribute="bottom" constant="-5" id="sT6-G9-puE"/>
@@ -106,13 +116,14 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="deleteMovieButton" destination="4Nt-Ml-gGk" id="Dxo-PM-8et"/>
+                <outlet property="downloadProgress" destination="BJS-cx-4ux" id="3nR-hJ-wrw"/>
                 <outlet property="movieImageView" destination="XCA-0C-1xr" id="efr-vT-5wD"/>
                 <outlet property="movieNameLabel" destination="nWA-RA-k0O" id="kXU-JY-kvB"/>
                 <outlet property="overviewLabel" destination="9rz-iV-gd8" id="43x-2l-6kd"/>
                 <outlet property="releaseDateLabel" destination="hu6-oy-AVv" id="PZX-cf-3aG"/>
                 <outlet property="voteCountLabel" destination="1CH-PN-otk" id="GHu-lA-hlJ"/>
             </connections>
-            <point key="canvasLocation" x="141" y="106"/>
+            <point key="canvasLocation" x="140.57971014492756" y="105.80357142857143"/>
         </tableViewCell>
     </objects>
     <resources>
