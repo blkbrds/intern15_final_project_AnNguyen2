@@ -253,6 +253,9 @@ final class DetailVC: BaseViewController {
         let playerViewController = AVPlayerViewController()
         playerViewController.player = player
         present(playerViewController, animated: true) {
+            try? AVAudioSession.sharedInstance().setCategory(.playback)
+            try? AVAudioSession.sharedInstance().setCategory(.soloAmbient)
+            try? AVAudioSession.sharedInstance().setActive(true)
             playerViewController.player?.play()
         }
     }

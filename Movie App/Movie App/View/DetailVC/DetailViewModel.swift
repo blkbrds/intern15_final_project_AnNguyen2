@@ -128,6 +128,7 @@ final class DetailViewModel {
         ]
         let group = DispatchGroup()
         print("Loading data...")
+        var error: APIError?
         for i in 0..<urls.count {
             group.enter()
             API.shared().request(with: urls[i]) { [weak self] (result) in
@@ -147,6 +148,9 @@ final class DetailViewModel {
                         }
                         self.movies[i] = items
                     }
+                    if self.movies[i].isEmpty {
+                        error = APIError.error("Server no response data some category.")
+                    }
                 }
                 self.isLoading[i] = false
                 group.leave()
@@ -155,7 +159,7 @@ final class DetailViewModel {
         }
         group.notify(queue: .main) {
             print("Finished task")
-            completion(true, nil)
+            completion(true, error)
         }
     }
 

@@ -12,7 +12,8 @@ import RealmSwift
 final class RealmManager {
     private let realm: Realm = {
         do {
-            return try Realm()
+            let config = Realm.Configuration(schemaVersion: 1)
+            return try Realm(configuration: config)
         } catch {
             fatalError("Realm not exist!")
         }
@@ -20,7 +21,7 @@ final class RealmManager {
 
     private init() { }
 
-    static func shared() -> RealmManager {
+    class func shared() -> RealmManager {
         return RealmManager()
     }
 

@@ -20,6 +20,7 @@ final class HomeVC: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
     }
 
     override func setupUI() {
@@ -31,8 +32,8 @@ final class HomeVC: BaseViewController {
         fetchData(for: .load)
     }
 
-    private func updateUI(sectionIndex: Int) {
-        movieTableView.reloadSection(section: sectionIndex)
+    private func updateUI() {
+        movieTableView.reloadData()
     }
 
     private func fetchData(for action: Action) {
@@ -43,8 +44,7 @@ final class HomeVC: BaseViewController {
         viewModel.fetchData { [weak self] (done, index, error) in
             guard let `self` = self else { return }
             if done {
-                self.movieTableView.reloadData()
-                //this.updateUI(sectionIndex: index)
+                self.updateUI()
             } else if let error = error {
                 self.alert(errorString: error.localizedDescription)
             }

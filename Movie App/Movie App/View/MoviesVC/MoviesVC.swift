@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Toast_Swift
 
 final class MoviesVC: BaseViewController {
 
@@ -49,7 +50,7 @@ final class MoviesVC: BaseViewController {
                 ])
             filterViewCustomTopAnchor?.isActive = true
             filterViewCustom.delegate = self
-            filterViewCustom.setupAlertFilterViewCustom(genres: self.viewModel.genres)
+            filterViewCustom.setupAlertFilterViewCustom(genres: viewModel.genres)
         }
     }
 
@@ -74,7 +75,6 @@ final class MoviesVC: BaseViewController {
         print("safeAreaInsets left", safeAreaInsetsLeft)
         let width = view.bounds.width - 2 * safeAreaInsetsLeft
         changedLayout(with: width)
-        moviesCollectionView.reloadData()
     }
 
     private func fetchData(for action: Action, page: Int = 1) {
@@ -91,6 +91,13 @@ final class MoviesVC: BaseViewController {
                 self.alert(errorString: error.localizedDescription)
             }
             self.loadActivityIndicator.isHidden = true
+            if let genre = self.viewModel.getGenreCurrent() {
+                self.view.makeToast(genre.name, position: .top)
+                return
+            }
+            if let trendingType = self.viewModel.getTrendingType() {
+                self.view.makeToast(trendingType.rawValue, position: .top)
+            }
         }
     }
 
@@ -133,7 +140,7 @@ final class MoviesVC: BaseViewController {
         if viewModel.status == .row {
             statusBarButtonItem.image = UIImage.init(systemName: "square.grid.2x2")
         } else {
-            statusBarButtonItem.image = UIImage.init(systemName: "line.horizontal.3")
+            statusBarButtonItem.image = UIImage.init(systemName: "rectangle.grid.1x2")
         }
     }
 
@@ -155,15 +162,16 @@ final class MoviesVC: BaseViewController {
             layout.itemSize = CGSize(width: widthItem, height: heightItem)
         }
         handleChangeStatusForButtonItem()
-        moviesCollectionView.collectionViewLayout = layout
+        moviesCollectionView.collectionViewLayout = layout //TODO: - Animation (.setCollectionView())
         moviesCollectionView.showsVerticalScrollIndicator = true
+        moviesCollectionView.reloadData()
     }
 
     private func handleChangedStatusFilterMovies() {
         viewModel.changedShowFilter()
         if viewModel.getShowFilter() {
-            filterViewCustomBottomAnchor?.isActive = true
             filterViewCustomTopAnchor?.isActive = false
+            filterViewCustomBottomAnchor?.isActive = true
         } else {
             filterViewCustomBottomAnchor?.isActive = false
             filterViewCustomTopAnchor?.isActive = true
@@ -177,7 +185,6 @@ final class MoviesVC: BaseViewController {
         viewModel.changedStatus()
         let width = moviesCollectionView.bounds.width
         changedLayout(with: width)
-        moviesCollectionView.reloadData()
     }
 
     @objc private func handleReloadData() {

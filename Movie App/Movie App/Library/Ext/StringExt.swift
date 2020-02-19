@@ -14,7 +14,6 @@ enum Process {
 }
 
 extension String {
-
     var trimmed: String {
         return trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
     }
@@ -32,7 +31,6 @@ extension String {
 }
 
 extension String {
-
     var url: URL? {
         return URL(string: self)
     }

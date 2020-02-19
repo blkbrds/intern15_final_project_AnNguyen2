@@ -24,7 +24,8 @@ final class Movie: Object {
     @objc dynamic var homePage: String = ""
     @objc dynamic var imageData: Data?
 
-    init(json: JSObject) {
+    convenience init(json: JSObject) {
+        self.init()
         self.id = json["id"] as? Int ?? 0
         self.popularity = json["popularity"] as? Double ?? 0.0
         self.voteCount = json["vote_count"] as? Int ?? 0
@@ -39,8 +40,6 @@ final class Movie: Object {
         self.tagLine = json["tagline"] as? String ?? ""
         self.homePage = json["homepage"] as? String ?? ""
     }
-
-    required init() { }
 
     override static func primaryKey() -> String? {
         return "id"

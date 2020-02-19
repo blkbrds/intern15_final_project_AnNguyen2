@@ -64,7 +64,7 @@ final class HomeViewModel {
     func moviesViewModel(at index: Int) -> MoviesViewModel {
         return MoviesViewModel(type: movieCategories[index])
     }
-    
+
     func detailViewModel(for id: Int) -> DetailViewModel {
         return DetailViewModel(by: id)
     }
@@ -93,6 +93,7 @@ final class HomeViewModel {
     func fetchData(completion: @escaping CompletionWithIndex) {
         let urls = movieCategories.map({ $0.defaultURL })
         let group = DispatchGroup()
+        var error: APIError?
         for i in 0..<urls.count {
             group.enter()
             API.shared().request(with: urls[i]) { [weak self] (result) in
@@ -101,18 +102,20 @@ final class HomeViewModel {
                 case .failure(_):
                     print("")
                 case .success(let data):
-                    guard let data = data else {
-                        return
-                    }
-                    let json = data.toJSObject()
-                    var items: [Movie] = []
-                    if let results = json["results"] as? JSArray {
-                        for item in results {
-                            let movie = Movie(json: item)
-                            items.append(movie)
+                    if let data = data {
+                        let json = data.toJSObject()
+                        var items: [Movie] = []
+                        if let results = json["results"] as? JSArray {
+                            for item in results {
+                                let movie = Movie(json: item)
+                                items.append(movie)
+                            }
                         }
+                        self.movies[i] = items
                     }
-                    self.movies[i] = items
+                    if self.movies[i].isEmpty {
+                        error = APIError.error("Server no response data some category.")
+                    }
                 }
                 group.leave()
                 self.isLoading[i] = false
@@ -121,7 +124,7 @@ final class HomeViewModel {
         }
         group.notify(queue: .main) {
             print("Loaded all.")
-            completion(true, 0, nil)
+            completion(true, 0, error)
         }
     }
 }

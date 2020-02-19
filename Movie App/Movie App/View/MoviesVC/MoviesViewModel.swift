@@ -31,6 +31,14 @@ final class MoviesViewModel {
     init(type: MovieCategory = .discover) {
         self.movieCategory = type
     }
+    
+    func getGenreCurrent() -> Genre? {
+        return genreFilter
+    }
+    
+    func getTrendingType() -> TrendingType? {
+        return trendingTypeFilter
+    }
 
     func detailViewModel(for id: Int) -> DetailViewModel {
         return DetailViewModel(by: id)

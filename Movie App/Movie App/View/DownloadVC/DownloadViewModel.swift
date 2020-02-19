@@ -17,21 +17,20 @@ final class DownloadViewModel {
     func resetMovies() {
         movies = []
     }
-    
+
     func removeMovie(at: IndexPath) {
         movies.remove(at: at.row)
     }
-    
+
     func getIndexPath(forID id: Int) -> IndexPath? {
         for index in 0..<movies.count {
             if movies[index].id == id {
                 return IndexPath(row: index, section: 0)
-                break
             }
         }
         return nil
     }
-    
+
     func numberOfRowsInSection() -> Int {
         return movies.count
     }
@@ -46,6 +45,9 @@ final class DownloadViewModel {
 
     func fetchData(completion: @escaping Completion) {
         let movies = RealmManager.shared().getAllObjects(type: Movie.self)
+            .sorted { (movie1, movie2) -> Bool in
+                movie1.originalTitle.lowercased() < movie2.originalTitle.lowercased()
+        }
         self.movies = movies
         completion(true, nil)
     }
@@ -55,18 +57,18 @@ final class DownloadViewModel {
         deleteVieo(movieID: movie.id)
         RealmManager.shared()
             .deleteObject(type: Movie.self,
-                          forPrimaryKey: movie.id) {[weak self] (done, error) in
-            guard let _ = self else { return }
-            if done {
-                completion(done, error)
-                print("Delete movie")
-            }else {
-                completion(false, error)
-                print("Can't Delete movie")
-            }
+                forPrimaryKey: movie.id) { [weak self] (done, error) in
+                guard let _ = self else { return }
+                if done {
+                    completion(done, nil)
+                    print("Delete movie")
+                } else {
+                    completion(false, error)
+                    print("Can't Delete movie")
+                }
         }
     }
-    
+
     func deleteVieo(movieID: Int) {
         let fileManager = FileManager.default
         do {
@@ -77,7 +79,7 @@ final class DownloadViewModel {
                 let itemUrl = URL(fileURLWithPath: filePath)
                 try fileManager.removeItem(at: itemUrl)
                 print("Delete local movie video sucess!")
-            }else {
+            } else {
                 print("Video not exist!")
             }
         } catch {
@@ -90,7 +92,7 @@ final class DownloadViewModel {
         forPrimaryKeys.forEach({
             deleteVieo(movieID: $0)
         })
-        RealmManager.shared().deleteObjects(type: Movie.self, forPrimaryKeys: forPrimaryKeys) {[weak self] (done, error) in
+        RealmManager.shared().deleteObjects(type: Movie.self, forPrimaryKeys: forPrimaryKeys) { [weak self] (done, error) in
             guard let _ = self else { return }
             completion(done, error)
         }
