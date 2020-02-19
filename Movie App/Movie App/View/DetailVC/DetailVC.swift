@@ -204,7 +204,6 @@ final class DetailVC: BaseViewController {
 
                 if let movie = self.viewModel.getMovie() {
                     NotificationCenter.default.post(name: .progressDidChanged, object: nil, userInfo: ["value": CGFloat(progress * 100), "movieID": movie.id])
-
                 }
                 DispatchQueue.main.async {
                     self.progressDownloadCircularProgressRing.value = CGFloat(progress * 100)
@@ -281,6 +280,7 @@ final class DetailVC: BaseViewController {
     }
 
     deinit {
+        print("deinit")
         NotificationCenter.default.removeObserver(self)
     }
 }

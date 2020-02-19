@@ -322,4 +322,8 @@ final class DetailViewModel {
                 completion(done, error)
         }
     }
+    
+    deinit {
+        print("deinit viewmodel")
+    }
 }
