@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SearchVC: BaseViewController {
+final class SearchVC: BaseViewController {
     @IBOutlet weak private var searchCollectionView: UICollectionView!
     @IBOutlet weak private var loadActivityIndicator: UIActivityIndicatorView!
     @IBOutlet weak private var noResultTextStackView: UIStackView!
@@ -22,6 +22,28 @@ class SearchVC: BaseViewController {
         super.viewDidLoad()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateCollectionView()
+    }
+    
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        let safeAreaInsetsLeft: CGFloat = view.safeAreaInsets.left
+        print("coordinator safeAreaInsets left", safeAreaInsetsLeft)
+        let width = view.bounds.width - 2 * safeAreaInsetsLeft
+        layoutForSearchCollectionView(width: width)
+        searchCollectionView.reloadData()
+    }
+
+
+    private func updateCollectionView() {
+        let width = searchCollectionView.bounds.width
+        layoutForSearchCollectionView(width: width)
+        searchCollectionView.delegate = self
+        searchCollectionView.dataSource = self
+    }
+
     override func setupUI() {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchBar.placeholder = "Search movies..."
@@ -30,8 +52,6 @@ class SearchVC: BaseViewController {
         searchController.obscuresBackgroundDuringPresentation = false
         navigationItem.searchController = searchController
         configMoviesCollectionView()
-        searchCollectionView.delegate = self
-        searchCollectionView.dataSource = self
     }
 
     private func updateUI() {
@@ -42,6 +62,7 @@ class SearchVC: BaseViewController {
     private func fetchData(with action: Action, page: Int = 1) {
         if action == .reload {
             viewModel.resetMovies()
+            viewModel.resetPage()
             updateUI()
         }
         let searctText = navigationItem.searchController?.searchBar.text
@@ -53,6 +74,7 @@ class SearchVC: BaseViewController {
         viewModel.fetchSearchData(page: page) { [weak self] (_, error) in
             guard let `self` = self else { return }
             if error != nil || self.viewModel.isEmptyMovie {
+                self.viewModel.resetPage()
                 self.noResultTextStackView.isHidden = false
             } else {
                 self.noResultTextStackView.isHidden = true
@@ -63,9 +85,9 @@ class SearchVC: BaseViewController {
     }
 
     //MARK: - Layout collectionView
-    private func layoutForSearchCollectionView() {
+    private func layoutForSearchCollectionView(width: CGFloat) {
         let collectionViewFlowLayout = UICollectionViewFlowLayout()
-        let itemWidth: CGFloat = (view.bounds.width - 30) / 3
+        let itemWidth: CGFloat = (width - 30) / 3
         let itemHeight: CGFloat = itemWidth * 1.4
         collectionViewFlowLayout.itemSize = CGSize(width: itemWidth, height: itemHeight)
         collectionViewFlowLayout.minimumLineSpacing = 5
@@ -79,7 +101,8 @@ class SearchVC: BaseViewController {
         searchCollectionView.register(GridCell.self)
         refeshControl.addTarget(self, action: #selector(handleReloadData), for: .valueChanged)
         searchCollectionView.refreshControl = refeshControl
-        layoutForSearchCollectionView()
+        let width = searchCollectionView.bounds.width
+        layoutForSearchCollectionView(width: width)
     }
 
     @objc private func handleReloadData() {
@@ -91,9 +114,17 @@ class SearchVC: BaseViewController {
 //MARK: - UISearchResultsUpdating
 extension SearchVC: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        let text = searchController.searchBar.text?.lowercased() ?? ""
-        viewModel.query = text
-        fetchData(with: .reload)
+        let text =  searchController.searchBar.text?.lowercased() ?? ""
+        viewModel.getTimer()?.invalidate()
+        let timer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { (_) in
+            self.viewModel.updateQuery(text: text)
+            if self.viewModel.isNotLoadData() && self.viewModel.getOldQuery() != text {
+                self.fetchData(with: .reload)
+                print("Reload! \(text)")
+                self.viewModel.updateOldQuery(text: text)
+            }
+        }
+        viewModel.updateOldTimer(timer: timer)
     }
 }
 
@@ -106,7 +137,7 @@ extension SearchVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(with: GridCell.self, for: indexPath)
         let movie = viewModel.getMovie(indexPath: indexPath)
-        cell.setupView(movie: movie)
+        cell.setupViewModel(movie: movie)
         return cell
     }
 }
@@ -120,7 +151,8 @@ extension SearchVC: UICollectionViewDelegate {
         if scrollHeight + scrollViewContentOffsetY >= contentSizeHeight && viewModel.isNotLoadData(), viewModel.getTotalPags() > viewModel.getCurrentPage() {
             let nextPage = viewModel.getCurrentPage() + 1
             fetchData(with: .load, page: nextPage)
-            print(viewModel.numberOfItems())
+            print(viewModel.currentPage, viewModel.totalPages)
+            print("\(viewModel.numberOfItems()) items")
         }
         scrollView.keyboardDismissMode = .onDrag
     }

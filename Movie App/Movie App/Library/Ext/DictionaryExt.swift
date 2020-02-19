@@ -9,7 +9,7 @@
 import Foundation
 
 extension Dictionary {
-    func toData(){
-        
+    func toData() {
+
     }
 }

@@ -13,7 +13,7 @@ typealias CompletionWithIndex = (Bool, Int, APIError?) -> Void
 
 
 enum MovieCategory: CaseIterable {
-    case tv, discover, popular, topRated, trending, similar, recommendations
+    case tv, discover, popular, topRated, trending, similar, recommendations, upcoming
 
     var title: String {
         switch self {
@@ -31,8 +31,9 @@ enum MovieCategory: CaseIterable {
             return "Recommendations"
         case .similar:
             return "Similar"
+        case .upcoming:
+            return "Upcoming"
         }
-
     }
 
     var defaultURL: String {
@@ -47,6 +48,8 @@ enum MovieCategory: CaseIterable {
             return APIManager.Path.TopRated().url
         case .tv:
             return APIManager.Path.TV().url
+        case .upcoming:
+            return APIManager.Path.Upcoming().url
         default:
             return ""
         }
@@ -54,14 +57,14 @@ enum MovieCategory: CaseIterable {
 }
 
 final class HomeViewModel {
-    let movieCategories: [MovieCategory] = [.popular, .discover, .topRated, .trending, .tv]
-    var movies: [[Movie]] = [[], [], [], [], []]
-    var isLoading: [Bool] = Array(repeating: true, count: 5)
+    let movieCategories: [MovieCategory] = [.popular, .discover, .topRated, .trending, .tv, .upcoming]
+    var movies: [[Movie]] = [[], [], [], [], [], []]
+    var isLoading: [Bool] = Array(repeating: true, count: 6)
 
     func moviesViewModel(at index: Int) -> MoviesViewModel {
         return MoviesViewModel(type: movieCategories[index])
     }
-    
+
     func detailViewModel(for id: Int) -> DetailViewModel {
         return DetailViewModel(by: id)
     }
@@ -70,8 +73,8 @@ final class HomeViewModel {
         return movieCategories[index].title
     }
 
-    func getMovies(for section: Int) -> [Movie] {
-        return movies[section]
+    func getMovies(for indexPath: IndexPath) -> [Movie] {
+        return movies[indexPath.section]
     }
 
     func numberOfSections() -> Int {
@@ -80,8 +83,9 @@ final class HomeViewModel {
 
     func resetMovies() {
         movies = Array(repeating: [], count: movieCategories.count)
+        isLoading = Array(repeating: true, count: 6)
     }
-    
+
     func isLoadingData(indexPath: IndexPath) -> Bool {
         return isLoading[indexPath.section]
     }
@@ -89,26 +93,29 @@ final class HomeViewModel {
     func fetchData(completion: @escaping CompletionWithIndex) {
         let urls = movieCategories.map({ $0.defaultURL })
         let group = DispatchGroup()
+        var error: APIError?
         for i in 0..<urls.count {
             group.enter()
-            API.shared().request(with: urls[i]) {[weak self] (result) in
+            API.shared().request(with: urls[i]) { [weak self] (result) in
                 guard let `self` = self else { return }
                 switch result {
                 case .failure(_):
                     print("")
                 case .success(let data):
-                    guard let data = data else {
-                        return
-                    }
-                    let json = data.toJSObject()
-                    var items: [Movie] = []
-                    if let results = json["results"] as? JSArray {
-                        for item in results {
-                            let movie = Movie(json: item)
-                            items.append(movie)
+                    if let data = data {
+                        let json = data.toJSObject()
+                        var items: [Movie] = []
+                        if let results = json["results"] as? JSArray {
+                            for item in results {
+                                let movie = Movie(json: item)
+                                items.append(movie)
+                            }
                         }
+                        self.movies[i] = items
                     }
-                    self.movies[i] = items
+                    if self.movies[i].isEmpty {
+                        error = APIError.error("Server no response data some category.")
+                    }
                 }
                 group.leave()
                 self.isLoading[i] = false
@@ -117,7 +124,7 @@ final class HomeViewModel {
         }
         group.notify(queue: .main) {
             print("Loaded all.")
-            completion(true, 0, nil)
+            completion(true, 0, error)
         }
     }
 }

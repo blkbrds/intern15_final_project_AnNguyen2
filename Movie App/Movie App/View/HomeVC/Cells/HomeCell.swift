@@ -16,7 +16,7 @@ protocol HomeCellDelegate: class {
     func homeCell(_ homeCell: HomeCell, didSelectItem: Movie, perform action: HomeCellActionType)
 }
 
-class HomeCell: UITableViewCell {
+final class HomeCell: UITableViewCell {
 
     @IBOutlet private weak var moviesCollectionView: UICollectionView!
     @IBOutlet private weak var loadActivityIndicator: UIActivityIndicatorView!
@@ -55,7 +55,8 @@ class HomeCell: UITableViewCell {
         loadActivityIndicator.isHidden = false
         moviesCollectionView.register(MovieCell.self)
         let layout = LayoutCustom() //Flow layout
-        moviesCollectionView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        moviesCollectionView.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 5, right: 0)
+        layout.itemSize = CGSize(width: 110, height: 150)
         moviesCollectionView.collectionViewLayout = layout
         moviesCollectionView.showsHorizontalScrollIndicator = false
         moviesCollectionView.backgroundColor = App.Color.mainColor
@@ -71,10 +72,10 @@ extension HomeCell: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(with: MovieCell.self, for: indexPath)
+        let movieCell = collectionView.dequeueReusableCell(with: MovieCell.self, for: indexPath)
         let movie = viewModel.getMovie(indexPath: indexPath)
-        cell.setupView(movie: movie)
-        return cell
+        movieCell.setupViewModel(movie: movie)
+        return movieCell
     }
 }
 

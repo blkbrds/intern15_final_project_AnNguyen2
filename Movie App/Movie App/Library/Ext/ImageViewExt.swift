@@ -9,7 +9,7 @@
 import UIKit
 
 extension UIImageView {
-    func borderImage(cornerRadius: CGFloat = 5){
+    func borderImage(cornerRadius: CGFloat = 5) {
         layer.cornerRadius = cornerRadius
         clipsToBounds = true
     }

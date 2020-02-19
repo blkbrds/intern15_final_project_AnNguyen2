@@ -19,7 +19,7 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="ZEe-Fh-bcI">
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" indicatorStyle="white" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="ZEe-Fh-bcI">
                     <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="wsy-uY-e1J">
@@ -36,12 +36,12 @@
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstAttribute="trailing" secondItem="ZEe-Fh-bcI" secondAttribute="trailing" id="20s-no-qX5"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="MJv-By-oDl" secondAttribute="bottom" constant="15" id="Nna-Jp-mvD"/>
                 <constraint firstItem="ZEe-Fh-bcI" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="Olk-rq-DD6"/>
-                <constraint firstAttribute="bottom" secondItem="ZEe-Fh-bcI" secondAttribute="bottom" id="WJl-LI-BNr"/>
+                <constraint firstItem="ZEe-Fh-bcI" firstAttribute="height" secondItem="fnl-2z-Ty3" secondAttribute="height" multiplier="1.09535" id="Qe0-Zp-g5n"/>
                 <constraint firstItem="MJv-By-oDl" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Xgb-Oq-8xl"/>
-                <constraint firstItem="ZEe-Fh-bcI" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="fqM-pM-MZW"/>
+                <constraint firstItem="ZEe-Fh-bcI" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="fqM-pM-MZW"/>
+                <constraint firstItem="ZEe-Fh-bcI" firstAttribute="width" secondItem="fnl-2z-Ty3" secondAttribute="width" id="zvy-tY-Xbk"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <point key="canvasLocation" x="140.57971014492756" y="141.96428571428569"/>

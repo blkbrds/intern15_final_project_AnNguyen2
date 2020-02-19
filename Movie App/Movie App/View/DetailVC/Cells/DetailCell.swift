@@ -13,10 +13,10 @@ enum DetailCellActionType {
 }
 
 protocol DetailCellDelegate: class {
-    func detailCell(_ homeCell: DetailCell, didSelectItem: Movie, perform action: DetailCellActionType)
+    func detailCell(_ cell: DetailCell, didSelectItem: Movie, perform action: DetailCellActionType)
 }
 
-class DetailCell: UITableViewCell {
+final class DetailCell: UITableViewCell {
 
     @IBOutlet private weak var moviesCollectionView: UICollectionView!
     @IBOutlet private weak var loadActivityIndicator: UIActivityIndicatorView!
@@ -73,7 +73,7 @@ extension DetailCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(with: MovieCell.self, for: indexPath)
         let movie = viewModel.getMovie(indexPath: indexPath)
-        cell.setupView(movie: movie)
+        cell.setupViewModel(movie: movie)
         return cell
     }
 }

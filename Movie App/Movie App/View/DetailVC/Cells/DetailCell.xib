@@ -52,7 +52,7 @@
                 <outlet property="moviesCollectionView" destination="db9-p7-KcM" id="y5T-vH-HBD"/>
                 <outlet property="serverResponseNoDataLabel" destination="Z2I-QP-HMc" id="Qiw-zo-1vN"/>
             </connections>
-            <point key="canvasLocation" x="139" y="106"/>
+            <point key="canvasLocation" x="137.68115942028987" y="105.80357142857143"/>
         </tableViewCell>
     </objects>
 </document>

@@ -8,10 +8,12 @@
 
 import UIKit
 
-class MovieCell: UICollectionViewCell {
+final class MovieCell: UICollectionViewCell {
 
     @IBOutlet private weak var voteCountLabel: UILabel!
     @IBOutlet private weak var movieImageView: ImageView!
+    
+    private var viewModel = GridCellViewModel()
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -24,18 +26,15 @@ class MovieCell: UICollectionViewCell {
         voteCountLabel.borderLabel()
     }
 
-    func setupView(movie: Movie) {
-        movieImageView.image = #imageLiteral(resourceName: "default_image")
+    func setupViewModel(movie: Movie) {
+        viewModel = GridCellViewModel(movie: movie)
+        guard let movie = viewModel.getMovie() else { return }
         voteCountLabel.text = " \(movie.voteCount.parseToThousandUnit()) K"
-        let urlString = APIManager.Path.baseImage5URL + movie.posterPath
-        APIManager.Downloader.downloadImage(with: urlString) { [weak self] (image, error) in
-            guard let this = self else { return }
-            if let error = error {
-                print(error)
-                return
-            }
-            DispatchQueue.main.async {
-                this.movieImageView.image = image
+        movieImageView.image = #imageLiteral(resourceName: "default_image")
+        viewModel.loadImageData { [weak self] (done, error, urlStr) in
+            guard let `self` = self else { return }
+            if done, let data = self.viewModel.getImageData(), APIManager.Path.baseImage3URL + movie.posterPath == urlStr {
+                self.movieImageView.image = UIImage(data: data)
             }
         }
     }

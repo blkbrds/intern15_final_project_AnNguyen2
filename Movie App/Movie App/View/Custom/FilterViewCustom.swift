@@ -55,14 +55,13 @@ class FilterViewCustom: UIView {
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-//        fatalError("init(coder:) has not been implemented")
     }
 }
 
 //MARK: -UIPickerViewDelegate
 extension FilterViewCustom: UIPickerViewDelegate {
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        guard genres.count > 0 else { return }
+        guard !genres.isEmpty else { return }
         let genre = genres[row]
         delegate?.filterViewCustom(self, didSelectGenre: genre, perform: .didSelectContent)
     }

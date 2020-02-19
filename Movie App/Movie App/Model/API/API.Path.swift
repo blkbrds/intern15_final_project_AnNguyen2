@@ -103,7 +103,8 @@ extension APIManager.Path {
         var id: String
         var page: Int = 1
         var url: String {
-            return APIManager.Path.baseURL / "movie" / "\(id)" / "recommendations?api_key=\(App.Key.apiKey)&language=en-US&page=\(page)"
+            return APIManager.Path.baseURL / "movie" / "\(id)"
+                / "recommendations?api_key=\(App.Key.apiKey)&language=en-US&page=\(page)"
         }
     }
 
@@ -125,13 +126,13 @@ extension APIManager.Path {
     
     struct GenresTV {
         var url: String {
-            return APIManager.Path.baseURL / "genre" / "movie" / "list?api_key=\(App.Key.apiKey)&language=en-US"
+            return APIManager.Path.baseURL / "genre" / "tv" / "list?api_key=\(App.Key.apiKey)&language=en-US"
         }
     }
     
     struct GenresMovie {
         var url: String {
-            return APIManager.Path.baseURL / "genre" / "tv" / "list?api_key=\(App.Key.apiKey)&language=en-US"
+            return APIManager.Path.baseURL / "genre" / "movie" / "list?api_key=\(App.Key.apiKey)&language=en-US"
         }
     }
     

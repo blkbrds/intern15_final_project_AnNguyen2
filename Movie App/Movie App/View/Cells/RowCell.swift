@@ -8,42 +8,39 @@
 
 import UIKit
 
-class RowCell: UICollectionViewCell {
+final class RowCell: UICollectionViewCell {
 
     @IBOutlet weak private var movieImageView: UIImageView!
     @IBOutlet weak private var movieNameLabel: UILabel!
     @IBOutlet weak private var releaseDateLabel: UILabel!
     @IBOutlet weak private var overviewLabel: UILabel!
     @IBOutlet weak private var voteCountLabel: UILabel!
+    
+    private var viewModel = RowCellViewModel()
 
     override func awakeFromNib() {
         super.awakeFromNib()
         configView()
     }
-
-    private func configView() {
+    
+    private func configView(){
         movieImageView.borderImage()
-        voteCountLabel.text = "..."
         voteCountLabel.borderLabel()
     }
 
-    func setupView(movie: Movie) {
+    func setupViewModel(movie: Movie) {
+        viewModel = RowCellViewModel(movie: movie)
+        guard let movie = viewModel.getMovie() else { return }
         movieImageView.image = #imageLiteral(resourceName: "default_image")
         voteCountLabel.text = " \(movie.voteCount.parseToThousandUnit()) K"
         overviewLabel.text = movie.overview
-        releaseDateLabel.text = movie.releaseDate
+        releaseDateLabel.text = movie.releaseDate?.toString()
         movieNameLabel.text = movie.originalTitle
-        let urlString = APIManager.Path.baseImage5URL + movie.posterPath
-        APIManager.Downloader.downloadImage(with: urlString) { [weak self] (image, error) in
+        viewModel.loadImageData { [weak self] (done, error, urlStr) in
             guard let `self` = self else { return }
-            if let error = error {
-                print(error)
-                return
-            }
-            DispatchQueue.main.async {
-                self.movieImageView.image = image
+            if done, let data = self.viewModel.getImageData(), APIManager.Path.baseImage3URL + movie.posterPath == urlStr {
+                self.movieImageView.image = UIImage(data: data)
             }
         }
     }
-
 }

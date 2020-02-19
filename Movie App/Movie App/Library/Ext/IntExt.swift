@@ -9,7 +9,7 @@
 import Foundation
 
 extension Int {
-    func parseToThousandUnit() -> String{
+    func parseToThousandUnit() -> String {
         let thousand: Double = Double(self) / 1000.0
         return String(format: "%.2f", thousand)
     }

@@ -2,12 +2,24 @@ PODS:
   - Alamofire (4.9.1)
   - MVVM-Swift (5.0.1)
   - ObjectMapper (3.5.1)
+  - Realm (4.3.0):
+    - Realm/Headers (= 4.3.0)
+  - Realm/Headers (4.3.0)
+  - RealmSwift (4.3.0):
+    - Realm (= 4.3.0)
+  - SwiftLint (0.38.2)
+  - Toast-Swift (5.0.1)
+  - UICircularProgressRing (6.5.0)
   - XCDYouTubeKit (2.8.2)
 
 DEPENDENCIES:
   - Alamofire
   - MVVM-Swift
   - ObjectMapper
+  - RealmSwift
+  - SwiftLint
+  - Toast-Swift
+  - UICircularProgressRing
   - XCDYouTubeKit
 
 SPEC REPOS:
@@ -15,14 +27,24 @@ SPEC REPOS:
     - Alamofire
     - MVVM-Swift
     - ObjectMapper
+    - Realm
+    - RealmSwift
+    - SwiftLint
+    - Toast-Swift
+    - UICircularProgressRing
     - XCDYouTubeKit
 
 SPEC CHECKSUMS:
   Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
   MVVM-Swift: 0333cd8a16abfe0e93a1423bfddb49b8c11065e1
   ObjectMapper: 70187b8941977c62ccfb423caf6b50be405cabf0
+  Realm: 9357c3589555793e1860a7104a7412bca4a48d99
+  RealmSwift: 402f1e379a8ef82c635313037b043f0f06de880c
+  SwiftLint: 8f5d2f903e1c9bcbc832fd16771e80a263ac6cbb
+  Toast-Swift: 9b6a70f28b3bf0b96c40d46c0c4b9d6639846711
+  UICircularProgressRing: e6852e8f88e296cbbbe2720cccb55241acda6708
   XCDYouTubeKit: 79baadb0560673a67c771eba45f83e353fd12c1f
 
-PODFILE CHECKSUM: d97e732120343c739c8be3bb8140d78f55c7b01b
+PODFILE CHECKSUM: ebf5ba61fcc58ed9e825dcb9019701141e4a1f0d
 
 COCOAPODS: 1.8.1

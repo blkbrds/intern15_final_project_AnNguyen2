@@ -7,17 +7,12 @@
 //
 
 import UIKit
+import Toast_Swift
 
-final private class Config {
-    static let withReuseIdentifier = "homeCell"
-    static let nibNameCell = "HomeCell"
-    static let defautIdentifier = "defaultCell"
-}
-
-class HomeVC: BaseViewController {
+final class HomeVC: BaseViewController {
 
     @IBOutlet private weak var movieTableView: UITableView!
-    private let viewModel = HomeViewModel()
+    fileprivate let viewModel = HomeViewModel()
 
     enum Action {
         case reload, load
@@ -25,6 +20,7 @@ class HomeVC: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
     }
 
     override func setupUI() {
@@ -36,9 +32,8 @@ class HomeVC: BaseViewController {
         fetchData(for: .load)
     }
 
-    private func updateUI(sectionIndex: Int) {
-        let indexSet = IndexSet(integer: sectionIndex)
-        movieTableView.reloadSections(indexSet, with: .fade)
+    private func updateUI() {
+        movieTableView.reloadData()
     }
 
     private func fetchData(for action: Action) {
@@ -49,8 +44,7 @@ class HomeVC: BaseViewController {
         viewModel.fetchData { [weak self] (done, index, error) in
             guard let `self` = self else { return }
             if done {
-                self.movieTableView.reloadData()
-                //this.updateUI(sectionIndex: index)
+                self.updateUI()
             } else if let error = error {
                 self.alert(errorString: error.localizedDescription)
             }
@@ -59,9 +53,7 @@ class HomeVC: BaseViewController {
 
     private func configMovieTableView() {
         movieTableView.backgroundColor = App.Color.mainColor
-        let nib = UINib(nibName: Config.nibNameCell, bundle: .main)
-        movieTableView.register(nib, forCellReuseIdentifier: Config.withReuseIdentifier)
-        movieTableView.register(UITableViewCell.self, forCellReuseIdentifier: Config.defautIdentifier)
+        movieTableView.register(HomeCell.self)
         let footerView = UIView()
         movieTableView.showsVerticalScrollIndicator = false
         movieTableView.tableFooterView = footerView
@@ -103,11 +95,9 @@ extension HomeVC: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: Config.withReuseIdentifier) as? HomeCell else {
-            return UITableViewCell()
-        }
+        let cell = tableView.dequeueReusableCell(HomeCell.self)
         cell.delegate = self
-        let movies = viewModel.getMovies(for: indexPath.section)
+        let movies = viewModel.getMovies(for: indexPath)
         let isLoading = viewModel.isLoadingData(indexPath: indexPath)
         cell.setupData(movies: movies, isLoading: isLoading)
         return cell
@@ -129,11 +119,11 @@ extension HomeVC: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 170
+        return 165
     }
 }
 
-//MARK: -DetailCellDelegate
+//MARK: -HomeCellDelegate
 extension HomeVC: HomeCellDelegate {
     func homeCell(_ homeCell: HomeCell, didSelectItem: Movie, perform action: HomeCellActionType) {
         let detailVC = DetailVC()

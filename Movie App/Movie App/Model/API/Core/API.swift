@@ -15,7 +15,7 @@ enum APIResult {
     case failure(APIError)
 }
 
-//MARK: - Defines
+// MARK: - Defines
 enum APIError: Error {
     case error(String)
     case errorURL
@@ -46,7 +46,7 @@ enum APIError: Error {
         case .emptyID:
             return "ID is empty."
         case .canNotGetVideoURL:
-            return "Can't get video url."
+            return "Can't get video online url."
         }
     }
 }

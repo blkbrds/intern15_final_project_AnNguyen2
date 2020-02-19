@@ -9,12 +9,11 @@
 import UIKit
 
 extension UITableView {
-    
-    func reloadSection(section: Int){
+    func reloadSection(section: Int) {
         let indexSet = IndexSet(integer: section)
         reloadSections(indexSet, with: .fade)
     }
-    
+
     func register(_ cellClass: AnyClass) {
         let identifier = String(describing: cellClass)
         let nib = UINib(nibName: identifier, bundle: .main)
@@ -33,4 +32,3 @@ extension UITableView {
         return cell
     }
 }
-

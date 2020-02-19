@@ -11,12 +11,12 @@ import Foundation
 struct Genre {
     let id: Int
     let name: String
-    
+
     init(id: Int, name: String) {
         self.id = id
         self.name = name
     }
-    
+
     init(json: JSObject) {
         self.id = json["id"] as? Int ?? 0
         self.name = json["name"] as? String ?? ""

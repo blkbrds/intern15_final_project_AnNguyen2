@@ -14,7 +14,6 @@ enum Process {
 }
 
 extension String {
-
     var trimmed: String {
         return trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
     }
@@ -32,7 +31,6 @@ extension String {
 }
 
 extension String {
-
     var url: URL? {
         return URL(string: self)
     }
@@ -47,7 +45,16 @@ extension String {
 }
 
 extension String {
-    static func /(left: String, right: String) -> String {
+    static func / (left: String, right: String) -> String {
         return left + "/" + right
+    }
+}
+
+extension String {
+    func toDate() -> Date? {
+        let dateFormater = DateFormatter()
+        dateFormater.dateFormat = "yyyy-MM-dd"
+        let date = dateFormater.date(from: self)
+        return date
     }
 }

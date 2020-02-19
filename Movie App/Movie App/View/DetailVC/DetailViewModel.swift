@@ -15,13 +15,16 @@ final class DetailViewModel {
     var movies: [[Movie]] = [[], []]
     var movieCategories: [MovieCategory] = [.similar, .recommendations]
     var urlVideo: URL?
-    var keyVideo: String?
+    var localUrl: URL?
+    var isSaved: Bool = false
+    var isLoadVideoOnline: Bool = false
     var isLoading: [Bool] = [true, true]
+    var canPopToDownload: Bool = false
 
     init() { }
 
     init(by id: Int) {
-        self.movieID = id
+        movieID = id
     }
 
     func resetMovie() {
@@ -32,8 +35,10 @@ final class DetailViewModel {
         return movie
     }
 
-    func getVideoUrl() -> URL? {
-        return urlVideo
+    func setupMovie(movie: Movie) {
+        self.movie = movie
+        isSaved = true
+        canPopToDownload = true
     }
 
     func getTitle(section: Int) -> String {
@@ -48,6 +53,14 @@ final class DetailViewModel {
         return movies[indexPath.section]
     }
 
+    func downloaded() -> Bool {
+        return isSaved
+    }
+
+    func videoUrl() -> URL? {
+        return localUrl ?? urlVideo
+    }
+
     func detailViewModel(for id: Int) -> DetailViewModel {
         return DetailViewModel(by: id)
     }
@@ -60,13 +73,30 @@ final class DetailViewModel {
         movies = Array(repeating: [], count: movieCategories.count)
     }
 
+    func setDataImageMovie(data: Data?) {
+        movie?.imageData = data
+    }
+
+    func isLoadingVideo() -> Bool {
+        return isLoadVideoOnline
+    }
+
+    func canPop() -> Bool {
+        return canPopToDownload
+    }
+
     func fetchMovieData(completion: @escaping Completion) {
         guard let id = movieID else {
             completion(false, APIError.emptyID)
             return
         }
+        if let _ = movie {
+            getLocalVideoUrl()
+            completion(true, nil)
+            return
+        }
         let url = APIManager.Path.Details(id: "\(id)").url
-        API.shared().request(with: url) {[weak self] (result) in
+        API.shared().request(with: url) { [weak self] (result) in
             guard let `self` = self else { return }
             switch result {
             case .failure(let error):
@@ -78,6 +108,8 @@ final class DetailViewModel {
                 }
                 let json = data.toJSObject()
                 self.movie = Movie(json: json)
+                self.getLocalVideoUrl()
+                self.getMovieDownloaded()
                 completion(true, nil)
             }
         }
@@ -87,6 +119,7 @@ final class DetailViewModel {
         guard let id = movieID else {
             isLoading[0] = false
             isLoading[1] = false
+            completion(false, APIError.emptyID)
             return
         }
         let urls: [String] = [
@@ -95,9 +128,10 @@ final class DetailViewModel {
         ]
         let group = DispatchGroup()
         print("Loading data...")
+        var error: APIError?
         for i in 0..<urls.count {
             group.enter()
-            API.shared().request(with: urls[i]) {[weak self] (result) in
+            API.shared().request(with: urls[i]) { [weak self] (result) in
                 guard let `self` = self else { return }
                 switch result {
                 case .failure(_):
@@ -114,6 +148,9 @@ final class DetailViewModel {
                         }
                         self.movies[i] = items
                     }
+                    if self.movies[i].isEmpty {
+                        error = APIError.error("Server no response data some category.")
+                    }
                 }
                 self.isLoading[i] = false
                 group.leave()
@@ -122,7 +159,7 @@ final class DetailViewModel {
         }
         group.notify(queue: .main) {
             print("Finished task")
-            completion(true, nil)
+            completion(true, error)
         }
     }
 
@@ -131,6 +168,7 @@ final class DetailViewModel {
             completion(false, APIError.emptyID)
             return
         }
+        isLoadVideoOnline = true
         let url = APIManager.Path.Trailer(id: id).url
         API.shared().request(with: url) { [weak self] (result) in
             guard let `self` = self else { return }
@@ -152,42 +190,136 @@ final class DetailViewModel {
                     completion(false, APIError.emptyData)
                     return
                 }
-                self.keyVideo = key
-                XCDYouTubeClient.default().getVideoWithIdentifier("\(key)") { [weak self] (video, error) in
-                    guard let `self` = self else { return }
-                    if let _ = error {
-                        completion(false, APIError.canNotGetVideoURL)
-                        return
-                    }
-                    guard let video = video else {
-                        completion(false, APIError.canNotGetVideoURL)
-                        return
-                    }
-                    self.urlVideo = video.streamURL
-                    completion(true, nil)
+                XCDYouTubeClient.default()
+                    .getVideoWithIdentifier("\(key)") { (video, error) in
+                        self.isLoadVideoOnline = false
+                        if let _ = error {
+                            completion(false, APIError.canNotGetVideoURL)
+                            return
+                        }
+                        guard let video = video else {
+                            completion(false, APIError.error("Video not exist!"))
+                            return
+                        }
+                        self.urlVideo = video.streamURL
+                        completion(true, nil)
                 }
             }
         }
     }
 
-    func saveOfflineVideo(completion: @escaping(_ data: Data?, _ error: Error?) -> Void) {
-        guard let url = self.urlVideo else {
-            completion(nil, APIError.invalidURL)
+    func downloadMovie(progressUpdating: @escaping (Double, Error?) -> Void) {
+        guard let url = urlVideo else {
+            print("AAA, APIError.invalidURL")
+            progressUpdating(0, APIError.invalidURL)
             return
         }
-        API.shared().request(with: url.absoluteString) { [weak self] (result) in
-            guard let _ = self else { return }
-            switch result {
-            case .failure(let error):
-                completion(nil, error)
-                return
-            case .success(let data):
-                guard let data = data else {
-                    completion(nil, APIError.emptyData)
+        if let _ = localUrl {
+            progressUpdating(0, APIError.error("Saved!"))
+            return
+        }
+        guard let movie = movie else {
+            progressUpdating(0, APIError.error("Movie is empty!"))
+            return
+        }
+        APIManager.Downloader.downloadVideo(
+            with: url.absoluteString,
+            nameFile: "\(movie.id)",
+            progressValue: { [weak self] (progress) in
+                guard let _ = self else { return }
+                progressUpdating(progress, nil)
+            },
+            completion: { [weak self] data, error in
+                guard let `self` = self else { return }
+                if let _ = error {
+                    self.isSaved = false
+                    progressUpdating(0, APIError.error("Can't download video movie!"))
                     return
                 }
-                completion(data, nil)
+                self.isSaved = true
+            })
+    }
+
+    func getLocalVideoUrl() {
+        let fileManager = FileManager.default
+        do {
+            let documentDirectory = try fileManager.url(
+                for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            guard let movie = self.movie else {
+                print("Video movie in local is empty!")
+                return
             }
+            let filePath: String = documentDirectory.path + "/\(movie.id).mp4"
+            if let _ = fileManager.contents(atPath: filePath) {
+                self.localUrl = URL(fileURLWithPath: filePath)
+                print("local video, \(self.localUrl?.absoluteString ?? "")")
+                print("Get success video movie in local!")
+            } else {
+                self.localUrl = nil
+                print("Video movie in local is empty!")
+            }
+        } catch {
+            print(APIError.errorURL.localizedDescription)
+        }
+    }
+
+    func getMovieDownloaded() {
+        guard let movie = movie else {
+            getLocalVideoUrl()
+            return
+        }
+        RealmManager.shared().getObjectForKey(
+            object: Movie.self,
+            forPrimaryKey: movie.id) { [weak self] (movie, error) in
+            guard let `self` = self else { return }
+            if let _ = error {
+                self.isSaved = false
+                return
+            }
+            self.isSaved = true
+        }
+        getLocalVideoUrl()
+    }
+
+    func addMovieContentToDownload(completion: @escaping Completion) {
+        guard let movie = movie else { return }
+        RealmManager.shared()
+            .addNewObject(object: movie) { [weak self] (done, error) in
+                guard let _ = self else { return }
+                completion(done, error)
+        }
+    }
+
+    func deleteVieo(movieID: Int) {
+        let fileManager = FileManager.default
+        do {
+            let documentDirectory = try fileManager.url(
+                for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            let filePath: String = documentDirectory.path + "/\(movieID).mp4"
+            if fileManager.fileExists(atPath: filePath) {
+                print("Exist")
+                let itemUrl = URL(fileURLWithPath: filePath)
+                try fileManager.removeItem(at: itemUrl)
+                print("Delete local movie video sucess!")
+            } else {
+                print("Video not exist!")
+            }
+        } catch {
+            print(APIError.errorURL.localizedDescription)
+        }
+    }
+
+    func removeMovie(completion: @escaping Completion) {
+        guard let movie = movie else { return }
+        deleteVieo(movieID: movie.id)
+        RealmManager.shared()
+            .deleteObject(type: Movie.self,
+                forPrimaryKey: movie.id) { [weak self] (done, error) in
+                guard let `self` = self else { return }
+                if done {
+                    self.isSaved = false
+                }
+                completion(done, error)
         }
     }
 }

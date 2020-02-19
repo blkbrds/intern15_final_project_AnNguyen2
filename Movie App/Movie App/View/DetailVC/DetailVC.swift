@@ -1,15 +1,8 @@
-//
-//  DetailVC.swift
-//  Movie App
-//
-//  Created by An Nguyễn on 1/20/20.
-//  Copyright © 2020 An Nguyễn. All rights reserved.
-//
-
 import UIKit
 import AVKit
+import UICircularProgressRing
 
-class DetailVC: BaseViewController {
+final class DetailVC: BaseViewController {
     @IBOutlet weak private var loadActivityIndicator: UIActivityIndicatorView!
     @IBOutlet weak private var detailScrollView: UIScrollView!
     @IBOutlet weak private var moviePosterImageView: UIImageView!
@@ -22,6 +15,9 @@ class DetailVC: BaseViewController {
     @IBOutlet weak private var taglineLabel: UILabel!
     @IBOutlet weak private var playVideoButton: UIButton!
     @IBOutlet weak private var moreLikeThisMoviesTableView: UITableView!
+    @IBOutlet weak private var downloadButton: UIButton!
+    @IBOutlet weak private var moviesTableViewHeightContraint: NSLayoutConstraint!
+    @IBOutlet weak private var progressDownloadCircularProgressRing: UICircularProgressRing!
 
     var viewModel = DetailViewModel()
     enum Action {
@@ -30,10 +26,28 @@ class DetailVC: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        NotificationCenter.default.addObserver(self,
+            selector: #selector(handleReloadData), name: .didChangedData, object: nil)
     }
 
     override func setupData() {
+        if viewModel.downloaded() {
+            viewModel.getMovieDownloaded()
+            updateUI()
+            return
+        }
         fetchData(for: .load)
+    }
+
+    override func setupUI() {
+        title = "Details"
+        detailScrollView.backgroundColor = App.Color.mainColor
+        progressDownloadCircularProgressRing.font = UIFont.systemFont(ofSize: 9)
+        refeshControl.addTarget(self, action: #selector(handleRefreshControlReloadData), for: .valueChanged)
+        detailScrollView.refreshControl = refeshControl
+        movieImageView.borderImage()
+        playVideoButton.borderButton()
+        configMovieTableView()
     }
 
     private func updateUI() {
@@ -42,19 +56,45 @@ class DetailVC: BaseViewController {
         overviewMovieLabel.text = movie?.overview ?? "..."
         movieNameLabel.text = movie?.originalTitle ?? "..."
         voteCountLabel.text = "\(movie?.voteCount ?? 0) votes"
-        releaseDateLabel.text = movie?.releaseDate ?? "..."
+        releaseDateLabel.text = movie?.releaseDate?.toString() ?? "..."
         idmScoreLabel.text = "IDM \(movie?.voteAverage ?? 0)"
         let urlString = APIManager.Path.baseImage3URL + (movie?.posterPath ?? "")
-        APIManager.Downloader.downloadImage(with: urlString) { [weak self] (image, error) in
+        if let data = movie?.imageData {
+            movieImageView.image = UIImage.init(data: data)
+            moviePosterImageView.image = UIImage.init(data: data)
+            changeIconButtonDownload()
+            moreLikeThisMoviesTableView.isHidden = true
+            moviesTableViewHeightContraint.constant = 0
+            return
+        }
+        APIManager.Downloader.downloadImage(with: urlString) { [weak self] (data, error) in
             guard let `self` = self else { return }
             if let error = error {
-                print(error, "downloadImage")
+                self.view.makeToast("\(error.localizedDescription) (image)")
                 return
             }
+            let imageData = data
+            self.viewModel.setDataImageMovie(data: imageData)
+            guard let data = data else { return }
             DispatchQueue.main.async {
-                self.movieImageView.image = image
-                self.moviePosterImageView.image = image
+                self.movieImageView.image = UIImage(data: data)
+                self.moviePosterImageView.image = UIImage(data: data)
             }
+            self.changeIconButtonDownload()
+        }
+    }
+
+    private func changeIconButtonDownload() {
+        if viewModel.downloaded() {
+            downloadButton.tintColor = UIColor.green
+            downloadButton.setBackgroundImage(
+                UIImage.init(systemName: "checkmark.circle.fill"), for: .normal)
+            print("Movie is download!")
+        } else {
+            downloadButton.tintColor = UIColor.white
+            downloadButton.setBackgroundImage(
+                UIImage.init(systemName: "arrow.down.to.line.alt"), for: .normal)
+            print("Movie is not download!")
         }
     }
 
@@ -77,6 +117,7 @@ class DetailVC: BaseViewController {
             } else if let error = error {
                 self.alert(errorString: error.localizedDescription)
             }
+            self.changeIconButtonDownload()
         }
         loadActivityIndicator.stopAnimating()
         loadActivityIndicator.isHidden = true
@@ -98,24 +139,14 @@ class DetailVC: BaseViewController {
     }
 
     private func getURLMovieVideo() {
-        viewModel.getURLMovieVideo {[weak self] (done, error) in
+        viewModel.getURLMovieVideo { [weak self] (done, error) in
             guard let `self` = self else { return }
             if done {
-                print("Get video url success!")
+                self.view.makeToast("Get video url success!")
             } else if let error = error {
                 self.alert(errorString: "Error video: \(error.localizedDescription)")
             }
         }
-    }
-
-    override func setupUI() {
-        title = "Details"
-        detailScrollView.backgroundColor = App.Color.mainColor
-        refeshControl.addTarget(self, action: #selector(handleRefreshData), for: .valueChanged)
-        detailScrollView.refreshControl = refeshControl
-        movieImageView.borderImage()
-        playVideoButton.borderButton()
-        configMovieTableView()
     }
 
     private func configMovieTableView() {
@@ -128,37 +159,107 @@ class DetailVC: BaseViewController {
         moreLikeThisMoviesTableView.delegate = self
     }
 
-    @objc private func handleRefreshData() {
+    private func handleDownload() {
+        if viewModel.downloaded() {
+            deleteAlert(msg: "Do you want to delete movie in download?") { (_) in
+                self.viewModel.removeMovie { [weak self] (done, error) in
+                    guard let `self` = self else { return }
+                    if let _ = error {
+                        self.view.makeToast("Delete failure!")
+                        return
+                    }
+                    NotificationCenter.default.post(name: .didChangedData, object: nil)
+                    if done, self.viewModel.canPop() {
+                        self.navigationController?.popViewController(animated: true)
+                    } else {
+                        self.changeIconButtonDownload()
+                    }
+                    self.view.makeToast("Delete success!")
+                }
+            }
+        } else {
+            if viewModel.isLoadingVideo() {
+                alert(errorString: "Video is loading, please wait...")
+                return
+            }
+            print("Downloading...")
+            viewModel.addMovieContentToDownload { [weak self] (done, error) in
+                guard let `self` = self else { return }
+                if done {
+                    NotificationCenter.default.post(name: .didChangedData, object: nil)
+                    self.view.makeToast("Saved movie content, video is downloading...")
+                } else {
+                    self.view.makeToast(error?.localizedDescription ?? "")
+                }
+            }
+            downloadButton.isHidden = true
+            progressDownloadCircularProgressRing.isHidden = false
+            progressDownloadCircularProgressRing.value = 0
+            viewModel.downloadMovie { (progress, error) in
+                if let _ = error {
+                    self.alert(errorString: "Error to download video!")
+                    self.changeIconButtonDownload()
+                    return
+                }
+
+                if let movie = self.viewModel.getMovie() {
+                    NotificationCenter.default.post(name: .progressDidChanged, object: nil, userInfo: ["value": CGFloat(progress * 100), "movieID": movie.id])
+
+                }
+                DispatchQueue.main.async {
+                    self.progressDownloadCircularProgressRing.value = CGFloat(progress * 100)
+                    if progress == 1 {
+                        self.downloadButton.isHidden = false
+                        self.progressDownloadCircularProgressRing.isHidden = true
+                        self.changeIconButtonDownload()
+                    }
+                }
+            }
+        }
+    }
+
+    @objc private func handleReloadData() {
+        if !viewModel.canPop() {
+            viewModel.getMovieDownloaded()
+        }
+        changeIconButtonDownload()
+    }
+
+    @objc private func handleRefreshControlReloadData() {
+        if viewModel.downloaded(), viewModel.canPop() {
+            viewModel.getMovieDownloaded()
+            updateUI()
+            refeshControl.endRefreshing()
+            return
+        }
         fetchData(for: .reload)
         fetchSimilarRecommendMovie(for: .reload)
         refeshControl.endRefreshing()
     }
 
     @IBAction private func playVideoButton(_ sender: Any) {
-        guard let url = viewModel.getVideoUrl() else {
-            alert(errorString: "URL video is empty!")
+        if viewModel.isLoadingVideo() {
+            alert(errorString: "Video is loading, please wait...")
             return
         }
-        let player = AVPlayer(url: url)
+        guard let videoUrl = viewModel.videoUrl() else {
+            alert(errorString: "Video is empty!")
+            return
+        }
+        print(videoUrl.absoluteString)
+        let player = AVPlayer(url: videoUrl)
         let playerViewController = AVPlayerViewController()
         playerViewController.player = player
-        self.present(playerViewController, animated: true) {
+        present(playerViewController, animated: true) {
+            try? AVAudioSession.sharedInstance().setCategory(.playback)
+            try? AVAudioSession.sharedInstance().setCategory(.soloAmbient)
+            try? AVAudioSession.sharedInstance().setActive(true)
             playerViewController.player?.play()
         }
     }
 
-    @IBAction private func favoriteButton(_ sender: Any) {
-        print("favoriteButton")
-    }
-    
     @IBAction private func downloadButton(_ sender: Any) {
-        viewModel.saveOfflineVideo {[weak self] (data, error) in
-            guard let `self` = self else { return }
-            if let error = error {
-                self.alert(errorString: error.localizedDescription)
-            }
-            print(data)
-        }
+        handleDownload()
     }
 
     @IBAction private func shareButton(_ sender: Any) {
@@ -166,7 +267,7 @@ class DetailVC: BaseViewController {
             alert(errorString: APIError.errorURL.localizedDescription)
             return
         }
-        let items: [Any] = ["Watch this movie \(url.absoluteString)"]
+        let items: [Any] = ["\(movie.originalTitle): \(url.absoluteString)"]
         let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
         present(activityViewController, animated: true)
     }
@@ -177,6 +278,10 @@ class DetailVC: BaseViewController {
             return
         }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
 
@@ -224,7 +329,7 @@ extension DetailVC: UITableViewDelegate {
 
 //MARK: -DetailCellDelegate
 extension DetailVC: DetailCellDelegate {
-    func detailCell(_ homeCell: DetailCell, didSelectItem: Movie, perform action: DetailCellActionType) {
+    func detailCell(_ cell: DetailCell, didSelectItem: Movie, perform action: DetailCellActionType) {
         let detailVC = DetailVC()
         let detailViewModel = viewModel.detailViewModel(for: didSelectItem.id)
         detailVC.viewModel = detailViewModel

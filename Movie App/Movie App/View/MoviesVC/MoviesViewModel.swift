@@ -31,6 +31,14 @@ final class MoviesViewModel {
     init(type: MovieCategory = .discover) {
         self.movieCategory = type
     }
+    
+    func getGenreCurrent() -> Genre? {
+        return genreFilter
+    }
+    
+    func getTrendingType() -> TrendingType? {
+        return trendingTypeFilter
+    }
 
     func detailViewModel(for id: Int) -> DetailViewModel {
         return DetailViewModel(by: id)
@@ -44,24 +52,25 @@ final class MoviesViewModel {
                 url = APIManager.Path.Trending(page: page, trendingType: trendingType) .url
             } else {
                 url = APIManager.Path.Trending(page: page) .url
-
             }
         case .discover:
             if let genre = genreFilter {
                 url = APIManager.Path.Discover(page: page, with_genres: genre.id).url
             } else {
-                url = APIManager.Path.Discover().url
+                url = APIManager.Path.Discover(page: page).url
             }
         case .tv:
             if let genre = genreFilter {
                 url = APIManager.Path.TV(page: page, with_genres: genre.id) .url
             } else {
-                url = APIManager.Path.TV().url
+                url = APIManager.Path.TV(page: page).url
             }
         case .popular:
             url = APIManager.Path.Popular(page: page).url
         case .topRated:
             url = APIManager.Path.TopRated(page: page).url
+        case .upcoming:
+            url = APIManager.Path.Upcoming(page: page).url
         default:
             url = ""
         }
@@ -185,4 +194,12 @@ final class MoviesViewModel {
     func getMovieCategory() -> MovieCategory? {
         return movieCategory
     }
+    
+    func resetMovies() {
+        movies = []
+    }
+    
+    func getTotalPage() -> Int{
+        return totalPages
+    } 
 }
