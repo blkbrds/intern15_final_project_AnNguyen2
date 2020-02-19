@@ -53,19 +53,19 @@ final class SearchViewModel {
     func updateQuery(text: String) {
         query = text
     }
-    
+
     func updateOldQuery(text: String) {
         oldQuery = text
     }
-    
+
     func getOldQuery() -> String {
         return oldQuery
     }
-    
+
     func getTimer() -> Timer? {
         return oldTimer
     }
-    
+
     func updateOldTimer(timer: Timer) {
         oldTimer = timer
     }
@@ -74,13 +74,14 @@ final class SearchViewModel {
         currentPage = 0
         totalPages = 0
     }
-    
+
     func fetchSearchData(page: Int = 1, completion: @escaping Completion) {
-        query = query.trimmed.replacingOccurrences(of: " ", with: "+") //or %20
-        guard query != "" else { return }
+        query = query.trimmed
+        guard query != "",
+            let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { return }
         let url = APIManager.Path.Search(query: query, page: page).url
         isLoadData = true
-        API.shared().request(with: url) {[weak self] (result) in
+        API.shared().request(with: url) { [weak self] (result) in
             guard let `self` = self else { return }
             switch result {
             case .failure(let error):

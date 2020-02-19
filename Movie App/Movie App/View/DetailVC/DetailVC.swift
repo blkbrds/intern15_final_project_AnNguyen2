@@ -171,7 +171,7 @@ final class DetailVC: BaseViewController {
                     NotificationCenter.default.post(name: .didChangedData, object: nil)
                     if done, self.viewModel.canPop() {
                         self.navigationController?.popViewController(animated: true)
-                    }else {
+                    } else {
                         self.changeIconButtonDownload()
                     }
                     self.view.makeToast("Delete success!")
@@ -195,25 +195,23 @@ final class DetailVC: BaseViewController {
             downloadButton.isHidden = true
             progressDownloadCircularProgressRing.isHidden = false
             progressDownloadCircularProgressRing.value = 0
-            DispatchQueue.global(qos: .background).async {
-                self.viewModel.downloadMovie { (progress, error) in
-                    if let _ = error {
-                        self.alert(errorString: "Error to download video!")
-                        self.changeIconButtonDownload()
-                        return
-                    }
-                    
-                    if let movie = self.viewModel.getMovie() {
-                        NotificationCenter.default.post(name: .progressDidChanged, object: nil, userInfo: ["value": CGFloat(progress * 100), "movieID": movie.id])
+            viewModel.downloadMovie { (progress, error) in
+                if let _ = error {
+                    self.alert(errorString: "Error to download video!")
+                    self.changeIconButtonDownload()
+                    return
+                }
 
-                    }
-                    DispatchQueue.main.async {
-                        self.progressDownloadCircularProgressRing.value = CGFloat(progress * 100)
-                        if progress == 1 {
-                            self.downloadButton.isHidden = false
-                            self.progressDownloadCircularProgressRing.isHidden = true
-                            self.changeIconButtonDownload()
-                        }
+                if let movie = self.viewModel.getMovie() {
+                    NotificationCenter.default.post(name: .progressDidChanged, object: nil, userInfo: ["value": CGFloat(progress * 100), "movieID": movie.id])
+
+                }
+                DispatchQueue.main.async {
+                    self.progressDownloadCircularProgressRing.value = CGFloat(progress * 100)
+                    if progress == 1 {
+                        self.downloadButton.isHidden = false
+                        self.progressDownloadCircularProgressRing.isHidden = true
+                        self.changeIconButtonDownload()
                     }
                 }
             }
@@ -281,7 +279,7 @@ final class DetailVC: BaseViewController {
         }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
-    
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
